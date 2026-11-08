@@ -9,7 +9,8 @@ import type {
 import { DEFAULT_TEXT_OPTIONS, parseText, type Role } from '@shared/textimport'
 import { call } from '../api'
 import { useT, type Key } from '../i18n'
-import { formatBytes, plainText } from '../lib/format'
+import { formatBytes } from '../lib/format'
+import { Inline } from './Inline'
 import { useStore } from '../store'
 import { Logo, Modal } from './ui'
 
@@ -147,7 +148,7 @@ function TextStep({ source, onDone, deckId: presetDeck }: { source: Extract<Impo
               <tr key={ri}>
                 {Array.from({ length: parsed.columns }, (_, i) => (
                   <td key={i} style={{ whiteSpace: 'normal', maxWidth: 220, opacity: roles[i] === 'skip' ? 0.4 : 1 }}>
-                    <div style={{ maxHeight: 44, overflow: 'hidden' }}>{plainText(r[i] ?? '').slice(0, 90)}</div>
+                    <div style={{ maxHeight: 44, overflow: 'hidden' }}><Inline text={r[i] ?? ''} max={90} /></div>
                   </td>
                 ))}
               </tr>
@@ -438,8 +439,8 @@ export function ImportWizard(): React.JSX.Element | null {
                 <div className="serif" style={{ fontSize: '1.5rem', marginBottom: 8 }}>{t('imp.md.sample', { n: source.cards })}</div>
                 {source.sample.map((c, i) => (
                   <div key={i} className="backup-row" style={{ fontSize: '0.875rem' }}>
-                    <span style={{ flex: 1, fontWeight: 500 }}>{plainText(c.front).slice(0, 80)}</span>
-                    <span className="muted" style={{ flex: 1 }}>{plainText(c.back).slice(0, 80)}</span>
+                    <span style={{ flex: 1, fontWeight: 500 }}><Inline text={c.front} max={80} /></span>
+                    <span className="muted" style={{ flex: 1 }}><Inline text={c.back} max={80} /></span>
                   </div>
                 ))}
                 <label className="field-label" style={{ marginTop: 14 }}>{t('imp.md.deck')}</label>

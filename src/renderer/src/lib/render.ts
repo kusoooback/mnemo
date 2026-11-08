@@ -16,6 +16,7 @@ import katex from 'katex'
 import { Marked } from 'marked'
 import type { NoteKind } from '@shared/types'
 import { transformCallouts } from './callouts'
+import { splitMath, stashMath } from './math'
 import { occlusionBack, occlusionFront } from './occlusion'
 import 'katex/dist/katex.min.css'
 
@@ -50,6 +51,48 @@ const URI_OK = /^(?:(?:https?|mailto|mnemo-media|data):|[^a-z]|[a-z+.-]+(?:[^a-z
 
 const cache = new Map<string, string>()
 
+/** KaTeX ne lève jamais d'erreur : une formule invalide s'affiche en rouge, jamais comme du code brut. */
+function renderTex(tex: string, display: boolean): string {
+  return katex.renderToString(tex, { displayMode: display, throwOnError: false, output: 'html', strict: 'ignore' })
+}
+
+/**
+ * Version « une ligne » pour les listes (bibliothèque, doublons, recherche…) : texte nettoyé et VRAIES formules rendues,
+ * jamais de « $x^2$ » brut. `max` limite la longueur du texte visible ; une formule n'est jamais coupée en deux.
+ */
+export function renderInline(src: string, max = 120): string {
+  const key = `inline:${max}:${src}`
+  const hit = cache.get(key)
+  if (hit !== undefined) return hit
+  const clean = src
+    .replace(/\{\{c\d+::([\s\S]*?)(?:::[\s\S]*?)?\}\}/g, '$1')
+    .replace(/```[\s\S]*?```/g, ' ‹code› ')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '🖼')
+  let used = 0
+  let out = ''
+  let cut = false
+  for (const seg of splitMath(clean)) {
+    if (used >= max) {
+      cut = true
+      break
+    }
+    if (seg.math) {
+      out += renderTex(seg.value, false)
+      used += Math.max(4, Math.min(seg.value.length, 24))
+    } else {
+      const t = seg.value.replace(/[*_`#>]/g, '').replace(/\s+/g, ' ')
+      const room = max - used
+      out += escapeHtml(t.length > room ? t.slice(0, room) : t)
+      used += Math.min(t.length, room)
+      if (t.length > room) cut = true
+    }
+  }
+  const html = `${out.trim()}${cut ? '…' : ''}`
+  if (cache.size > 400) cache.clear()
+  cache.set(key, html)
+  return html
+}
+
 /**
  * Markdown + LaTeX + code coloré. Les formules sont mises de côté avant le Markdown puis
  * réinsérées après le nettoyage : la sortie de KaTeX est de confiance, le reste est assaini.
@@ -58,21 +101,7 @@ export function renderMarkdown(src: string): string {
   const hit = cache.get(src)
   if (hit !== undefined) return hit
 
-  const maths: string[] = []
-  const stash = (tex: string, display: boolean): string => {
-    maths.push(katex.renderToString(tex, { displayMode: display, throwOnError: false, output: 'html' }))
-    return `@@MATH${maths.length - 1}@@`
-  }
-  // Les blocs de code sont protégés pour qu'on n'y interprète pas les « $ ».
-  const codes: string[] = []
-  let text = src.replace(/```[\s\S]*?```|`[^`\n]+`/g, (m) => {
-    codes.push(m)
-    return `@@CODE${codes.length - 1}@@`
-  })
-  text = text
-    .replace(/\$\$([\s\S]+?)\$\$/g, (_, tex: string) => stash(tex, true))
-    .replace(/\$(?!\s)([^$\n]+?)(?<!\s)\$(?!\d)/g, (_, tex: string) => stash(tex, false))
-    .replace(/@@CODE(\d+)@@/g, (_, i: string) => codes[Number(i)])
+  const { text, stash: maths } = stashMath(src, (tex, display) => renderTex(tex, display))
 
   const html = DOMPurify.sanitize(md.parse(text, { async: false }) as string, {
     ALLOWED_URI_REGEXP: URI_OK

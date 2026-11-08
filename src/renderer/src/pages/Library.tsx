@@ -5,7 +5,8 @@ import { call } from '../api'
 import { DuplicatesModal } from '../components/Duplicates'
 import { useConfirm } from '../components/ui'
 import { useT, type Key } from '../i18n'
-import { formatDue, plainText } from '../lib/format'
+import { formatDue } from '../lib/format'
+import { Inline } from '../components/Inline'
 import { useStore } from '../store'
 
 const PAGE = 100
@@ -25,10 +26,10 @@ const stateLabel = (r: CardRow): Key =>
           : 'lib.state.label.review'
 
 function cardText(r: CardRow): { a: string; b: string } {
-  if (r.kind === 'cloze') return { a: plainText(r.fields.text ?? ''), b: plainText(r.fields.extra ?? '') }
-  if (r.kind === 'occlusion') return { a: `Image à compléter · zone ${r.ord}`, b: plainText(r.fields.extra ?? '') }
+  if (r.kind === 'cloze') return { a: r.fields.text ?? '', b: r.fields.extra ?? '' }
+  if (r.kind === 'occlusion') return { a: `Image à compléter · zone ${r.ord}`, b: r.fields.extra ?? '' }
   const rev = r.kind === 'basic-reverse' && r.ord === 1
-  return { a: plainText((rev ? r.fields.back : r.fields.front) ?? ''), b: plainText((rev ? r.fields.front : r.fields.back) ?? '') }
+  return { a: (rev ? r.fields.back : r.fields.front) ?? '', b: (rev ? r.fields.front : r.fields.back) ?? '' }
 }
 
 export function Library({ initialDeck, initialText }: { initialDeck?: string | null; initialText?: string }): React.JSX.Element {
@@ -170,9 +171,9 @@ export function Library({ initialDeck, initialText }: { initialDeck?: string | n
                   <input type="checkbox" className="checkbox" checked={sel.has(r.cardId)} onChange={() => toggle(r.cardId)} aria-label="select" />
                 </span>
                 <div className="front">
-                  <div className="a">{a || '…'}</div>
+                  <div className="a">{a ? <Inline text={a} max={110} /> : '…'}</div>
                   <div className="b">
-                    {b || ' '}
+                    {b ? <Inline text={b} max={110} /> : ' '}
                     {r.tags.length > 0 && <span className="faint"> {b ? '·' : ''} #{r.tags.join(' #')}</span>}
                   </div>
                 </div>

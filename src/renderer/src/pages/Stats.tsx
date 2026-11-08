@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { StatsData } from '@shared/types'
 import { call } from '../api'
 import { useT } from '../i18n'
+import { Inline } from '../components/Inline'
 import { formatDuration } from '../lib/format'
 import { useStore } from '../store'
 
@@ -151,7 +152,7 @@ export function Stats(): React.JSX.Element {
           ) : (
             s.hardest.map((h) => (
               <div className="hard-row" key={h.cardId}>
-                <span className="t">{h.front || '…'}</span>
+                <span className="t">{h.front ? <Inline text={h.front} max={140} /> : '…'}</span>
                 <span className="tag">{t('stats.lapses', { n: h.lapses })}</span>
               </div>
             ))

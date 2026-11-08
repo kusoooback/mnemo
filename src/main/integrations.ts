@@ -202,7 +202,7 @@ export function findDuplicates(): DuplicateGroup[] {
     if (key.length < 4) continue
     groups.set(key, [
       ...(groups.get(key) ?? []),
-      { id: r.id, front: (first ?? '').slice(0, 140), back: (f.back ?? f.extra ?? '').slice(0, 140), deckName: r.deckName ?? '', reviews: r.reviews }
+      { id: r.id, front: (first ?? '').slice(0, 600), back: (f.back ?? f.extra ?? '').slice(0, 600), deckName: r.deckName ?? '', reviews: r.reviews }
     ])
   }
   return [...groups.entries()].filter(([, v]) => v.length > 1).map(([key, notes]) => ({ key, notes }))

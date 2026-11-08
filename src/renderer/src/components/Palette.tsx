@@ -3,13 +3,15 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { CardRow } from '@shared/types'
 import { call } from '../api'
 import { useT } from '../i18n'
-import { plainText } from '../lib/format'
+import { Inline } from './Inline'
 import { useStore } from '../store'
 
 interface Item {
   id: string
   group: string
   label: string
+  /** Carte : le libellé contient du texte de carte, affiché avec ses vraies formules. */
+  rich?: boolean
   icon: ReactNode
   run: () => void
 }
@@ -80,7 +82,8 @@ export function Palette(): React.JSX.Element {
     const cardItems: Item[] = cards.map((c) => ({
       id: `c-${c.cardId}`,
       group: t('pal.cards'),
-      label: plainText(c.kind === 'cloze' ? (c.fields.text ?? '') : (c.fields.front ?? '')).slice(0, 90),
+      label: (c.kind === 'cloze' ? (c.fields.text ?? '') : (c.fields.front ?? '')).slice(0, 300),
+      rich: true,
       icon: <FileText size={17} />,
       run: () => openEditor({ noteId: c.noteId })
     }))
@@ -137,7 +140,7 @@ export function Palette(): React.JSX.Element {
                 {header && <div className="palette-group">{it.group}</div>}
                 <button className={`palette-item ${i === idx ? 'on' : ''}`} onMouseMove={() => setIdx(i)} onClick={() => run(it)}>
                   {it.icon}
-                  <span className="t">{it.label}</span>
+                  <span className="t">{it.rich ? <Inline text={it.label} max={90} /> : it.label}</span>
                   {i === idx && <CornerDownLeft size={14} />}
                 </button>
               </div>

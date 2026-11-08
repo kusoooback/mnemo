@@ -3,6 +3,7 @@ import type { DuplicateGroup } from '@shared/types'
 import { call } from '../api'
 import { useT } from '../i18n'
 import { useStore } from '../store'
+import { Inline } from './Inline'
 import { Modal } from './ui'
 
 /** Fusion assistée des cartes en doublon (F10). */
@@ -31,8 +32,8 @@ export function DuplicatesModal({ onClose }: { onClose: () => void }): React.JSX
                 {g.notes.map((n) => (
                   <div key={n.id} className="backup-row" style={{ padding: '10px 14px', alignItems: 'flex-start' }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontWeight: 500, overflowWrap: 'anywhere' }}>{n.front}</div>
-                      <div className="muted" style={{ fontSize: '0.8125rem', overflowWrap: 'anywhere' }}>{n.back || '—'}</div>
+                      <div style={{ fontWeight: 500, overflowWrap: 'anywhere' }}><Inline text={n.front} max={160} /></div>
+                      <div className="muted" style={{ fontSize: '0.8125rem', overflowWrap: 'anywhere' }}>{n.back ? <Inline text={n.back} max={160} /> : '—'}</div>
                       <div className="faint" style={{ fontSize: '0.75rem', marginTop: 2 }}>
                         {n.deckName} · {t('dup.reviews', { n: n.reviews })}
                       </div>

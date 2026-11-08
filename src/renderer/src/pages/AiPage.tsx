@@ -6,6 +6,7 @@ import { JobRow } from '../components/Activity'
 import { ApiKeyCard } from '../components/ApiKeyCard'
 import { LocalAiSetup } from '../components/LocalAiSetup'
 import { useT } from '../i18n'
+import { cardFaces } from '../lib/render'
 import { useStore } from '../store'
 
 interface Row extends AiCardProposal {
@@ -180,6 +181,7 @@ export function AiPage(): React.JSX.Element {
             <div className="row" style={{ alignItems: 'flex-start' }}>
               <input type="checkbox" className="checkbox" style={{ marginTop: 4 }} checked={r.selected} onChange={(e) => patch(r.uid, { selected: e.target.checked })} />
               <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <GeneratedPreview r={r} />
                 {r.kind === 'cloze' ? (
                   <textarea className="textarea selectable" rows={2} value={r.text} onChange={(e) => patch(r.uid, { text: e.target.value })} />
                 ) : (
@@ -344,6 +346,17 @@ export function AiPage(): React.JSX.Element {
           </div>
         )}
       </div>
+    </div>
+  )
+}
+
+/** Aperçu de la carte telle qu'elle sera étudiée : les formules sont rendues, jamais affichées en LaTeX brut. */
+function GeneratedPreview({ r }: { r: { kind: string; text?: string; front?: string; back?: string } }): React.JSX.Element {
+  const f = r.kind === 'cloze' ? cardFaces('cloze', { text: r.text ?? '', extra: '' }, 1) : cardFaces('basic', { front: r.front ?? '', back: r.back ?? '' }, 0)
+  return (
+    <div className="gen-preview">
+      <div className="md" dangerouslySetInnerHTML={{ __html: f.front }} />
+      <div className="md gen-ans" dangerouslySetInnerHTML={{ __html: f.answer }} />
     </div>
   )
 }

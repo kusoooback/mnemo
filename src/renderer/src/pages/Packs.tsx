@@ -2,6 +2,7 @@ import { Download, FolderOpen, Globe, Share2 } from 'lucide-react'
 import { useState } from 'react'
 import type { CommunityPack, PackOpened } from '@shared/types-extra'
 import { call } from '../api'
+import { Inline } from '../components/Inline'
 import { useT } from '../i18n'
 import { useStore } from '../store'
 
@@ -155,7 +156,7 @@ function PackPreviewCard(p: { o: PackOpened; root: string; setRoot: (v: string) 
       {v.duplicates > 0 && <div className="d">{t('pk.preview.dups', { n: v.duplicates })}</div>}
       <ul className="pk-sample">
         {v.sample.map((s, i) => (
-          <li key={i}>{s}</li>
+          <li key={i}><Inline text={s} max={120} /></li>
         ))}
       </ul>
       <label className="pk-field">

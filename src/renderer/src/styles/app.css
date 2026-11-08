@@ -3952,3 +3952,10 @@ svg.lucide {
   display: inline-flex;
   margin-left: 14px;
 }
+
+/* Aperçu rendu d'une carte générée et formules dans les listes */
+.gen-preview { background: var(--surface-2); border-radius: var(--r-sm, 8px); padding: 10px 12px; font-size: 0.9375rem; }
+.gen-preview .md > :first-child { margin-top: 0; }
+.gen-preview .md > :last-child { margin-bottom: 0; }
+.gen-preview .gen-ans { border-top: 1px dashed var(--border); margin-top: 8px; padding-top: 8px; color: var(--text-2); }
+.inl .katex { font-size: 1.02em; }

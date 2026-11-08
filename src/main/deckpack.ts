@@ -184,7 +184,7 @@ export function previewPack(pack: Pack): PackPreview {
     decks: decks.size,
     images: Object.keys(pack.media).length,
     duplicates: pack.notes.filter((n) => n.kind !== 'occlusion' && firstOf(n).trim() && have.has(dupKey(n.kind, firstOf(n)))).length,
-    sample: pack.notes.slice(0, 3).map((n) => firstOf(n).replace(/\s+/g, ' ').slice(0, 120))
+    sample: pack.notes.slice(0, 3).map((n) => firstOf(n).replace(/\s+/g, ' ').slice(0, 400))
   }
 }
 
