@@ -65,10 +65,11 @@ async function inner(win: BrowserWindow, outDir: string, log: string[]): Promise
 
   // Fin : Entrée termine la visite, l’accueil prend le relais.
   await key('Enter')
-  await wait(900)
+  for (let k = 0; k < 20 && (await has('[data-testid="tour"]')); k++) await wait(250)
   check(!(await has('[data-testid="tour"]')), 'Entrée sur la dernière étape ferme la visite')
   check((await tourDone()) === true, 'tourDone enregistré')
-  check(await has('.tour-hl') === false, 'plus de surlignage après la visite')
+  check((await has('.tour-hl')) === false, 'plus de surlignage après la visite')
+  for (let k = 0; k < 20 && !(await js<boolean>(`[...document.querySelectorAll('button')].some(x => x.textContent.includes('sans rien configurer'))`)); k++) await wait(250)
   check(await js<boolean>(`[...document.querySelectorAll('button')].some(x => x.textContent.includes('sans rien configurer'))`), 'l’accueil apparaît ensuite')
   await shot('apres-visite')
   await js(`(() => { const b = [...document.querySelectorAll('button')].find(x => x.textContent.includes('sans rien configurer')); if (b) b.click() })()`)

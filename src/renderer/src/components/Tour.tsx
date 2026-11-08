@@ -212,6 +212,11 @@ export function Tour(): React.JSX.Element {
   const { setTour, patchSettings, openEditor, go, bump } = useStore()
   const [i, setI] = useState(0)
 
+  // L'écran d'accueil suit la visite : on le charge d'avance pour qu'il s'affiche sans attente.
+  useEffect(() => {
+    void import('./Onboarding')
+  }, [])
+
   const steps = useMemo<{ nav?: string; scene: ReactNode }[]>(
     () => [
       { scene: <SceneWelcome /> },

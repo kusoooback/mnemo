@@ -1,41 +1,61 @@
 import { FileUp, PanelLeft } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { Suspense, lazy, useEffect, useRef, useState } from 'react'
 import type { Job, PrepaAutoEvent } from '@shared/types'
 import { call } from './api'
-import { Editor } from './components/Editor'
-import { ImportWizard } from './components/ImportWizard'
-import { Onboarding } from './components/Onboarding'
-import { Tour } from './components/Tour'
-import { Palette } from './components/Palette'
 import { Sidebar } from './components/Sidebar'
 import { useT } from './i18n'
-import { DeckPage } from './pages/DeckPage'
-import { DocViewer } from './pages/DocViewer'
-import { AiPage } from './pages/AiPage'
-import { Assistant } from './pages/Assistant'
-import { Resources } from './pages/Resources'
-import { Packs } from './pages/Packs'
-import { Quiz } from './pages/Quiz'
-import { ShortcutsHelp } from './components/ShortcutsHelp'
 import { Home } from './pages/Home'
-import { Integrations } from './pages/Integrations'
-import { Notebook } from './pages/Notebook'
-import { Prepa } from './pages/Prepa'
-import { SyncPage } from './pages/SyncPage'
-import { Library } from './pages/Library'
 import { Review } from './pages/Review'
-import { Settings } from './pages/Settings'
-import { Sheets } from './pages/Sheets'
-import { Stats } from './pages/Stats'
 import { skinById } from '@shared/skins'
 import { shortcut } from './lib/platform'
 import { SKIN_VAR_NAMES, skinVars } from './lib/skins'
 import { useStore } from './store'
 
+// Les écrans secondaires ne sont chargés qu'à la première visite : démarrage plus rapide, moins de mémoire.
+const DeckPage = lazy(() => import('./pages/DeckPage').then((m) => ({ default: m.DeckPage })))
+const DocViewer = lazy(() => import('./pages/DocViewer').then((m) => ({ default: m.DocViewer })))
+const AiPage = lazy(() => import('./pages/AiPage').then((m) => ({ default: m.AiPage })))
+const Assistant = lazy(() => import('./pages/Assistant').then((m) => ({ default: m.Assistant })))
+const Resources = lazy(() => import('./pages/Resources').then((m) => ({ default: m.Resources })))
+const Packs = lazy(() => import('./pages/Packs').then((m) => ({ default: m.Packs })))
+const Quiz = lazy(() => import('./pages/Quiz').then((m) => ({ default: m.Quiz })))
+const Integrations = lazy(() =>
+  import('./pages/Integrations').then((m) => ({ default: m.Integrations }))
+)
+const Notebook = lazy(() => import('./pages/Notebook').then((m) => ({ default: m.Notebook })))
+const Prepa = lazy(() => import('./pages/Prepa').then((m) => ({ default: m.Prepa })))
+const SyncPage = lazy(() => import('./pages/SyncPage').then((m) => ({ default: m.SyncPage })))
+const Library = lazy(() => import('./pages/Library').then((m) => ({ default: m.Library })))
+const Settings = lazy(() => import('./pages/Settings').then((m) => ({ default: m.Settings })))
+const Sheets = lazy(() => import('./pages/Sheets').then((m) => ({ default: m.Sheets })))
+const Stats = lazy(() => import('./pages/Stats').then((m) => ({ default: m.Stats })))
+const Editor = lazy(() => import('./components/Editor').then((m) => ({ default: m.Editor })))
+const ImportWizard = lazy(() =>
+  import('./components/ImportWizard').then((m) => ({ default: m.ImportWizard }))
+)
+const Onboarding = lazy(() =>
+  import('./components/Onboarding').then((m) => ({ default: m.Onboarding }))
+)
+const Tour = lazy(() => import('./components/Tour').then((m) => ({ default: m.Tour })))
+const Palette = lazy(() => import('./components/Palette').then((m) => ({ default: m.Palette })))
+const ShortcutsHelp = lazy(() =>
+  import('./components/ShortcutsHelp').then((m) => ({ default: m.ShortcutsHelp }))
+)
+
 const jobStatus = new Map<string, Job['status']>()
 
 function useAppearance(): void {
-  const { theme, skin, accentColor, fontScale, dyslexia, language, cardFont, cardScale, cardAlign } = useStore((s) => s.settings)
+  const {
+    theme,
+    skin,
+    accentColor,
+    fontScale,
+    dyslexia,
+    language,
+    cardFont,
+    cardScale,
+    cardAlign
+  } = useStore((s) => s.settings)
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)')
     const sk = skinById(skin)
@@ -47,7 +67,8 @@ function useAppearance(): void {
       if (sk) root.dataset.skin = sk.id
       else delete root.dataset.skin
       for (const name of SKIN_VAR_NAMES) root.style.removeProperty(name)
-      for (const [name, value] of Object.entries(skinVars(sk, base, accentColor))) root.style.setProperty(name, value)
+      for (const [name, value] of Object.entries(skinVars(sk, base, accentColor)))
+        root.style.setProperty(name, value)
       void call('app.setTitleBar', base, sk ? { bg: sk.bg, fg: sk.text2 } : undefined)
     }
     apply()
@@ -70,7 +91,10 @@ function useAppearance(): void {
       else root.removeProperty(name)
     }
     set('--card-font', fonts[cardFont] ?? null)
-    set('--card-scale', cardScale && cardScale !== 1 ? String(Math.min(1.8, Math.max(0.7, cardScale))) : null)
+    set(
+      '--card-scale',
+      cardScale && cardScale !== 1 ? String(Math.min(1.8, Math.max(0.7, cardScale))) : null
+    )
     set('--card-align', cardAlign === 'center' ? 'center' : null)
   }, [cardFont, cardScale, cardAlign])
   useEffect(() => {
@@ -117,7 +141,13 @@ function useGlobalShortcuts(): void {
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
       // « ? » ouvre l'aide des raccourcis, sauf quand on est en train d'écrire.
-      if (e.key === '?' && !e.ctrlKey && !e.metaKey && !e.altKey && !(e.target as HTMLElement).closest('input,textarea,select,[contenteditable]')) {
+      if (
+        e.key === '?' &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.altKey &&
+        !(e.target as HTMLElement).closest('input,textarea,select,[contenteditable]')
+      ) {
         e.preventDefault()
         useStore.getState().setShortcuts(!useStore.getState().shortcuts)
         return
@@ -142,7 +172,25 @@ function useGlobalShortcuts(): void {
 
 export default function App(): React.JSX.Element | null {
   const t = useT()
-  const { ready, init, route, sidebarOpen, setSidebar, palette, shortcuts, editor, toasts, onboarding, tour, bump, openEditor, toast, importer, openImport, go } = useStore()
+  const {
+    ready,
+    init,
+    route,
+    sidebarOpen,
+    setSidebar,
+    palette,
+    shortcuts,
+    editor,
+    toasts,
+    onboarding,
+    tour,
+    bump,
+    openEditor,
+    toast,
+    importer,
+    openImport,
+    go
+  } = useStore()
   const [dragging, setDragging] = useState(false)
   useAppearance()
   useGlobalShortcuts()
@@ -164,10 +212,18 @@ export default function App(): React.JSX.Element | null {
             const was = jobStatus.get(j.id)
             jobStatus.set(j.id, j.status)
             if (was === 'running' && j.status !== 'running' && j.kind !== 'scan') {
-              toast(`${j.title} — ${j.result || (j.status === 'cancelled' ? t('act.cancelled') : '')}`, {
-                kind: j.status === 'error' ? 'error' : undefined,
-                action: j.docId ? { label: t('act.open'), run: () => go({ name: 'doc', id: j.docId as string }) } : { label: t('act.title'), run: () => go({ name: 'home' }) }
-              })
+              toast(
+                `${j.title} — ${j.result || (j.status === 'cancelled' ? t('act.cancelled') : '')}`,
+                {
+                  kind: j.status === 'error' ? 'error' : undefined,
+                  action: j.docId
+                    ? {
+                        label: t('act.open'),
+                        run: () => go({ name: 'doc', id: j.docId as string })
+                      }
+                    : { label: t('act.title'), run: () => go({ name: 'home' }) }
+                }
+              )
               if (j.status === 'done') void bump()
             } else if (was === undefined) jobStatus.set(j.id, j.status)
           }
@@ -179,8 +235,14 @@ export default function App(): React.JSX.Element | null {
           const p = e.payload as PrepaAutoEvent
           if (p.state !== 'done') return
           const r = p.result
-          if (r.downloaded + r.cards + r.events > 0) toast(t('pp.autoNew', { docs: r.downloaded, cards: r.cards, events: r.events }), { action: { label: t('nav.prepa'), run: () => go({ name: 'prepa' }) } })
-          else if (p.needLogin) toast(t('pp.autoLogin'), { action: { label: t('nav.prepa'), run: () => go({ name: 'prepa' }) } })
+          if (r.downloaded + r.cards + r.events > 0)
+            toast(t('pp.autoNew', { docs: r.downloaded, cards: r.cards, events: r.events }), {
+              action: { label: t('nav.prepa'), run: () => go({ name: 'prepa' }) }
+            })
+          else if (p.needLogin)
+            toast(t('pp.autoLogin'), {
+              action: { label: t('nav.prepa'), run: () => go({ name: 'prepa' }) }
+            })
         }
       }),
     [bump, openEditor, toast, t, go]
@@ -189,7 +251,8 @@ export default function App(): React.JSX.Element | null {
   // Glisser-déposer un fichier n'importe où : l'assistant d'import s'ouvre dessus.
   useEffect(() => {
     let depth = 0
-    const hasFiles = (e: DragEvent): boolean => !!e.dataTransfer && [...e.dataTransfer.types].includes('Files')
+    const hasFiles = (e: DragEvent): boolean =>
+      !!e.dataTransfer && [...e.dataTransfer.types].includes('Files')
     const enter = (e: DragEvent): void => {
       if (!hasFiles(e)) return
       e.preventDefault()
@@ -231,45 +294,62 @@ export default function App(): React.JSX.Element | null {
   const reviewing = route.name === 'review'
 
   return (
-    <div className={`app ${sidebarOpen ? '' : 'sidebar-closed'} ${narrow ? 'narrow' : ''} ${window.mnemo.platform === 'darwin' ? 'mac' : ''}`}>
+    <div
+      className={`app ${sidebarOpen ? '' : 'sidebar-closed'} ${narrow ? 'narrow' : ''} ${window.mnemo.platform === 'darwin' ? 'mac' : ''}`}
+    >
       <div className="sidebar-scrim" onClick={() => setSidebar(false)} />
       <div className="titlebar">
         <div className="titlebar-drag" />
       </div>
       {!sidebarOpen && (
-        <button className="icon-btn floating-toggle no-drag" onClick={() => setSidebar(true)} title={`${t('nav.sidebar')} (${shortcut('Ctrl+B')})`} aria-label={t('nav.sidebar')}>
+        <button
+          className="icon-btn floating-toggle no-drag"
+          onClick={() => setSidebar(true)}
+          title={`${t('nav.sidebar')} (${shortcut('Ctrl+B')})`}
+          aria-label={t('nav.sidebar')}
+        >
           <PanelLeft size={18} />
         </button>
       )}
       <Sidebar />
       <main className="main">
-          {route.name === 'review' && <Review deckId={route.deckId} />}
-        <div className="main-scroll" hidden={reviewing} key={route.name + ('id' in route ? route.id : '')}>
-          {route.name === 'home' && <Home />}
-          {route.name === 'deck' && <DeckPage id={route.id} />}
-          {route.name === 'library' && <Library initialDeck={route.deckId} initialText={route.text} />}
-          {route.name === 'stats' && <Stats />}
-          {route.name === 'settings' && <Settings />}
-          {route.name === 'notebook' && <Notebook />}
-          {route.name === 'ai' && <AiPage />}
-          {route.name === 'assistant' && <Assistant />}
-          {route.name === 'resources' && <Resources />}
-          {route.name === 'packs' && <Packs />}
-          {route.name === 'quiz' && <Quiz />}
-          {route.name === 'sync' && <SyncPage />}
-          {route.name === 'integrations' && <Integrations />}
-          {route.name === 'prepa' && <Prepa />}
-          {route.name === 'doc' && <DocViewer id={route.id} />}
-          {route.name === 'sheets' && <Sheets />}
-        </div>
+        {route.name === 'review' && <Review deckId={route.deckId} />}
+        <Suspense fallback={null}>
+          <div
+            className="main-scroll"
+            hidden={reviewing}
+            key={route.name + ('id' in route ? route.id : '')}
+          >
+            {route.name === 'home' && <Home />}
+            {route.name === 'deck' && <DeckPage id={route.id} />}
+            {route.name === 'library' && (
+              <Library initialDeck={route.deckId} initialText={route.text} />
+            )}
+            {route.name === 'stats' && <Stats />}
+            {route.name === 'settings' && <Settings />}
+            {route.name === 'notebook' && <Notebook />}
+            {route.name === 'ai' && <AiPage />}
+            {route.name === 'assistant' && <Assistant />}
+            {route.name === 'resources' && <Resources />}
+            {route.name === 'packs' && <Packs />}
+            {route.name === 'quiz' && <Quiz />}
+            {route.name === 'sync' && <SyncPage />}
+            {route.name === 'integrations' && <Integrations />}
+            {route.name === 'prepa' && <Prepa />}
+            {route.name === 'doc' && <DocViewer id={route.id} />}
+            {route.name === 'sheets' && <Sheets />}
+          </div>
+        </Suspense>
       </main>
 
-      {editor && <Editor />}
-      {palette && <Palette />}
-      {shortcuts && <ShortcutsHelp />}
-      {tour && <Tour />}
-      {onboarding && !tour && <Onboarding />}
-      {importer && <ImportWizard />}
+      <Suspense fallback={null}>
+        {editor && <Editor />}
+        {palette && <Palette />}
+        {shortcuts && <ShortcutsHelp />}
+        {tour && <Tour />}
+        {onboarding && !tour && <Onboarding />}
+        {importer && <ImportWizard />}
+      </Suspense>
       {dragging && (
         <div className="drop-overlay">
           <div>

@@ -50,6 +50,7 @@ const MODELS: ModelDef[] = [
 export const modelsDir = (): string => join(dataDir(), 'models')
 
 // L'import dynamique évite que le bundler transforme ce module (ESM) en require().
+// Processeur seul : les binaires GPU (Vulkan, CUDA) pèsent plus de 200 Mo et ne sont pas embarqués.
 const dynImport = new Function('s', 'return import(s)') as (s: string) => Promise<any> // eslint-disable-line @typescript-eslint/no-explicit-any
 
 type Sink = (event: string, payload: unknown) => void
@@ -78,7 +79,7 @@ async function probeHardware(): Promise<{ gpu: string | false; vramMb: number }>
   if (hw) return hw
   try {
     const { getLlama } = await dynImport('node-llama-cpp')
-    const llama = await getLlama()
+    const llama = await getLlama({ gpu: false, build: 'never' })
     const vram = llama.gpu ? await llama.getVramState() : { total: 0 }
     hw = { gpu: llama.gpu as string | false, vramMb: Math.round(vram.total / 1024 / 1024) }
   } catch {
@@ -188,7 +189,7 @@ async function ensure(selected: string): Promise<NonNullable<typeof engine>> {
   if (engine && engine.modelId === def.id) return engine
   await unload()
   const { getLlama } = await dynImport('node-llama-cpp')
-  const llama = await getLlama()
+  const llama = await getLlama({ gpu: false, build: 'never' })
   const model = await llama.loadModel({ modelPath: path })
   engine = { llama, model, modelId: def.id, path }
   return engine
