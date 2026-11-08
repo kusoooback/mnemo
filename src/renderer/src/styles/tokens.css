@@ -1,0 +1,147 @@
+/* Mnémo — design tokens.
+   Valeurs relevées sur l'interface publique de Claude (échelle de gris « v2 », argile de la marque, sémantique
+   bg-000…500 / text-000…500 / border). Projet libre et non commercial ; le nom et le logo de Claude ne sont pas repris. */
+
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  /* surfaces : bg-100 (page), bg-200 (barre latérale), bg-000 (cartes, champs) */
+  --bg: #f9f9f7;
+  --sidebar: var(--bg); /* même couleur que le reste de l'application */
+  --surface: #ffffff;
+  --surface-2: #f3f3f0;
+  --surface-3: #e7e6e1;
+  --hover: rgba(30, 30, 29, 0.055);
+  --active: rgba(30, 30, 29, 0.085);
+
+  /* bordures : border-300 à 15 % / 30 % */
+  --border: rgba(30, 30, 29, 0.15);
+  --border-strong: rgba(30, 30, 29, 0.3);
+  --hairline: rgba(30, 30, 29, 0.1);
+
+  --text: #131313;
+  --text-2: #383835;
+  --muted: #7b7974;
+  --faint: #a4a29a;
+
+  /* argile de la marque */
+  --accent: #c6613f;
+  --accent-hover: #b4553a;
+  --accent-soft: rgba(198, 97, 63, 0.1);
+  --accent-text: #ffffff;
+  --accent-ink: #c6613f;
+  --accent-btn: #c6613f;
+  --accent-btn-hover: #b4553a;
+  --accent-btn-text: #ffffff;
+  --link: #184f95;
+
+  --again: #b5503c;
+  --hard: #b8873f;
+  --good: #6b8450;
+  --easy: #8a6f4e;
+  --again-soft: rgba(181, 80, 60, 0.1);
+  --hard-soft: rgba(184, 135, 63, 0.12);
+  --good-soft: rgba(107, 132, 80, 0.12);
+  --easy-soft: rgba(138, 111, 78, 0.12);
+
+  --cloze-bg: rgba(198, 97, 63, 0.12);
+  --cloze-fg: #b4553a;
+  --code-bg: #f3f3f0;
+  --danger: #8e2626;
+  --success: #3f7a3a;
+  --warn-bg: rgba(250, 178, 25, 0.16);
+
+  /* ombres : le compositeur de Claude (très diffuse) et les fenêtres */
+  --shadow-sm: 0 0 0 0.5px rgba(30, 30, 29, 0.05);
+  --shadow-md: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.035), 0 0 0 0.5px rgba(30, 30, 29, 0.15);
+  --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.14), 0 0 0 0.5px rgba(30, 30, 29, 0.15);
+  --overlay: rgba(19, 19, 19, 0.4);
+
+  --heat-0: #ecebe5;
+  --heat-1: #f0cdbd;
+  --heat-2: #e5a589;
+  --heat-3: #d97757;
+  --heat-4: #b4553a;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  /* bg-100 (page), bg-200 (barre latérale), bg-000 (cartes, champs) */
+  --bg: #151515;
+  --sidebar: var(--bg); /* même couleur que le reste de l'application : jamais de teinte différente */
+  --surface: #20201f;
+  --surface-2: #1b1b1a;
+  --surface-3: #2c2c2a;
+  --hover: rgba(249, 249, 247, 0.06);
+  --active: rgba(249, 249, 247, 0.1);
+
+  --border: rgba(225, 224, 217, 0.15);
+  --border-strong: rgba(225, 224, 217, 0.3);
+  --hairline: rgba(225, 224, 217, 0.1);
+
+  --text: #f9f9f7;
+  --text-2: #c3c2b7;
+  --muted: #97958d;
+  --faint: #6a6963;
+
+  --accent: #d97757;
+  --accent-hover: #e48a6c;
+  --accent-soft: rgba(217, 119, 87, 0.15);
+  --accent-text: #151515;
+  --accent-ink: #e8896a;
+  --accent-btn: #c6613f;
+  --accent-btn-hover: #d97757;
+  --accent-btn-text: #ffffff;
+  --link: #9ec5f4;
+
+  --again: #e0735f;
+  --hard: #d9a453;
+  --good: #96b27a;
+  --easy: #c9a57a;
+  --again-soft: rgba(224, 115, 95, 0.15);
+  --hard-soft: rgba(217, 164, 83, 0.15);
+  --good-soft: rgba(150, 178, 122, 0.15);
+  --easy-soft: rgba(201, 165, 122, 0.15);
+
+  --cloze-bg: rgba(217, 119, 87, 0.2);
+  --cloze-fg: #f0a086;
+  --code-bg: #0d0d0d;
+  --danger: #f4abab;
+  --success: #91d68b;
+  --warn-bg: rgba(250, 178, 25, 0.14);
+
+  --shadow-sm: 0 0 0 0.5px rgba(225, 224, 217, 0.1);
+  --shadow-md: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(225, 224, 217, 0.15);
+  --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.6), 0 0 0 0.5px rgba(225, 224, 217, 0.15);
+  --overlay: rgba(0, 0, 0, 0.6);
+
+  --heat-0: #262625;
+  --heat-1: #4d3429;
+  --heat-2: #7e4d3b;
+  --heat-3: #c0694b;
+  --heat-4: #e48a6c;
+}
+
+:root {
+  /* Claude utilise « Anthropic Sans / Serif » (polices propriétaires) : on prend les équivalents libres les plus proches. */
+  --font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Newsreader Variable', 'Iowan Old Style', Georgia, serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'Cascadia Code', Consolas, monospace;
+
+  --radius-sm: 6px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+
+  --sidebar-w: 288px;
+  --titlebar-h: 40px;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+}
+
+:root[data-font='dyslexia'] {
+  --font-sans: 'Atkinson Hyperlegible', 'Inter Variable', system-ui, sans-serif;
+  --font-serif: 'Atkinson Hyperlegible', 'Newsreader Variable', Georgia, serif;
+}

@@ -1,0 +1,107 @@
+appId: app.mnemo
+productName: Mnemo
+electronLanguages:
+  - fr
+  - en
+  - en-US
+afterPack: build/afterPack.js
+directories:
+  buildResources: build
+files:
+  - '!**/.vscode/*'
+  - '!src/*'
+  - '!electron.vite.config.{js,ts,mjs,cjs}'
+  - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
+  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
+  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+  - '!node_modules/@node-llama-cpp/win-x64-cuda*/**'
+  - '!node_modules/@node-llama-cpp/win-arm64/**'
+  - '!node_modules/@node-llama-cpp/linux*/**'
+  - '!**/*.map'
+  - '!node_modules/@tesseract.js-data/**'
+  - '!node_modules/tesseract.js/dist/**'
+  - '!node_modules/tesseract.js/src/worker-script/browser/**'
+  - '!node_modules/better-sqlite3/deps/**'
+  - '!node_modules/better-sqlite3/src/**'
+  - '!node_modules/pdfjs-dist/web/**'
+  - '!node_modules/pdfjs-dist/build/**'
+  - '!node_modules/pdfjs-dist/types/**'
+  - '!node_modules/pdfjs-dist/image_decoders/**'
+  - '!tests/**'
+  - '!dist/**'
+  - '!dist-*/**'
+  - '!qa-*/**'
+  - '!docs/**'
+extraResources:
+  - from: node_modules/@tesseract.js-data/fra/4.0.0/fra.traineddata.gz
+    to: tessdata/fra.traineddata.gz
+  - from: node_modules/@tesseract.js-data/eng/4.0.0/eng.traineddata.gz
+    to: tessdata/eng.traineddata.gz
+asarUnpack:
+  - resources/**
+  - node_modules/better-sqlite3/**
+  - node_modules/pdfjs-dist/**
+  - node_modules/node-llama-cpp/**
+  - node_modules/@node-llama-cpp/**
+  - node_modules/@napi-rs/**
+  - node_modules/tesseract.js/**
+  - node_modules/tesseract.js-core/**
+  - node_modules/bmp-js/**
+  - node_modules/idb-keyval/**
+  - node_modules/is-url/**
+  - node_modules/node-fetch/**
+  - node_modules/whatwg-url/**
+  - node_modules/tr46/**
+  - node_modules/webidl-conversions/**
+  - node_modules/regenerator-runtime/**
+  - node_modules/wasm-feature-detect/**
+  - node_modules/zlibjs/**
+win:
+  executableName: Mnemo
+  icon: build/icon.ico
+nsis:
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+  installerHeaderIcon: build/icon.ico
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  language: '1036'
+  artifactName: ${name}-${version}-setup.${ext}
+  shortcutName: ${productName}
+  uninstallDisplayName: ${productName}
+  createDesktopShortcut: always
+mac:
+  category: public.app-category.education
+  icon: build/icon.png
+  target:
+    - dmg
+    - zip
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+  hardenedRuntime: false
+  gatekeeperAssess: false
+  extendInfo:
+    CFBundleDisplayName: Mnémo
+    NSDocumentsFolderUsageDescription: Mnémo enregistre tes cours et tes exports PDF dans le dossier de ton choix.
+    NSDownloadsFolderUsageDescription: Mnémo lit les fichiers que tu glisses dans l'application.
+  notarize: false
+dmg:
+  artifactName: ${name}-${version}-${arch}.${ext}
+  title: Mnémo ${version}
+  contents:
+    - x: 130
+      y: 220
+    - x: 410
+      y: 220
+      type: link
+      path: /Applications
+linux:
+  target:
+    - AppImage
+    - snap
+    - deb
+  maintainer: Malo
+  category: Utility
+appImage:
+  artifactName: ${name}-${version}.${ext}
+npmRebuild: false

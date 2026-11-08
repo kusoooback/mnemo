@@ -1,0 +1,65 @@
+name: Publier Mnémo
+
+# Pousse un tag « v1.0.0 » (ou lance le workflow à la main) : les installateurs Windows et Mac sont construits
+# puis attachés à la page « Releases », d'où tout le monde peut les télécharger.
+# Les installateurs Mac se construisent obligatoirement sur un Mac : ce sont les machines « macos-* » de GitHub.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            args: --win
+            name: windows
+          - os: macos-latest # puce Apple (M1 et suivantes)
+            args: --mac --arm64
+            name: mac-apple-silicon
+          - os: macos-15-intel # Mac Intel
+            args: --mac --x64
+            name: mac-intel
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npx electron-vite build
+      - run: npx electron-builder ${{ matrix.args }} --publish never
+        env:
+          # Sans certificat Apple, la signature « ad hoc » de build/afterPack.js est appliquée.
+          # Pour signer et notarier : ajouter CSC_LINK / CSC_KEY_PASSWORD (et APPLE_ID…) dans les secrets du dépôt.
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mnemo-${{ matrix.name }}
+          path: |
+            dist/*.exe
+            dist/*.dmg
+            dist/*.zip
+          if-no-files-found: error
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*
+          generate_release_notes: true

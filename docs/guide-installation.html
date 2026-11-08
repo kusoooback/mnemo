@@ -1,0 +1,227 @@
+<title>Guide d'installation de Mnémo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
+<style>
+/* Mise en page : une colonne de lecture de 44rem, sommaire collant à gauche sur grand écran. */
+:root {
+  --bg: #faf9f5;
+  --surface: #ffffff;
+  --sunk: #f0eee6;
+  --line: #e3e0d4;
+  --fg: #141413;
+  --fg2: #3d3d3a;
+  --muted: #6f6e68;
+  --accent: #c0573a;
+  --accent-soft: rgba(192, 87, 58, 0.1);
+  --warn-bg: #f7ecd9;
+  --serif: 'Newsreader', Georgia, 'Times New Roman', serif;
+  --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #262624; --surface: #302f2d; --sunk: #1f1e1d; --line: #43423e;
+    --fg: #faf9f5; --fg2: #dcdacf; --muted: #a09e95;
+    --accent: #e4876a; --accent-soft: rgba(228, 135, 106, 0.14); --warn-bg: #3a3225;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #262624; --surface: #302f2d; --sunk: #1f1e1d; --line: #43423e;
+  --fg: #faf9f5; --fg2: #dcdacf; --muted: #a09e95;
+  --accent: #e4876a; --accent-soft: rgba(228, 135, 106, 0.14); --warn-bg: #3a3225;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 400 1rem/1.65 var(--sans); padding-inline: 1rem; padding-block: 2.5rem 5rem; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 62rem; margin-inline: auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 2.5rem; }
+@media (min-width: 60rem) { .wrap { grid-template-columns: 13rem minmax(0, 44rem); justify-content: center; } }
+nav.toc { font-size: 0.875rem; }
+@media (min-width: 60rem) { nav.toc { position: sticky; top: calc(1.5rem + env(safe-area-inset-top, 0px)); align-self: start; } }
+nav.toc .brand { font: 500 1.25rem var(--serif); margin-bottom: 1rem; display: block; letter-spacing: -0.01em; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.25rem 0.5rem; }
+@media (min-width: 60rem) { nav.toc ol { flex-direction: column; gap: 0.15rem; } }
+nav.toc a { color: var(--muted); text-decoration: none; padding: 0.2rem 0.55rem; margin-left: -0.55rem; border-radius: 6px; display: inline-block; }
+nav.toc a:hover { color: var(--fg); background: var(--sunk); }
+main { min-width: 0; }
+h1 { font: 400 clamp(2.1rem, 6vw, 3rem)/1.1 var(--serif); letter-spacing: -0.025em; margin: 0 0 1rem; text-wrap: balance; }
+.lead { font-size: 1.125rem; color: var(--fg2); margin: 0 0 2rem; max-width: 38rem; }
+h2 { font: 400 1.75rem/1.2 var(--serif); letter-spacing: -0.015em; margin: 3.5rem 0 0.75rem; text-wrap: balance; scroll-margin-top: 1.5rem; }
+h3 { font: 600 1rem var(--sans); margin: 1.75rem 0 0.4rem; }
+p { margin: 0 0 1rem; }
+a { color: var(--accent); }
+.tag { display: inline-block; font: 500 0.75rem var(--sans); letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
+.steps { list-style: none; counter-reset: s; margin: 1rem 0 1.5rem; padding: 0; display: flex; flex-direction: column; gap: 0.9rem; }
+.steps > li { counter-increment: s; display: grid; grid-template-columns: 2rem minmax(0, 1fr); gap: 0.85rem; }
+.steps > li::before { content: counter(s); width: 2rem; height: 2rem; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font: 600 0.875rem/2rem var(--sans); text-align: center; }
+.steps > li > div { padding-top: 0.2rem; min-width: 0; }
+.steps ul { margin: 0.4rem 0 0; padding-left: 1.1rem; color: var(--fg2); }
+.note { background: var(--warn-bg); border-radius: 10px; padding: 0.85rem 1rem; margin: 1rem 0 1.25rem; font-size: 0.9375rem; }
+.note b { font-weight: 600; }
+kbd { font: 500 0.8125rem var(--sans); background: var(--surface); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 6px; padding: 0.05rem 0.4rem; white-space: nowrap; }
+code { font: 0.875em ui-monospace, 'Cascadia Code', Consolas, monospace; background: var(--sunk); padding: 0.1em 0.35em; border-radius: 5px; }
+.tbl { overflow-x: auto; margin: 1rem 0 1.5rem; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.9375rem; }
+th, td { text-align: left; padding: 0.65rem 0.9rem; vertical-align: top; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+th { font-weight: 600; font-size: 0.8125rem; color: var(--muted); background: var(--sunk); white-space: nowrap; }
+td:first-child { white-space: nowrap; }
+.pair { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); margin: 1rem 0 1.5rem; }
+.pair > div { border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 1.1rem 1.2rem; min-width: 0; }
+.pair h3 { margin-top: 0; }
+.pair p { margin: 0; color: var(--fg2); font-size: 0.9375rem; }
+footer { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.875rem; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+  <nav class="toc" aria-label="Sommaire">
+    <span class="brand">Mnémo</span>
+    <ol>
+      <li><a href="#installer">Installer</a></li>
+      <li><a href="#premiers-pas">Premiers pas</a></li>
+      <li><a href="#anki">Importer</a></li>
+      <li><a href="#synchro">Deux ordinateurs</a></li>
+      <li><a href="#ia">L'IA</a></li>
+      <li><a href="#planning">Planning</a></li>
+      <li><a href="#donnees">Tes données</a></li>
+      <li><a href="#depannage">Dépannage</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <span class="tag">Guide pour Windows</span>
+    <h1>Installer et utiliser Mnémo</h1>
+    <p class="lead">Aucune connaissance de GitHub, d'un terminal ou du code n'est nécessaire. Compte cinq minutes. Mnémo marche sans internet et sans compte : tes cartes restent sur ton PC.</p>
+
+    <h2 id="installer">Installer Mnémo</h2>
+    <h3>Méthode 1 : télécharger l'installateur (la plus simple)</h3>
+    <ol class="steps">
+      <li><div>Ouvre la page des versions de Mnémo. Elle ressemble à <code>github.com/…/mnemo/releases</code> ; le lien t'a été donné avec ce guide.</div></li>
+      <li><div>Repère la dernière version tout en haut, puis la section <b>Assets</b>. Si elle est repliée, clique sur la petite flèche.</div></li>
+      <li><div>Clique sur le fichier qui se termine par <code>-setup.exe</code>. Le téléchargement démarre.</div></li>
+      <li><div>Ouvre ton dossier <b>Téléchargements</b> et double-clique sur le fichier.</div></li>
+      <li><div>Windows affiche « Windows a protégé votre ordinateur » ? C'est normal, Mnémo est un logiciel libre non signé.
+        <ul><li>Clique sur <b>Informations complémentaires</b></li><li>puis sur <b>Exécuter quand même</b></li></ul></div></li>
+      <li><div>Laisse l'installation se terminer. Un raccourci <b>Mnémo</b> apparaît sur le bureau.</div></li>
+    </ol>
+
+    <h3>Méthode 2 : s'il n'y a pas de fichier .exe</h3>
+    <ol class="steps">
+      <li><div>Sur la page principale de Mnémo, clique sur le bouton vert <b>Code</b>, puis <b>Download ZIP</b>.</div></li>
+      <li><div>Dans <b>Téléchargements</b>, clic droit sur le ZIP, <b>Extraire tout…</b>, puis <b>Extraire</b>.</div></li>
+      <li><div>Ouvre le dossier extrait, puis le dossier <code>mnemo</code> à l'intérieur.</div></li>
+      <li><div>Double-clique sur <code>INSTALLER-MNEMO.bat</code>. Une fenêtre noire s'ouvre : elle fait le travail à ta place, laisse-la tourner 2 à 5 minutes.
+        <ul><li>Si Node.js manque, elle l'installe. Ferme alors la fenêtre et double-clique de nouveau sur <code>INSTALLER-MNEMO.bat</code>.</li></ul></div></li>
+      <li><div>Mnémo s'ouvre à la fin. Les fois suivantes, double-clique sur <code>LANCER-MNEMO.bat</code>.</div></li>
+    </ol>
+
+    <h2 id="premiers-pas">Premiers pas</h2>
+    <p>Au premier lancement, Mnémo propose trois étapes facultatives : importer Anki, synchroniser tes PC, activer l'IA. Tu peux cliquer sur « Commencer sans rien configurer » ou « Essayer avec un deck d'exemple ».</p>
+
+    <h3>Créer une carte</h3>
+    <ol class="steps">
+      <li><div>Clique sur <b>Nouvelle carte</b> en haut à gauche, ou appuie sur <kbd>Ctrl</kbd> <kbd>N</kbd>.</div></li>
+      <li><div>Choisis ou crée un <b>deck</b> (un paquet de cartes, par exemple « Histoire »).</div></li>
+      <li><div>Écris la question (Recto) et la réponse (Verso).</div></li>
+      <li><div><kbd>Ctrl</kbd> <kbd>Entrée</kbd> enregistre et passe à la carte suivante.</div></li>
+    </ol>
+    <p>Pour un texte à trous, sélectionne un mot et appuie sur <kbd>Ctrl</kbd> <kbd>Maj</kbd> <kbd>C</kbd>. Tu peux aussi coller une image directement, écrire <code>$x^2$</code> pour une formule, ou <code>**gras**</code>.</p>
+
+    <h3>Réviser</h3>
+    <ol class="steps">
+      <li><div>Sur l'accueil, clique sur <b>Commencer la révision</b>.</div></li>
+      <li><div>Lis la question, réfléchis, puis appuie sur <kbd>Espace</kbd> pour voir la réponse.</div></li>
+      <li><div>Note-toi avec <kbd>1</kbd> À revoir, <kbd>2</kbd> Difficile, <kbd>3</kbd> Bien ou <kbd>4</kbd> Facile. Mnémo décide seul quand te reposer la question.</div></li>
+    </ol>
+    <p>Révise un peu chaque jour : la régularité compte plus que la durée.</p>
+
+    <div class="tbl"><table>
+      <thead><tr><th>Touche</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td><kbd>Ctrl</kbd> <kbd>K</kbd></td><td>Recherche et commandes rapides</td></tr>
+        <tr><td><kbd>Espace</kbd></td><td>Voir la réponse, puis répondre « Bien »</td></tr>
+        <tr><td><kbd>Z</kbd></td><td>Annuler la dernière réponse</td></tr>
+        <tr><td><kbd>E</kbd></td><td>Modifier la carte en cours</td></tr>
+        <tr><td><kbd>S</kbd> / <kbd>B</kbd></td><td>Suspendre la carte / la reporter à demain</td></tr>
+        <tr><td><kbd>Win</kbd> <kbd>Maj</kbd> <kbd>C</kbd></td><td>Créer une carte depuis le texte copié, dans n'importe quelle application</td></tr>
+      </tbody>
+    </table></div>
+
+    <h2 id="anki">Passer d'Anki (ou d'autre chose) à Mnémo</h2>
+    <p>Clique sur <b>Importer</b> dans le menu de gauche, ou <b>glisse un fichier dans la fenêtre</b>. Mnémo reconnaît le format tout seul et te montre ce qui va se passer avant d'importer.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Tu viens de…</th><th>Ce que tu fais</th></tr></thead>
+      <tbody>
+        <tr><td>Anki sur ce PC</td><td>Ferme Anki, puis <b>Importer</b>, <b>Anki installé sur ce PC</b>. Un clic : cartes, images, historique. Ta collection Anki n'est jamais modifiée.</td></tr>
+        <tr><td>Anki sur un autre PC</td><td>Dans Anki : <i>Fichier</i>, <i>Exporter…</i>, <i>Paquet Anki (.apkg)</i>, avec médias et historique. Glisse le fichier dans Mnémo.</td></tr>
+        <tr><td>Anki, export texte</td><td><i>Exporter</i> en <i>Notes en texte brut</i>. Deck, type de note et étiquettes sont reconnus.</td></tr>
+        <tr><td>Quizlet</td><td><i>Exporter</i> ton jeu, copie le texte, puis <b>Importer</b>, <b>Coller du texte</b>.</td></tr>
+        <tr><td>Excel, Google Sheets, Brainscape…</td><td>Enregistre en CSV et glisse le fichier. Dans l'aperçu, tu dis ce que contient chaque colonne.</td></tr>
+        <tr><td>Obsidian, Notion, Markdown</td><td><b>Importer</b>, <b>Dossier de notes</b> ou Notion.</td></tr>
+        <tr><td>Un cours en PDF ou Word</td><td>Glisse le fichier : l'IA propose des cartes, tu valides.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><b>Tu peux utiliser les deux applications en parallèle quelque temps.</b> Relance l'import quand tu veux : Mnémo n'ajoute que les nouvelles cartes et les révisions faites entre-temps, sans rien dupliquer. L'audio n'est pas encore repris.</div>
+
+    <h2 id="synchro">Utiliser deux ordinateurs</h2>
+    <p>Sans compte ni serveur : il suffit d'un dossier que OneDrive, Dropbox ou Google Drive synchronise déjà sur tes deux PC.</p>
+    <div class="pair">
+      <div>
+        <h3>Premier PC</h3>
+        <p>Ouvre <b>Synchronisation</b> (clic sur « Local · hors ligne » en bas à gauche), choisis le dossier, invente une phrase de récupération d'au moins 8 caractères, puis active.</p>
+      </div>
+      <div>
+        <h3>Second PC</h3>
+        <p>Installe Mnémo, ouvre <b>Synchronisation</b>, choisis le même dossier et saisis la même phrase. Les révisions des deux PC s'additionnent, rien n'est écrasé.</p>
+      </div>
+    </div>
+    <div class="note"><b>Note ta phrase de récupération dans un endroit sûr.</b> Sans elle, les données synchronisées sont perdues. Ta base locale reste intacte. Tout est chiffré dans le dossier, et une copie de sécurité est faite avant chaque fusion.</div>
+
+    <h2 id="ia">Générer des cartes avec l'IA</h2>
+    <p>Facultatif : Mnémo marche très bien sans. Rien n'est ajouté à tes decks sans que tu le valides.</p>
+    <div class="pair">
+      <div>
+        <h3>Sur ton PC, gratuit</h3>
+        <p>Installe <a href="https://ollama.com">Ollama</a>, ouvre l'invite de commandes (touche Windows, tape <code>cmd</code>) et tape <code>ollama pull llama3.1</code>. Dans Mnémo : <b>Intégrations</b>, <b>Ollama (local)</b>, <b>Tester la connexion</b>.</p>
+      </div>
+      <div>
+        <h3>Avec ta propre clé</h3>
+        <p>Choisis Anthropic ou OpenAI dans <b>Intégrations</b>, colle ta clé (chiffrée par Windows) et fixe un plafond mensuel. Le texte exact et le coût estimé s'affichent avant chaque envoi.</p>
+      </div>
+    </div>
+    <p>Ensuite : <b>Génération IA</b>, colle ton cours ou choisis un PDF ou un fichier Word, <b>Vérifier avant l'envoi</b>, <b>Envoyer et générer</b>. Corrige, décoche ou rejette, puis <b>Ajouter</b>.</p>
+
+    <h2 id="planning">Cahier de texte et planning</h2>
+    <ol class="steps">
+      <li><div><b>Cahier de texte</b>, <b>Matières</b> : crée tes matières avec une couleur et un coefficient.</div></li>
+      <li><div><b>Nouvelle entrée</b> : choisis <i>Examen</i>, une date, la matière, et relie un ou plusieurs decks.</div></li>
+      <li><div>L'onglet <b>Planning</b> te dit combien de nouvelles cartes par jour viser pour tout avoir vu deux jours avant. <b>Appliquer cette limite</b> règle tes decks ; tu restes libre de refuser.</div></li>
+    </ol>
+    <p>Le bouton <b>.ics</b> exporte tes échéances vers Google Agenda, Outlook ou Apple Calendrier. Dans <b>Intégrations</b>, active le rappel quotidien pour recevoir une notification Windows.</p>
+
+    <h2 id="donnees">Tes données</h2>
+    <ul>
+      <li>Elles sont dans <code>C:\Users\&lt;toi&gt;\AppData\Roaming\Mnemo</code> (Réglages, <b>Dossier de données</b>, <b>Ouvrir</b>).</li>
+      <li>Une sauvegarde automatique est faite chaque jour, 30 sont gardées. Réglages, <b>Sauvegardes</b>, <b>Restaurer</b>.</li>
+      <li>Pour tout récupérer ailleurs : <b>Tout exporter (JSON)</b>, ou CSV, Markdown et Anki dans <b>Intégrations</b>.</li>
+      <li>Pour désinstaller : Paramètres Windows, Applications, Mnémo. Tes données restent dans le dossier ci-dessus tant que tu ne le supprimes pas.</li>
+    </ul>
+
+    <h2 id="depannage">Ça ne marche pas ?</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>Problème</th><th>Solution</th></tr></thead>
+      <tbody>
+        <tr><td>Windows bloque l'installation</td><td>Informations complémentaires, puis Exécuter quand même. Si l'antivirus insiste, ajoute une exception pour ce fichier.</td></tr>
+        <tr><td><code>INSTALLER-MNEMO.bat</code> se ferme aussitôt</td><td>Clic droit, Exécuter en tant qu'administrateur. Vérifie ta connexion internet.</td></tr>
+        <tr><td>« Node.js n'est pas reconnu »</td><td>Installe la version LTS depuis nodejs.org, redémarre l'ordinateur, relance le fichier.</td></tr>
+        <tr><td>Mnémo ne s'ouvre pas</td><td>Double-clique sur <code>LANCER-MNEMO.bat</code>. S'il dit « pas encore installé », relance <code>INSTALLER-MNEMO.bat</code>.</td></tr>
+        <tr><td>« Phrase incorrecte » à la synchro</td><td>La phrase doit être identique sur les deux PC, majuscules et espaces compris.</td></tr>
+        <tr><td>« Ollama ne répond pas »</td><td>Ouvre l'application Ollama (icône dans la barre des tâches) puis réessaie.</td></tr>
+      </tbody>
+    </table></div>
+    <p>Pour demander de l'aide, joins une capture d'écran et décris ce que tu as cliqué juste avant.</p>
+
+    <footer>Mnémo est libre et open source (licence MIT). Aucune télémétrie, aucun compte.</footer>
+  </main>
+</div>
