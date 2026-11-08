@@ -20,7 +20,7 @@ jobs:
           - os: macos-latest # puce Apple (M1 et suivantes)
             args: --mac --arm64
             name: mac-apple-silicon
-          - os: macos-15-intel # Mac Intel
+          - os: macos-latest # Mac Intel : construit depuis la machine Apple (le dmg échoue sur le runner Intel)
             args: --mac --x64
             name: mac-intel
     runs-on: ${{ matrix.os }}
