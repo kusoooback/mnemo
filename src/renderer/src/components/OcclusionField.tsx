@@ -1,9 +1,10 @@
-import { Image as ImageIcon, Trash2 } from 'lucide-react'
+import { Image as ImageIcon, PenLine, Trash2 } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { call } from '../api'
 import { useT } from '../i18n'
 import { parseBoxes, type Box } from '../lib/occlusion'
 import { useStore } from '../store'
+import { DrawPad } from './DrawPad'
 
 type Pt = { x: number; y: number }
 const rect = (a: Pt, b: Pt): Box => ({ x: Math.min(a.x, b.x), y: Math.min(a.y, b.y), w: Math.abs(a.x - b.x), h: Math.abs(a.y - b.y) })
@@ -17,6 +18,7 @@ export function OcclusionField({ image, boxes, onChange }: { image: string; boxe
   const start = useRef<Pt | null>(null)
   const [draft, setDraft] = useState<Box | null>(null)
   const [sel, setSel] = useState(-1)
+  const [drawing, setDrawing] = useState(false)
 
   const set = useCallback(
     (b: Box[]) => onChange(image, JSON.stringify(b.map((x) => ({ x: +x.x.toFixed(4), y: +x.y.toFixed(4), w: +x.w.toFixed(4), h: +x.h.toFixed(4) })))),
@@ -81,6 +83,18 @@ export function OcclusionField({ image, boxes, onChange }: { image: string; boxe
           <span>{t('ed.occPick')}</span>
           <span className="faint">{t('ed.occPaste')}</span>
         </button>
+        <button type="button" className="link-btn" style={{ marginTop: 8 }} onClick={() => setDrawing(true)}>
+          <PenLine size={13} /> {t('ed.occDraw')}
+        </button>
+        {drawing && (
+          <DrawPad
+            onClose={() => setDrawing(false)}
+            onSave={(png) => {
+              setDrawing(false)
+              void load(png)
+            }}
+          />
+        )}
       </div>
     )
   }

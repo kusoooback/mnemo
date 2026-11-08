@@ -42,7 +42,11 @@ export const SKINS: Skin[] = [
   { id: 'terminal', name: { fr: 'Terminal', en: 'Terminal' }, base: 'dark', bg: '#0a0e0a', surface: '#121812', surface2: '#0e130e', surface3: '#1b241b', text: '#d6f5d6', text2: '#a9d6a9', muted: '#78a078', faint: '#4f704f', accent: '#4ade80', accentHover: '#6ee79a', accentInk: '#5be58f', onAccent: '#04120a' }
 ]
 
-export const skinById = (id: string | undefined): Skin | undefined => (id ? SKINS.find((s) => s.id === id) : undefined)
+export function skinById(id: string | undefined): Skin | undefined {
+  if (!id) return undefined
+  const c = parseCustomSkin(id)
+  return c ? customSkin(c.bg, c.text, c.accent) : SKINS.find((s) => s.id === id)
+}
 
 /* ---------- Couleur d'accent personnalisée (au choix, sur n'importe quel thème) ---------- */
 
@@ -80,5 +84,57 @@ export function accentFrom(color: string, base: 'light' | 'dark'): Pick<Skin, 'a
     accentHover: toHex(mix(rgb, base === 'dark' ? white : black, 0.14)),
     accentInk: toHex(mix(rgb, base === 'dark' ? white : black, base === 'dark' ? 0.22 : 0.12)),
     onAccent: contrast(accent, '#ffffff') >= contrast(accent, '#14110d') ? '#ffffff' : '#14110d'
+  }
+}
+
+/* ---------- Thème sur mesure : trois couleurs au choix, le reste en est déduit ---------- */
+
+const CUSTOM_RE = /^custom:([0-9a-f]{6}):([0-9a-f]{6}):([0-9a-f]{6})$/
+
+/** « custom:fond:texte:accent » (hexadécimal sans #) : c'est à la fois l'identifiant enregistré et le code qu'on partage. */
+export const customSkinId = (bg: string, text: string, accent: string): string => `custom:${[bg, text, accent].map((c) => c.replace('#', '').toLowerCase()).join(':')}`
+
+export function parseCustomSkin(id: string): { bg: string; text: string; accent: string } | null {
+  const m = CUSTOM_RE.exec(id.trim().toLowerCase())
+  return m ? { bg: `#${m[1]}`, text: `#${m[2]}`, accent: `#${m[3]}` } : null
+}
+
+/**
+ * Déduit un thème complet de trois couleurs. Le texte est corrigé s'il manque de contraste avec le fond (on ne livre pas
+ * un thème illisible), et les gris (texte discret, accent en texte) sont rapprochés du texte jusqu'à rester lisibles.
+ */
+export function customSkin(bgIn: string, textIn: string, accentIn: string): Skin {
+  const bg = toHex(hex(bgIn) ?? [249, 249, 247])
+  const dark = luminance(bg) < 0.36
+  const base = dark ? 'dark' : 'light'
+  const text0 = toHex(hex(textIn) ?? (dark ? [244, 244, 242] : [27, 27, 27]))
+  const text = contrast(text0, bg) >= 9 ? text0 : dark ? '#f4f4f2' : '#1b1b1b'
+  const rgb = (c: string): number[] => hex(c) ?? [0, 0, 0]
+  const mixHex = (a: string, b: string, t: number): string => toHex(mix(rgb(a), rgb(b), t))
+  const surfaces = dark
+    ? { surface: mixHex(bg, '#ffffff', 0.06), surface2: mixHex(bg, '#ffffff', 0.03), surface3: mixHex(bg, '#ffffff', 0.12) }
+    : { surface: mixHex(bg, '#ffffff', 0.6), surface2: mixHex(bg, text, 0.05), surface3: mixHex(bg, text, 0.1) }
+  let muted = mixHex(text, bg, 0.45)
+  for (let t = 0.4; contrast(muted, bg) < 4.5 && t >= 0; t -= 0.05) muted = mixHex(text, bg, t)
+  const a = accentFrom(accentIn, base) ?? accentFrom('#c6613f', base)!
+  let ink = a.accentInk
+  for (const t of [0.15, 0.3, 0.45, 0.6, 0.8]) {
+    if (contrast(ink, bg) >= 3.5) break
+    ink = mixHex(a.accent, text, t)
+  }
+  return {
+    id: customSkinId(bg, text0, a.accent),
+    name: { fr: 'Mon thème', en: 'My theme' },
+    base,
+    bg,
+    ...surfaces,
+    text,
+    text2: mixHex(text, bg, 0.2),
+    muted,
+    faint: mixHex(text, bg, 0.65),
+    accent: a.accent,
+    accentHover: a.accentHover,
+    accentInk: ink,
+    onAccent: a.onAccent
   }
 }

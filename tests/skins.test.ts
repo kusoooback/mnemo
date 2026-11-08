@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { accentFrom, contrast, SKINS, skinById } from '../src/shared/skins'
+import { accentFrom, contrast, customSkin, customSkinId, parseCustomSkin, SKINS, skinById } from '../src/shared/skins'
 import { SKIN_VAR_NAMES, skinVars } from '../src/renderer/src/lib/skins'
 
 const rgb = (hex: string): number[] => [0, 2, 4].map((i) => parseInt(hex.slice(1 + i, 3 + i), 16))
@@ -64,6 +64,54 @@ describe('Thèmes colorés', () => {
     for (const c of ['#c6613f', '#ff0000', '#00ff00', '#0000ff', '#ffffff', '#000000', '#808080']) {
       const a = accentFrom(c, 'light')!
       expect(contrast(a.onAccent, a.accent), c).toBeGreaterThanOrEqual(4)
+    }
+  })
+})
+
+describe('Thème sur mesure', () => {
+  const sets: [string, string, string][] = [
+    ['#f4efe6', '#2b2b2b', '#c0562b'],
+    ['#10151f', '#e8ecf4', '#4da3ff'],
+    ['#ffffff', '#000000', '#ffe14d'],
+    ['#0b3d2e', '#f3f0e0', '#f2c94c'],
+    ['#fdf0f5', '#d8c8cf', '#b5405f'], // texte choisi trop pâle : doit être corrigé
+    ['#222222', '#2a2a2a', '#336699'] // texte quasi invisible sur fond sombre
+  ]
+
+  it('déduit un thème complet et lisible à partir de trois couleurs', () => {
+    for (const [bg, text, accent] of sets) {
+      const s = customSkin(bg, text, accent)
+      const tag = `${bg}/${text}/${accent}`
+      for (const [k, v] of Object.entries(s)) if (typeof v === 'string' && k !== 'id' && k !== 'base') expect(v, `${tag} ${k}`).toMatch(/^#[0-9a-f]{6}$/i)
+      expect(contrast(s.text, s.bg), `${tag} texte/fond`).toBeGreaterThanOrEqual(9)
+      expect(contrast(s.text, s.surface), `${tag} texte/carte`).toBeGreaterThanOrEqual(7)
+      expect(contrast(s.text, s.surface3), `${tag} texte/relief`).toBeGreaterThanOrEqual(6)
+      expect(contrast(s.muted, s.bg), `${tag} discret`).toBeGreaterThanOrEqual(4.5)
+      expect(contrast(s.accentInk, s.bg), `${tag} accent en texte`).toBeGreaterThanOrEqual(3.5)
+      expect(contrast(s.onAccent, s.accent), `${tag} bouton`).toBeGreaterThanOrEqual(3.8)
+    }
+  })
+
+  it('choisit le mode clair ou sombre d’après le fond, et suit la règle de la barre latérale', () => {
+    expect(customSkin('#f4efe6', '#2b2b2b', '#c0562b').base).toBe('light')
+    expect(customSkin('#10151f', '#e8ecf4', '#4da3ff').base).toBe('dark')
+    const vars = skinVars(customSkin('#10151f', '#e8ecf4', '#4da3ff'), 'dark')
+    expect(vars['--bg']).toBe('#10151f')
+    expect(Object.keys(vars)).not.toContain('--sidebar')
+  })
+
+  it('s’identifie par un code partageable, relu à l’identique', () => {
+    const id = customSkinId('#F4EFE6', '#2b2b2b', '#C0562B')
+    expect(id).toBe('custom:f4efe6:2b2b2b:c0562b')
+    expect(parseCustomSkin(id)).toEqual({ bg: '#f4efe6', text: '#2b2b2b', accent: '#c0562b' })
+    expect(skinById(id)?.bg).toBe('#f4efe6')
+    expect(skinById(id)?.name.fr).toBe('Mon thème')
+  })
+
+  it('refuse les codes mal formés ou dangereux', () => {
+    for (const bad of ['custom:zzzzzz:000000:000000', 'custom:fff:000:000', 'custom:f4efe6:2b2b2b', 'custom:f4efe6:2b2b2b:c0562b:00', 'custom:f4efe6:2b2b2b:c0562b;}body{display:none', '<script>', 'sepia2']) {
+      expect(parseCustomSkin(bad), bad).toBeNull()
+      expect(skinById(bad), bad).toBeUndefined()
     }
   })
 })

@@ -32,7 +32,7 @@ import { useStore } from './store'
 const jobStatus = new Map<string, Job['status']>()
 
 function useAppearance(): void {
-  const { theme, skin, accentColor, fontScale, dyslexia, language } = useStore((s) => s.settings)
+  const { theme, skin, accentColor, fontScale, dyslexia, language, cardFont, cardScale, cardAlign } = useStore((s) => s.settings)
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)')
     const sk = skinById(skin)
@@ -54,6 +54,22 @@ function useAppearance(): void {
   useEffect(() => {
     document.documentElement.style.fontSize = `${16 * fontScale}px`
   }, [fontScale])
+  // Typographie des cartes (révision) : trois variables, posées seulement si elles s'écartent du réglage par défaut.
+  useEffect(() => {
+    const root = document.documentElement.style
+    const fonts: Record<string, string> = {
+      sans: 'var(--font-sans)',
+      mono: 'var(--font-mono)',
+      readable: "'Atkinson Hyperlegible', var(--font-sans)"
+    }
+    const set = (name: string, value: string | null): void => {
+      if (value) root.setProperty(name, value)
+      else root.removeProperty(name)
+    }
+    set('--card-font', fonts[cardFont] ?? null)
+    set('--card-scale', cardScale && cardScale !== 1 ? String(Math.min(1.8, Math.max(0.7, cardScale))) : null)
+    set('--card-align', cardAlign === 'center' ? 'center' : null)
+  }, [cardFont, cardScale, cardAlign])
   useEffect(() => {
     if (dyslexia) document.documentElement.dataset.font = 'dyslexia'
     else delete document.documentElement.dataset.font

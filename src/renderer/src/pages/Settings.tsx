@@ -102,6 +102,40 @@ export function Settings(): React.JSX.Element {
               <span style={{ fontSize: 20 }}>A</span>
             </div>
           </div>
+          <div className="set-row" style={{ display: 'block' }}>
+            <div className="info" style={{ marginBottom: 10 }}>
+              <div className="t">{t('set.cards')}</div>
+              <div className="d">{t('set.cardsDesc')}</div>
+            </div>
+            <div className="cs-row">
+              <div className="ctrl segmented" role="group" aria-label={t('set.cardFont')}>
+                {([['', 'set.cardFont.serif'], ['sans', 'set.cardFont.sans'], ['mono', 'set.cardFont.mono'], ['readable', 'set.cardFont.readable']] as const).map(([v, k]) => (
+                  <button key={v} className={settings.cardFont === v ? 'on' : ''} onClick={() => void patchSettings({ cardFont: v })}>
+                    {t(k)}
+                  </button>
+                ))}
+              </div>
+              <div className="ctrl segmented" role="group" aria-label={t('set.cardAlign')}>
+                {([['left', 'set.cardAlign.left'], ['center', 'set.cardAlign.center']] as const).map(([v, k]) => (
+                  <button key={v} className={settings.cardAlign === v ? 'on' : ''} onClick={() => void patchSettings({ cardAlign: v })}>
+                    {t(k)}
+                  </button>
+                ))}
+              </div>
+              <div className="ctrl" style={{ width: 200 }}>
+                <span style={{ fontSize: 12 }}>A</span>
+                <input type="range" min={0.8} max={1.6} step={0.1} value={settings.cardScale} aria-label={t('set.cardScale')} onChange={(e) => void patchSettings({ cardScale: Number(e.target.value) })} />
+                <span style={{ fontSize: 20 }}>A</span>
+              </div>
+              <button className="btn btn-sm" disabled={!settings.cardFont && settings.cardScale === 1 && settings.cardAlign === 'left'} onClick={() => void patchSettings({ cardFont: '', cardScale: 1, cardAlign: 'left' })}>
+                {t('set.cardReset')}
+              </button>
+            </div>
+            <div className="cs-preview">
+              <div className="rv-q md">{t('set.cardSample.q')}</div>
+              <div className="rv-a md">{t('set.cardSample.a')}</div>
+            </div>
+          </div>
           <div className="set-row">
             <div className="info">
               <div className="t">{t('set.autoZoom')}</div>

@@ -1,4 +1,4 @@
-import { Bold, Braces, Code, Image as ImageIcon, Italic, List, ShieldCheck, Sigma, Trash2, TriangleAlert } from 'lucide-react'
+import { Bold, Braces, Code, Image as ImageIcon, Italic, List, PenLine, ShieldCheck, Sigma, Trash2, TriangleAlert } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { NoteKind } from '@shared/types'
 import { call } from '../api'
@@ -8,6 +8,7 @@ import { parseBoxes } from '../lib/occlusion'
 import { cardFaces } from '../lib/render'
 import { useStore } from '../store'
 import { hasMod, shortcut } from '../lib/platform'
+import { DrawPad } from './DrawPad'
 import { OcclusionField } from './OcclusionField'
 import { Modal, useConfirm } from './ui'
 
@@ -46,6 +47,7 @@ function Field({
   const t = useT()
   const ta = useRef<HTMLTextAreaElement | null>(null)
   const toast = useStore((s) => s.toast)
+  const [drawing, setDrawing] = useState(false)
 
   const edit = (fn: (sel: string) => { text: string; selStart?: number; selEnd?: number }): void => {
     const el = ta.current
@@ -91,6 +93,15 @@ function Field({
 
   return (
     <div>
+      {drawing && (
+        <DrawPad
+          onClose={() => setDrawing(false)}
+          onSave={(png) => {
+            setDrawing(false)
+            void addImage(png)
+          }}
+        />
+      )}
       <label className="field-label">{label}</label>
       <div className="field-wrap">
         <div className="field-tools">
@@ -112,6 +123,9 @@ function Field({
           </button>
           <button className="icon-btn" type="button" title={t('ed.image')} onClick={pickImage}>
             <ImageIcon size={15} />
+          </button>
+          <button className="icon-btn" type="button" title={t('ed.draw')} aria-label={t('ed.draw')} onClick={() => setDrawing(true)}>
+            <PenLine size={15} />
           </button>
           {withCloze && (
             <>

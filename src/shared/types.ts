@@ -18,6 +18,11 @@ export interface Settings {
   skin: string
   /** Couleur d'accent personnalisée (#rrggbb), vide = celle du thème. */
   accentColor: string
+  /** Police des cartes pendant la révision : vide = empattement (serif), sinon « sans », « mono » ou « readable » (Atkinson). */
+  cardFont: '' | 'sans' | 'mono' | 'readable'
+  /** Taille du texte des cartes (1 = normal). */
+  cardScale: number
+  cardAlign: 'left' | 'center'
   showTimer: boolean
   onboarded: boolean
   // IA (la clé d'API n'est jamais ici : elle est dans le coffre du système)
@@ -67,6 +72,9 @@ export const DEFAULT_SETTINGS: Settings = {
   dyslexia: false,
   skin: '',
   accentColor: '',
+  cardFont: '',
+  cardScale: 1,
+  cardAlign: 'left',
   showTimer: false,
   onboarded: false,
   aiProvider: 'builtin',
