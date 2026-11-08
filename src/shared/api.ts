@@ -197,6 +197,7 @@ export interface Api {
   'assistant.addCards': (deck: string, cards: AiCardProposal[]) => { added: number; deckId: string }
   'assistant.makeSheets': (source: string, title: string) => AssistantSheet[]
   'assistant.makeExercises': (source: string, title: string, count: number) => AssistantSheet
+  'web.readPage': (url: string) => { title: string; url: string; text: string }
   'bridge.status': () => BridgeInfo
   'bridge.set': (enabled: boolean) => BridgeInfo
 }

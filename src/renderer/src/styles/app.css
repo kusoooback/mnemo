@@ -3572,3 +3572,95 @@ svg.lucide {
   margin-top: 10px;
   color: var(--good);
 }
+
+/* Ressources */
+.rs-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+  max-width: 640px;
+}
+.rs-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+.rs-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 220px;
+  height: 38px;
+  padding: 0 12px;
+  border: 0.5px solid var(--border-strong);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--muted);
+}
+.rs-search input {
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+}
+.rs-cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.rs-cats .chip {
+  height: 30px;
+  padding: 0 12px;
+  font-size: 0.8125rem;
+}
+.rs-cats .chip.on {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--text);
+}
+.rs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.rs-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+}
+.rs-main {
+  flex: 1;
+  min-width: 0;
+}
+.rs-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+.rs-host {
+  font-size: 0.75rem;
+  color: var(--faint);
+  margin-top: 2px;
+}
+.rs-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+@media (max-width: 880px) {
+  .rs-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

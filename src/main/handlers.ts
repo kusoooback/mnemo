@@ -29,6 +29,7 @@ import {
   startMarkdownWatch
 } from './integrations'
 import * as nb from './notebook'
+import { webPage } from './web'
 import { bridgeState, startBridge, stopBridge } from './bridge'
 import { assistantAddCards, assistantChat, assistantMakeCards, assistantMakeExercises, assistantMakeSheets } from './assistant'
 import * as repo from './repo'
@@ -383,6 +384,7 @@ export function registerHandlers(getWindow: () => BrowserWindow | null): void {
       emit(getWindow(), 'data-changed')
       return r
     },
+    'web.readPage': (url) => webPage(url, 60_000),
     'bridge.status': () => bridgeInfo(),
     'bridge.set': async (enabled) => {
       setSettings({ bridgeEnabled: enabled })

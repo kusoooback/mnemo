@@ -13,6 +13,7 @@ export type Route =
   | { name: 'notebook' }
   | { name: 'ai' }
   | { name: 'assistant' }
+  | { name: 'resources' }
   | { name: 'sync' }
   | { name: 'integrations' }
   | { name: 'prepa' }
