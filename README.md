@@ -5,7 +5,9 @@
 **Une application de révision par cartes mémoire, gratuite, qui marche sans internet et sans compte.**
 Tes cartes restent sur ton ordinateur. Elle remplace Anki avec une interface plus simple, une IA gratuite intégrée, et un import en un clic de tes cours depuis le **Cahier de Prépa**.
 
-![Accueil](docs/screenshots/accueil.png)
+| Thème clair | Thème sombre |
+| --- | --- |
+| ![Accueil, thème clair](docs/screenshots/accueil.png) | ![Accueil, thème sombre](docs/screenshots/accueil-sombre.png) |
 
 ## ⬇️ Télécharger Mnémo
 
@@ -352,7 +354,15 @@ Au premier lancement, Mnémo te propose trois choses, toutes facultatives : impo
 | Réviser | **Commencer la révision** sur l'accueil |
 | Partager un deck, dessiner un schéma, changer les couleurs | Voir le [chapitre 6](#6-partager-dessiner-personnaliser) |
 
-![Révision](docs/screenshots/revision.png)
+| Thème clair | Thème sombre |
+| --- | --- |
+| ![Révision d’une carte, thème clair](docs/screenshots/revision.png) | ![Révision d’une carte, thème sombre](docs/screenshots/revision-sombre.png) |
+
+La **bibliothèque** retrouve n’importe quelle carte, et les **statistiques** montrent ce que ta mémoire fait vraiment :
+
+![Bibliothèque](docs/screenshots/bibliotheque.png)
+
+![Statistiques](docs/screenshots/statistiques.png)
 
 **Réviser** : lis la question, réfléchis, appuie sur `Espace` pour voir la réponse, puis note-toi honnêtement : `1` À revoir · `2` Difficile · `3` Bien · `4` Facile. Mnémo décide seul quand te reposer la carte (algorithme FSRS). `Z` annule la dernière réponse.
 
@@ -393,6 +403,10 @@ Clique sur **Importer** (menu de gauche) **ou glisse un fichier dans la fenêtre
 Mnémo lit le site de ta classe (par exemple `cahier-de-prepa.fr/ecg1-clemenceau/`), télécharge les documents, les range **par matière**, crée **les decks**, **les cartes** et **une fiche de révision** pour chaque cours, et met les **DS et colles** de l'agenda dans ton cahier de texte.
 
 ![Cahier de Prépa](docs/screenshots/cahier-de-prepa.png)
+
+Chaque cours reçoit aussi une **fiche de révision** :
+
+![Fiches de révision](docs/screenshots/fiches.png)
 
 1. Menu de gauche → **Cahier de Prépa**.
 2. Vérifie l'adresse de ta classe, clique sur **Analyser le site**. Sans te connecter, tu vois les contenus publics.
