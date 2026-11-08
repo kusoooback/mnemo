@@ -31,6 +31,10 @@ import type {
   NoteRecord,
   NotionPage,
   BridgeInfo,
+  AssistantChatReq,
+  AssistantChatRes,
+  AssistantCard,
+  AssistantSheet,
   PlanItem,
   Rating,
   SearchQuery,
@@ -188,6 +192,11 @@ export interface Api {
   'notion.pageText': (id: string) => string
   'notion.forget': () => void
   'notion.status': () => boolean
+  'assistant.chat': (req: AssistantChatReq) => AssistantChatRes
+  'assistant.makeCards': (source: string, count: number, hint: string) => AssistantCard[]
+  'assistant.addCards': (deck: string, cards: AiCardProposal[]) => { added: number; deckId: string }
+  'assistant.makeSheets': (source: string, title: string) => AssistantSheet[]
+  'assistant.makeExercises': (source: string, title: string, count: number) => AssistantSheet
   'bridge.status': () => BridgeInfo
   'bridge.set': (enabled: boolean) => BridgeInfo
 }

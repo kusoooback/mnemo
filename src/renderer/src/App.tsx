@@ -11,6 +11,7 @@ import { useT } from './i18n'
 import { DeckPage } from './pages/DeckPage'
 import { DocViewer } from './pages/DocViewer'
 import { AiPage } from './pages/AiPage'
+import { Assistant } from './pages/Assistant'
 import { Home } from './pages/Home'
 import { Integrations } from './pages/Integrations'
 import { Notebook } from './pages/Notebook'
@@ -224,6 +225,7 @@ export default function App(): React.JSX.Element | null {
           {route.name === 'settings' && <Settings />}
           {route.name === 'notebook' && <Notebook />}
           {route.name === 'ai' && <AiPage />}
+          {route.name === 'assistant' && <Assistant />}
           {route.name === 'sync' && <SyncPage />}
           {route.name === 'integrations' && <Integrations />}
           {route.name === 'prepa' && <Prepa />}

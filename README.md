@@ -31,6 +31,7 @@ Et **uniquement parce que tu l'as demandé**, jamais en arrière-plan sans que t
 | **Cahier de Prépa** (import et synchro de tes cours) | **Le site de ta classe**, à l'adresse que tu as saisie | Tes identifiants vont **uniquement** à ce site, comme dans un navigateur. Les cours téléchargés sont stockés chez toi. La synchro automatique ne s'active qu'après ton premier import manuel. | Non |
 | **IA en ligne (optionnel)** : OpenRouter, Groq, Google Gemini, OpenAI, Claude… | Le fournisseur que **tu** as choisi, avec **ta propre clé** | Le texte que tu demandes de transformer en cartes ou en fiches. **Il quitte alors ton ordinateur.** Garde l'IA intégrée pour les documents confidentiels. | Non (IA intégrée par défaut) |
 | **Ollama** (optionnel) | Ton propre ordinateur (`localhost`) | Rien ne sort de ta machine | Non |
+| **Assistant, recherche web** (optionnelle, case à cocher dans la conversation) | Wikipédia, ou la page web dont tu donnes l'adresse | Les mots de la recherche (ou l'adresse de la page), rien d'autre. Ton cours n'est envoyé qu'à l'IA que tu as choisie (voir la ligne « IA en ligne ») | Non (case décochée) |
 | **Connexion de Claude** (optionnel, [section 5](#brancher-claude-sur-mnémo)) | Rien : une « porte » locale (`127.0.0.1`) que **tu** ouvres | Rien ne sort de ta machine par Mnémo ; c'est le programme de Claude, sur ton PC, qui y dépose des cartes | Non (désactivée) |
 | **Notion** (optionnel) | Notion, avec ton jeton | Ton jeton, pour **lire** les pages que tu importes (Mnémo n'écrit rien dans Notion) | Non |
 | **Ouvrir un lien** (par exemple openrouter.ai) | Ton navigateur habituel, quand tu cliques | Rien de la part de Mnémo | Sur clic |
@@ -439,6 +440,16 @@ Mnémo te recommande le bon selon ton ordinateur. Sans carte graphique, ça marc
 4. **Confidentialité** : avec OpenRouter, le texte de tes cours est envoyé à OpenRouter et au fournisseur du modèle choisi, et les modèles gratuits peuvent conserver les échanges. Garde le modèle intégré pour les documents confidentiels.
 
 Tu peux aussi brancher Groq, Google Gemini, Ollama ou ta propre clé Claude / OpenAI (*Fournisseur : OpenAI / compatible*). Le plafond de dépense reste réglable.
+
+### L'assistant intégré : un chatbot qui connaît Mnémo
+
+Menu **Assistant** : une conversation avec l'IA que tu as choisie (voir ci-dessus). Elle **connaît toute l'application** (pages, raccourcis, imports, fiches, réglages) et l'état de tes decks, donc tu peux lui demander « comment j'importe mon paquet Anki ? » et elle te répond avec les bons clics.
+
+- **Dicter ou coller un cours** : clique sur **Dictée** (ou écris « je vais te dicter mon cours »), puis envoie ton cours en autant de messages que tu veux : l'assistant ne répond pas entre-temps et compte les mots. Écris **« c'est fini »**, puis choisis **Créer des cartes**, **Créer une fiche**, **Créer des exercices** ou **Cartes + fiche**. Un très gros cours (par exemple 50 copies doubles) est découpé automatiquement par l'application : rien n'est perdu et il n'y a pas de limite de longueur.
+- **Tu valides tout** : les cartes sont proposées dans la conversation (tu coches, tu choisis le deck, les doublons sont repérés), les fiches et les exercices (avec corrigé) sont enregistrés dans **Fiches**.
+- **Être interrogé** : **Joindre une fiche**, puis « interroge-moi ». L'assistant pose une question à la fois, corrige et adapte la difficulté.
+- **Compléter un cours** : coche **Recherche web** : l'assistant peut chercher sur Wikipédia ou lire une page dont tu donnes l'adresse, te montre ses sources, puis en tirer des cartes ou une fiche. Décoché, rien ne sort de l'ordinateur.
+- La qualité dépend du modèle : pour un gros cours, un modèle puissant (OpenRouter gratuit, Claude, etc.) est bien meilleur que le petit modèle installé sur le PC.
 
 ### Brancher Claude sur Mnémo
 

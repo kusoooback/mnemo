@@ -13,7 +13,8 @@ import {
   Settings,
   Sparkles,
   Sun,
-  Upload
+  Upload,
+  MessageCircle
 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useT } from '../i18n'
@@ -114,6 +115,10 @@ export function Sidebar(): React.JSX.Element {
         <button className={`nav-item ${is('ai') ? 'active' : ''}`} onClick={() => go({ name: 'ai' })}>
           <Sparkles size={18} />
           <span className="label">{t('nav.ai')}</span>
+        </button>
+        <button className={`nav-item ${is('assistant') ? 'active' : ''}`} onClick={() => go({ name: 'assistant' })}>
+          <MessageCircle size={18} />
+          <span className="label">{t('nav.assistant')}</span>
         </button>
         <button className={`nav-item ${is('sheets') ? 'active' : ''}`} onClick={() => go({ name: 'sheets' })}>
           <ScrollText size={18} />

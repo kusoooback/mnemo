@@ -27,6 +27,18 @@ import { getSettings, newId, setSettings } from './util'
  * Pour ajouter un fournisseur : une entrée dans PROVIDERS qui sait faire `chat()`.
  */
 
+/** Un tour de conversation passé (pour l'assistant : le modèle voit ce qui a déjà été dit). */
+export interface Turn {
+  role: 'user' | 'assistant'
+  content: string
+}
+
+const withHistory = (system: string, user: string, history: Turn[] = []): { role: string; content: string }[] => [
+  { role: 'system', content: system },
+  ...history,
+  { role: 'user', content: user }
+]
+
 interface ChatResult {
   text: string
   tokensIn: number
@@ -39,7 +51,7 @@ interface Provider {
   defaultBase: string
   needsKey: boolean
   local: boolean
-  chat(o: { base: string; model: string; key: string | null; system: string; user: string; maxTokens: number; json: boolean; schema?: Record<string, unknown> }): Promise<ChatResult>
+  chat(o: { base: string; model: string; key: string | null; system: string; user: string; history?: Turn[]; maxTokens: number; json: boolean; schema?: Record<string, unknown> }): Promise<ChatResult>
   test(o: { base: string; key: string | null }): Promise<{ ok: boolean; message: string; models?: string[] }>
 }
 
@@ -148,8 +160,8 @@ const PROVIDERS: Record<Exclude<AiProviderId, 'none'>, Provider> = {
     defaultBase: '',
     needsKey: false,
     local: true,
-    async chat({ model, system, user, maxTokens, schema }) {
-      return localChat(model, { system, user, schema, maxTokens })
+    async chat({ model, system, user, history, maxTokens, schema }) {
+      return localChat(model, { system, user, history, schema, maxTokens })
     },
     async test() {
       return hasInstalledModel(getSettings().aiModel || 'balanced')
@@ -163,7 +175,7 @@ const PROVIDERS: Record<Exclude<AiProviderId, 'none'>, Provider> = {
     defaultBase: 'http://localhost:11434',
     needsKey: false,
     local: true,
-    async chat({ base, model, system, user, json }) {
+    async chat({ base, model, system, user, history, json }) {
       const r = (await http(`${base}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -171,10 +183,7 @@ const PROVIDERS: Record<Exclude<AiProviderId, 'none'>, Provider> = {
           model,
           stream: false,
           ...(json ? { format: 'json' } : {}),
-          messages: [
-            { role: 'system', content: system },
-            { role: 'user', content: user }
-          ]
+          messages: withHistory(system, user, history)
         })
       })) as { message?: { content?: string }; prompt_eval_count?: number; eval_count?: number }
       return { text: r.message?.content ?? '', tokensIn: r.prompt_eval_count ?? 0, tokensOut: r.eval_count ?? 0 }
@@ -195,7 +204,7 @@ const PROVIDERS: Record<Exclude<AiProviderId, 'none'>, Provider> = {
     defaultBase: 'https://openrouter.ai/api/v1',
     needsKey: true,
     local: false,
-    async chat({ base, model, key, system, user, maxTokens }) {
+    async chat({ base, model, key, system, user, history, maxTokens }) {
       // Modèle gratuit : on essaie le meilleur, puis les suivants s'il est saturé ou indisponible.
       const chain = isFreeModel(model) ? [model, ...FREE_CHAIN.filter((m) => m !== model)] : [model]
       let last: Error = new Error('Aucun modèle OpenRouter disponible.')
@@ -208,10 +217,7 @@ const PROVIDERS: Record<Exclude<AiProviderId, 'none'>, Provider> = {
             max_tokens: maxTokens + 2000,
             temperature: 0.3,
             reasoning: { effort: 'low' },
-            messages: [
-              { role: 'system', content: system },
-              { role: 'user', content: user }
-            ]
+            messages: withHistory(system, user, history)
           })
           const msg = r.choices?.[0]?.message
           const raw = typeof msg?.content === 'string' ? msg.content : Array.isArray(msg?.content) ? msg.content.map((p: { text?: string }) => p.text ?? '').join('') : ''
@@ -244,7 +250,7 @@ const PROVIDERS: Record<Exclude<AiProviderId, 'none'>, Provider> = {
     defaultBase: 'https://api.openai.com/v1',
     needsKey: true,
     local: false,
-    async chat({ base, model, key, system, user, maxTokens, json }) {
+    async chat({ base, model, key, system, user, history, maxTokens, json }) {
       const r = (await http(`${base}/chat/completions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
@@ -252,10 +258,7 @@ const PROVIDERS: Record<Exclude<AiProviderId, 'none'>, Provider> = {
           model,
           max_tokens: maxTokens,
           ...(json ? { response_format: { type: 'json_object' } } : {}),
-          messages: [
-            { role: 'system', content: system },
-            { role: 'user', content: user }
-          ]
+          messages: withHistory(system, user, history)
         })
       })) as { choices?: { message?: { content?: string } }[]; usage?: { prompt_tokens?: number; completion_tokens?: number } }
       return {
@@ -279,11 +282,11 @@ const PROVIDERS: Record<Exclude<AiProviderId, 'none'>, Provider> = {
     defaultBase: 'https://api.anthropic.com/v1',
     needsKey: true,
     local: false,
-    async chat({ base, model, key, system, user, maxTokens }) {
+    async chat({ base, model, key, system, user, history, maxTokens }) {
       const r = (await http(`${base}/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-api-key': key ?? '', 'anthropic-version': '2023-06-01' },
-        body: JSON.stringify({ model, max_tokens: maxTokens, system, messages: [{ role: 'user', content: user }] })
+        body: JSON.stringify({ model, max_tokens: maxTokens, system, messages: [...(history ?? []), { role: 'user', content: user }] })
       })) as { content?: { type: string; text?: string }[]; usage?: { input_tokens?: number; output_tokens?: number } }
       return {
         text: (r.content ?? []).filter((c) => c.type === 'text').map((c) => c.text).join(''),
@@ -433,7 +436,7 @@ export function aiEstimate(text: string, count: number): AiEstimate {
   return { chars: text.length, tokensIn, tokensOut, cost, chunks, overCap: !local && s.aiMonthlyCap > 0 && st.monthCost + cost > s.aiMonthlyCap }
 }
 
-async function call(purpose: string, system: string, user: string, maxTokens: number, json: boolean, schema?: Record<string, unknown>): Promise<string> {
+async function call(purpose: string, system: string, user: string, maxTokens: number, json: boolean, schema?: Record<string, unknown>, history?: Turn[]): Promise<string> {
   const a = active()
   const s = getSettings()
   const st = aiStatus()
@@ -444,16 +447,16 @@ async function call(purpose: string, system: string, user: string, maxTokens: nu
   let used = a.id
   try {
     if (a.id === 'openrouter' && Date.now() < cloudPausedUntil) throw new Error('OpenRouter en pause (limite atteinte).')
-    r = await a.p.chat({ base: a.base, model: a.model, key: a.key, system, user, maxTokens, json, schema })
+    r = await a.p.chat({ base: a.base, model: a.model, key: a.key, system, user, history, maxTokens, json, schema })
     if (!r.text.trim()) throw new Error('Réponse vide du fournisseur.')
   } catch (e) {
     // En ligne en panne ou limite atteinte : on reprend avec le modèle installé sur le PC, plutôt que d'échouer.
     const local = !a.p.local && s.aiFallbackLocal ? anyInstalledModel() : null
     if (!local) throw e
-    r = await PROVIDERS.builtin.chat({ base: '', model: local, key: null, system, user, maxTokens, json, schema })
+    r = await PROVIDERS.builtin.chat({ base: '', model: local, key: null, system, user, history, maxTokens, json, schema })
     used = 'builtin'
   }
-  const tin = r.tokensIn || tokens(system.length + user.length)
+  const tin = r.tokensIn || tokens(system.length + user.length + (history ?? []).reduce((n, h) => n + h.content.length, 0))
   const tout = r.tokensOut || tokens(r.text.length)
   const cost = used === 'builtin' || free ? 0 : (tin * s.aiPriceIn + tout * s.aiPriceOut) / 1e6
   getDb()
@@ -464,6 +467,9 @@ async function call(purpose: string, system: string, user: string, maxTokens: nu
 
 /** Appel brut au modèle (tri de documents, etc.). */
 export const aiCall = call
+
+/** Conversation : le modèle reçoit aussi les tours précédents. */
+export const aiChat = (purpose: string, system: string, user: string, history: Turn[], maxTokens: number): Promise<string> => call(purpose, system, user, maxTokens, false, undefined, history)
 
 export function aiLog(): AiCallRow[] {
   return (

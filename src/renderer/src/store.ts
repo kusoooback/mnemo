@@ -12,6 +12,7 @@ export type Route =
   | { name: 'settings' }
   | { name: 'notebook' }
   | { name: 'ai' }
+  | { name: 'assistant' }
   | { name: 'sync' }
   | { name: 'integrations' }
   | { name: 'prepa' }

@@ -30,6 +30,7 @@ import {
 } from './integrations'
 import * as nb from './notebook'
 import { bridgeState, startBridge, stopBridge } from './bridge'
+import { assistantAddCards, assistantChat, assistantMakeCards, assistantMakeExercises, assistantMakeSheets } from './assistant'
 import * as repo from './repo'
 import { getStats } from './stats'
 import * as study from './study'
@@ -365,6 +366,23 @@ export function registerHandlers(getWindow: () => BrowserWindow | null): void {
     'notion.pageText': (id) => notionPageText(id),
     'notion.forget': () => notionForget(),
     'notion.status': () => notionStatus(),
+    'assistant.chat': (req) => assistantChat(req),
+    'assistant.makeCards': (source, count, hint) => assistantMakeCards(source, count, hint),
+    'assistant.addCards': (deck, cards) => {
+      const r = assistantAddCards(deck, cards)
+      emit(getWindow(), 'data-changed')
+      return r
+    },
+    'assistant.makeSheets': async (source, title) => {
+      const r = await assistantMakeSheets(source, title)
+      emit(getWindow(), 'data-changed')
+      return r
+    },
+    'assistant.makeExercises': async (source, title, count) => {
+      const r = await assistantMakeExercises(source, title, count)
+      emit(getWindow(), 'data-changed')
+      return r
+    },
     'bridge.status': () => bridgeInfo(),
     'bridge.set': async (enabled) => {
       setSettings({ bridgeEnabled: enabled })

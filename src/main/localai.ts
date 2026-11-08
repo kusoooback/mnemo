@@ -197,6 +197,7 @@ async function ensure(selected: string): Promise<NonNullable<typeof engine>> {
 export interface LocalChat {
   system: string
   user: string
+  history?: { role: 'user' | 'assistant'; content: string }[]
   schema?: Record<string, unknown>
   maxTokens: number
 }
@@ -209,6 +210,11 @@ export function localChat(selected: string, o: LocalChat): Promise<{ text: strin
     const context = await e.model.createContext({ contextSize: 8192 })
     try {
       const session = new LlamaChatSession({ contextSequence: context.getSequence(), systemPrompt: o.system })
+      if (o.history?.length)
+        session.setChatHistory([
+          { type: 'system', text: o.system },
+          ...o.history.map((h) => (h.role === 'user' ? { type: 'user' as const, text: h.content } : { type: 'model' as const, response: [h.content] }))
+        ])
       const grammar = o.schema ? await e.llama.createGrammarForJsonSchema(o.schema) : undefined
       let n = 0
       const text: string = await session.prompt(o.user, {
@@ -222,7 +228,7 @@ export function localChat(selected: string, o: LocalChat): Promise<{ text: strin
       })
       return {
         text,
-        tokensIn: e.model.tokenize(o.system + o.user).length,
+        tokensIn: e.model.tokenize(o.system + (o.history ?? []).map((h) => h.content).join('') + o.user).length,
         tokensOut: e.model.tokenize(text).length
       }
     } finally {

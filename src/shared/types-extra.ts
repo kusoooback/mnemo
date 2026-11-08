@@ -187,6 +187,52 @@ export interface DuplicateGroup {
   notes: { id: string; front: string; back: string; deckName: string; reviews: number }[]
 }
 
+/* Assistant (conversation) */
+export interface AssistantTurn {
+  role: 'user' | 'assistant'
+  content: string
+}
+
+export type AssistantActionType = 'cards' | 'sheet' | 'exercises' | 'dictation'
+
+/** Une action demandée par l'assistant, exécutée par l'application (jamais sans que l'utilisateur la voie). */
+export interface AssistantAction {
+  type: AssistantActionType
+  params: Record<string, string>
+}
+
+export interface AssistantTrace {
+  kind: 'search' | 'page' | 'sheet'
+  label: string
+  links: { title: string; url: string }[]
+}
+
+export interface AssistantChatReq {
+  history: AssistantTurn[]
+  message: string
+  /** Autoriser la recherche sur le web (Wikipédia, pages https) pour cette conversation. */
+  web: boolean
+  /** Cours dicté ou collé dans la conversation. */
+  source: string
+  /** Fiches jointes par l'utilisateur. */
+  attached: { title: string; text: string }[]
+}
+
+export interface AssistantChatRes {
+  reply: string
+  actions: AssistantAction[]
+  trace: AssistantTrace[]
+}
+
+export interface AssistantCard extends AiCardProposal {
+  dup: boolean
+}
+
+export interface AssistantSheet {
+  id: string
+  title: string
+}
+
 export interface BridgeInfo {
   enabled: boolean
   running: boolean
