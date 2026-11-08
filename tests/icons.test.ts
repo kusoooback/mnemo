@@ -34,7 +34,7 @@ describe('Icônes', () => {
 
   it('les entrées de la barre latérale ont chacune leur icône', () => {
     const text = readFileSync(join(src, 'components', 'Sidebar.tsx'), 'utf8')
-    const icons = [...text.matchAll(/<([A-Z][A-Za-z0-9]+) size=\{18\} \/>/g)].map((m) => m[1]).filter((n) => !['PanelLeft'].includes(n))
+    const icons = [...text.matchAll(/icon: ([A-Z][A-Za-z0-9]+)/g), ...text.matchAll(/<([A-Z][A-Za-z0-9]+) size=\{18\} \/>/g)].map((m) => m[1]).filter((n) => !['PanelLeft'].includes(n))
     expect(new Set(icons).size).toBe(icons.length)
     expect(icons.length).toBeGreaterThanOrEqual(7)
   })

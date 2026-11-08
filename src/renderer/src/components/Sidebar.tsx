@@ -20,17 +20,106 @@ import {
   ListChecks
 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useT } from '../i18n'
+import type { LucideIcon } from 'lucide-react'
+import { useT, type Key } from '../i18n'
 import { useStore, type Route } from '../store'
 import { shortcut } from '../lib/platform'
 import { Logo, PromptModal } from './ui'
 import { call } from '../api'
 
+type NavItem = {
+  key: string
+  icon: LucideIcon
+  label: Key
+  route?: Route['name']
+  run?: () => void
+}
+
 export function Sidebar(): React.JSX.Element {
   const t = useT()
-  const { decks, route, go, settings, setPalette, openEditor, setSidebar, toast, refreshDecks, openImport } = useStore()
+  const {
+    decks,
+    route,
+    go,
+    settings,
+    setPalette,
+    openEditor,
+    setSidebar,
+    toast,
+    refreshDecks,
+    openImport
+  } = useStore()
   const [newDeck, setNewDeck] = useState(false)
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
+
+  // Les rubriques secondaires restent repliées : la barre latérale ne montre que l'essentiel, le reste est à un clic.
+  const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
+    try {
+      return new Set<string>(JSON.parse(localStorage.getItem('mnemo.navOpen') || '[]'))
+    } catch {
+      return new Set()
+    }
+  })
+  const setGroups = (next: Set<string>): void => {
+    setOpenGroups(next)
+    try {
+      localStorage.setItem('mnemo.navOpen', JSON.stringify([...next]))
+    } catch {
+      /* stockage indisponible : l'état n'est simplement pas gardé */
+    }
+  }
+  const toggleGroup = (id: string): void => {
+    const n = new Set(openGroups)
+    if (n.has(id)) n.delete(id)
+    else n.add(id)
+    setGroups(n)
+  }
+
+  const PRIMARY: NavItem[] = [
+    { key: 'home', icon: Sun, label: 'nav.today', route: 'home' },
+    { key: 'library', icon: Library, label: 'nav.library', route: 'library' },
+    { key: 'quiz', icon: ListChecks, label: 'nav.quiz', route: 'quiz' },
+    { key: 'stats', icon: BarChart3, label: 'nav.stats', route: 'stats' },
+    { key: 'assistant', icon: MessageCircle, label: 'nav.assistant', route: 'assistant' }
+  ]
+  const GROUPS: { id: string; label: Key; items: NavItem[] }[] = [
+    {
+      id: 'create',
+      label: 'nav.grp.create',
+      items: [
+        { key: 'ai', icon: Sparkles, label: 'nav.ai', route: 'ai' },
+        { key: 'import', icon: Upload, label: 'nav.import', run: () => openImport({}) },
+        { key: 'sheets', icon: ScrollText, label: 'nav.sheets', route: 'sheets' }
+      ]
+    },
+    {
+      id: 'course',
+      label: 'nav.grp.course',
+      items: [
+        { key: 'prepa', icon: BookOpenCheck, label: 'nav.prepa', route: 'prepa' },
+        { key: 'notebook', icon: CalendarDays, label: 'nav.notebook', route: 'notebook' }
+      ]
+    },
+    {
+      id: 'explore',
+      label: 'nav.grp.explore',
+      items: [
+        { key: 'resources', icon: Compass, label: 'nav.resources', route: 'resources' },
+        { key: 'packs', icon: Share2, label: 'nav.packs', route: 'packs' }
+      ]
+    }
+  ]
+  // La visite guidée demande d'ouvrir la rubrique de l'entrée qu'elle présente.
+  useEffect(() => {
+    const onOpen = (e: Event): void => {
+      const key = (e as CustomEvent<string>).detail
+      const g = GROUPS.find((x) => x.items.some((it) => it.key === key))
+      if (g && !openGroups.has(g.id)) setGroups(new Set([...openGroups, g.id]))
+    }
+    window.addEventListener('mnemo:nav-open', onOpen)
+    return () => window.removeEventListener('mnemo:nav-open', onOpen)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openGroups])
 
   // Les decks qui contiennent des sous-decks (ex. « Prépa ECG ») arrivent repliés : sinon la liste devient interminable.
   const seen = useRef<Set<string>>(new Set())
@@ -62,13 +151,29 @@ export function Sidebar(): React.JSX.Element {
   }, [decks, collapsed])
 
   const is = (name: Route['name']): boolean => route.name === name
+  const navButton = (it: NavItem): React.JSX.Element => (
+    <button
+      key={it.key}
+      className={`nav-item ${it.route && is(it.route) ? 'active' : ''}`}
+      data-nav={it.key}
+      onClick={() => (it.run ? it.run() : it.route && go({ name: it.route } as Route))}
+    >
+      <it.icon size={18} />
+      <span className="label">{t(it.label)}</span>
+    </button>
+  )
   const activeDeck = route.name === 'deck' ? route.id : null
   const initial = (settings.userName || t('nav.you')).trim().charAt(0).toUpperCase()
 
   return (
     <aside className="sidebar">
       <div className="sidebar-top">
-        <button className="icon-btn" onClick={() => setSidebar(false)} title={`${t('nav.sidebar')} (${shortcut('Ctrl+B')})`} aria-label={t('nav.sidebar')}>
+        <button
+          className="icon-btn"
+          onClick={() => setSidebar(false)}
+          title={`${t('nav.sidebar')} (${shortcut('Ctrl+B')})`}
+          aria-label={t('nav.sidebar')}
+        >
           <PanelLeft size={18} />
         </button>
         <div className="brand">
@@ -84,65 +189,52 @@ export function Sidebar(): React.JSX.Element {
           <span className="kbd">{shortcut('Ctrl K')}</span>
         </button>
 
-        <button data-nav="new" className="nav-item new" onClick={() => openEditor({ deckId: activeDeck })}>
+        <button
+          data-nav="new"
+          className="nav-item new"
+          onClick={() => openEditor({ deckId: activeDeck })}
+        >
           <span className="new-dot">
             <Plus size={14} />
           </span>
           <span className="label">{t('nav.new')}</span>
           <span className="kbd">{shortcut('Ctrl N')}</span>
         </button>
-        <button className={`nav-item ${is('home') ? 'active' : ''}`} onClick={() => go({ name: 'home' })} data-nav="home">
-          <Sun size={18} />
-          <span className="label">{t('nav.today')}</span>
-        </button>
-        <button className={`nav-item ${is('library') ? 'active' : ''}`} onClick={() => go({ name: 'library' })} data-nav="library">
-          <Library size={18} />
-          <span className="label">{t('nav.library')}</span>
-        </button>
-        <button className={`nav-item ${is('stats') ? 'active' : ''}`} onClick={() => go({ name: 'stats' })} data-nav="stats">
-          <BarChart3 size={18} />
-          <span className="label">{t('nav.stats')}</span>
-        </button>
-        <button className="nav-item" onClick={() => openImport({})}>
-          <Upload size={18} />
-          <span className="label">{t('nav.import')}</span>
-        </button>
-        <button className={`nav-item ${is('prepa') ? 'active' : ''}`} onClick={() => go({ name: 'prepa' })} data-nav="prepa">
-          <BookOpenCheck size={18} />
-          <span className="label">{t('nav.prepa')}</span>
-        </button>
-        <button className={`nav-item ${is('notebook') ? 'active' : ''}`} onClick={() => go({ name: 'notebook' })} data-nav="notebook">
-          <CalendarDays size={18} />
-          <span className="label">{t('nav.notebook')}</span>
-        </button>
-        <button className={`nav-item ${is('ai') ? 'active' : ''}`} onClick={() => go({ name: 'ai' })} data-nav="ai">
-          <Sparkles size={18} />
-          <span className="label">{t('nav.ai')}</span>
-        </button>
-        <button className={`nav-item ${is('assistant') ? 'active' : ''}`} onClick={() => go({ name: 'assistant' })} data-nav="assistant">
-          <MessageCircle size={18} />
-          <span className="label">{t('nav.assistant')}</span>
-        </button>
-        <button className={`nav-item ${is('resources') ? 'active' : ''}`} onClick={() => go({ name: 'resources' })} data-nav="resources">
-          <Compass size={18} />
-          <span className="label">{t('nav.resources')}</span>
-        </button>
-        <button className={`nav-item ${is('quiz') ? 'active' : ''}`} onClick={() => go({ name: 'quiz' })} data-nav="quiz">
-          <ListChecks size={18} />
-          <span className="label">{t('nav.quiz')}</span>
-        </button>
-        <button className={`nav-item ${is('packs') ? 'active' : ''}`} onClick={() => go({ name: 'packs' })} data-nav="packs">
-          <Share2 size={18} />
-          <span className="label">{t('nav.packs')}</span>
-        </button>
-        <button className={`nav-item ${is('sheets') ? 'active' : ''}`} onClick={() => go({ name: 'sheets' })} data-nav="sheets">
-          <ScrollText size={18} />
-          <span className="label">{t('nav.sheets')}</span>
-        </button>
+        {PRIMARY.map((it) => navButton(it))}
+
+        {GROUPS.map((g) => {
+          const open = openGroups.has(g.id) || g.items.some((it) => it.route && is(it.route))
+          return (
+            <div key={g.id} className={`nav-group ${open ? 'open' : ''}`}>
+              <button
+                className="nav-group-head"
+                onClick={() => toggleGroup(g.id)}
+                aria-expanded={open}
+                data-group={g.id}
+              >
+                <ChevronRight size={14} className="chev" />
+                <span className="gl">{t(g.label)}</span>
+                {!open && (
+                  <span className="gi">
+                    {g.items.map((it) => (
+                      <it.icon key={it.key} size={14} />
+                    ))}
+                  </span>
+                )}
+              </button>
+              {open && <div className="nav-group-body">{g.items.map((it) => navButton(it))}</div>}
+            </div>
+          )
+        })}
 
         <div className="nav-section">
           <span style={{ flex: 1 }}>{t('nav.decks')}</span>
-          <button className="icon-btn" style={{ width: 24, height: 24 }} onClick={() => setNewDeck(true)} aria-label={t('home.newDeck')}>
+          <button
+            className="icon-btn"
+            style={{ width: 24, height: 24 }}
+            onClick={() => setNewDeck(true)}
+            aria-label={t('home.newDeck')}
+          >
             <Plus size={16} />
           </button>
         </div>
@@ -181,12 +273,26 @@ export function Sidebar(): React.JSX.Element {
         <div className="avatar">{initial}</div>
         <div className="foot-meta">
           <div className="name">{settings.userName || t('nav.you')}</div>
-          <button className="sub" style={{ textAlign: 'left' }} onClick={() => go({ name: 'sync' })} title={t('nav.sync')}>
-            <i className="status-dot" style={settings.syncMode === 'folder' ? undefined : { background: 'var(--faint)' }} />
+          <button
+            className="sub"
+            style={{ textAlign: 'left' }}
+            onClick={() => go({ name: 'sync' })}
+            title={t('nav.sync')}
+          >
+            <i
+              className="status-dot"
+              style={settings.syncMode === 'folder' ? undefined : { background: 'var(--faint)' }}
+            />
             {settings.syncMode === 'folder' ? t('sync.active') : t('nav.localOnly')}
           </button>
         </div>
-        <button data-nav="settings" className={`icon-btn ${is('settings') ? 'on' : ''}`} onClick={() => go({ name: 'settings' })} aria-label={t('nav.settings')} title={t('nav.settings')}>
+        <button
+          data-nav="settings"
+          className={`icon-btn ${is('settings') ? 'on' : ''}`}
+          onClick={() => go({ name: 'settings' })}
+          aria-label={t('nav.settings')}
+          title={t('nav.settings')}
+        >
           <Settings size={18} />
         </button>
       </div>

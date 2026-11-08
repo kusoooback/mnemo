@@ -244,9 +244,17 @@ export function Tour(): React.JSX.Element {
   // La zone de l'appli dont on parle brille dans la barre latérale.
   useEffect(() => {
     const nav = steps[i].nav
-    const el = nav ? document.querySelector<HTMLElement>(`[data-nav="${nav}"]`) : null
-    el?.classList.add('tour-hl')
-    return () => el?.classList.remove('tour-hl')
+    let el: HTMLElement | null = null
+    // Une entrée rangée dans une rubrique repliée de la barre latérale : on ouvre la rubrique d'abord.
+    if (nav) window.dispatchEvent(new CustomEvent('mnemo:nav-open', { detail: nav }))
+    const timer = window.setTimeout(() => {
+      el = nav ? document.querySelector<HTMLElement>(`[data-nav="${nav}"]`) : null
+      el?.classList.add('tour-hl')
+    }, 90)
+    return () => {
+      window.clearTimeout(timer)
+      el?.classList.remove('tour-hl')
+    }
   }, [i, steps])
 
   useEffect(() => {

@@ -1,0 +1,202 @@
+/* Peaufinage de la mise en page : barre latérale par rubriques, réglages en deux colonnes. */
+
+/* ---------- Barre latérale ---------- */
+.nav-group {
+  margin-top: 2px;
+}
+.nav-group-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted);
+  text-align: left;
+  transition: background 0.12s, color 0.12s;
+}
+.nav-group-head:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+.nav-group-head .chev {
+  flex: none;
+  transition: transform 0.18s ease;
+}
+.nav-group.open .nav-group-head .chev {
+  transform: rotate(90deg);
+}
+.nav-group-head .gl {
+  flex: 1;
+}
+.nav-group-head .gi {
+  display: inline-flex;
+  gap: 7px;
+  color: var(--faint);
+}
+.nav-group-head .gi svg {
+  stroke-width: 1.6;
+}
+.nav-group-body {
+  display: grid;
+  gap: 0;
+  animation: nav-open 0.16s ease both;
+}
+@keyframes nav-open {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+.nav-group .nav-item {
+  height: 32px;
+}
+.nav-section {
+  margin-top: 18px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-group-body,
+  .nav-group-head .chev {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* ---------- Réglages en deux colonnes ---------- */
+.page.settings {
+  max-width: 1020px;
+}
+.set-layout {
+  display: grid;
+  grid-template-columns: 188px minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+}
+.set-nav {
+  position: sticky;
+  top: 20px;
+  display: grid;
+  gap: 2px;
+}
+.set-nav button {
+  height: 34px;
+  padding: 0 12px;
+  border-radius: var(--radius);
+  text-align: left;
+  font-size: 0.875rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.12s, color 0.12s;
+}
+.set-nav button svg {
+  flex: none;
+  stroke-width: 1.6;
+}
+.set-nav button:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+.set-nav button.on {
+  background: var(--active);
+  color: var(--text);
+  font-weight: 500;
+}
+.set-body {
+  min-width: 0;
+}
+.set-section {
+  scroll-margin-top: 20px;
+  margin-bottom: 40px;
+}
+.set-section > header {
+  margin-bottom: 14px;
+}
+.set-section > header h2 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+.set-section > header p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.set-section .set-card + .set-card,
+.set-section .set-card + .set-sub {
+  margin-top: 14px;
+}
+.set-sub {
+  margin: 26px 0 10px;
+}
+.set-sub h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+}
+.set-sub p {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+.set-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.set-link {
+  display: grid;
+  gap: 4px;
+  text-align: left;
+  padding: 16px 18px;
+  border-radius: var(--radius-xl);
+  border: 0.5px solid var(--border);
+  background: var(--surface);
+  transition: transform 0.14s cubic-bezier(0.2, 0.8, 0.3, 1.3), border-color 0.14s, box-shadow 0.14s;
+}
+.set-link:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent-btn) 45%, var(--border-strong));
+  box-shadow: 0 10px 20px -12px var(--btn-glow);
+}
+.set-link b {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+.set-link b svg {
+  color: var(--accent);
+}
+.set-link span {
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+@media (max-width: 860px) {
+  .set-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .set-nav {
+    position: static;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .set-nav button {
+    height: 30px;
+    border: 0.5px solid var(--border);
+  }
+  .set-links {
+    grid-template-columns: 1fr;
+  }
+}
+.set-section .set-card + .section-head.set-sub {
+  margin-top: 34px;
+}

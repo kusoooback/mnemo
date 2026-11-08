@@ -7,6 +7,7 @@ import '@fontsource/atkinson-hyperlegible/700.css'
 import './styles/tokens.css'
 import './styles/app.css'
 import './styles/buttons.css'
+import './styles/layout.css'
 
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
