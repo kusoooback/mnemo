@@ -1,6 +1,6 @@
 import { Download, FileText, FolderOpen, Loader2, Plug, Upload } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import type { AiCallRow, AiProviderId, AiStatus, FreeModel, IntegrationInfo, NotionPage } from '@shared/types'
+import type { AiCallRow, AiProviderId, AiStatus, BridgeInfo, FreeModel, IntegrationInfo, NotionPage } from '@shared/types'
 import { call } from '../api'
 import { ApiKeyCard } from '../components/ApiKeyCard'
 import { DuplicatesModal } from '../components/Duplicates'
@@ -276,6 +276,61 @@ function AiSection({ active }: { active: boolean }): React.JSX.Element {
   )
 }
 
+function ClaudeSection(): React.JSX.Element {
+  const t = useT()
+  const { toast } = useStore()
+  const [info, setInfo] = useState<BridgeInfo | null>(null)
+  useEffect(() => {
+    void call('bridge.status').then(setInfo)
+  }, [])
+  if (!info) return <></>
+  const q = (s: string): string => (/[\s"]/.test(s) ? `"${s}"` : s)
+  const envFlags = Object.entries(info.env).map(([k, v]) => `-e ${k}=${v}`)
+  const cli = ['claude mcp add mnemo', ...envFlags, '--', q(info.command), q(info.script)].join(' ')
+  const json = JSON.stringify({ mcpServers: { mnemo: { command: info.command, args: [info.script], ...(Object.keys(info.env).length ? { env: info.env } : {}) } } }, null, 2)
+  const copy = async (text: string): Promise<void> => {
+    try {
+      await navigator.clipboard.writeText(text)
+      toast(t('int.claude.copied'))
+    } catch {
+      /* presse-papiers indisponible : le texte reste sélectionnable */
+    }
+  }
+  const toggle = async (on: boolean): Promise<void> => {
+    try {
+      setInfo(await call('bridge.set', on))
+    } catch (e) {
+      toast(errText(e), { kind: 'error' })
+    }
+  }
+  return (
+    <Section title={t('int.claude')} badge={info.running ? 'active' : 'available'}>
+      <div className="d" style={{ marginBottom: 12 }}>{t('int.claude.desc')}</div>
+      <div className="set-row" style={{ padding: 0, borderBottom: 0 }}>
+        <div className="info">
+          <div className="t">{t('int.claude.enable')}</div>
+          <div className="d">{info.running ? t('int.claude.on', { port: info.port }) : t('int.claude.off')}</div>
+        </div>
+        <div className="ctrl">
+          <Switch on={info.enabled} label={t('int.claude.enable')} onChange={(v) => void toggle(v)} />
+        </div>
+      </div>
+      {info.enabled && (
+        <>
+          <div className="eyebrow" style={{ marginTop: 16 }}>{t('int.claude.step')}</div>
+          <pre className="selectable code-box">{cli}</pre>
+          <button className="btn btn-sm" onClick={() => void copy(cli)}>{t('int.claude.copy')}</button>
+          <div className="eyebrow" style={{ marginTop: 16 }}>{t('int.claude.desktop')}</div>
+          <pre className="selectable code-box">{json}</pre>
+          <button className="btn btn-sm" onClick={() => void copy(json)}>{t('int.claude.copy')}</button>
+          <div className="d" style={{ marginTop: 14 }}>{t('int.claude.try')}</div>
+        </>
+      )}
+      <div className="d" style={{ marginTop: 12 }}>{t('int.claude.privacy')}</div>
+    </Section>
+  )
+}
+
 export function Integrations(): React.JSX.Element {
   const t = useT()
   const { settings, patchSettings, toast, bump, go, setAiSeed, decks, openImport } = useStore()
@@ -463,6 +518,8 @@ export function Integrations(): React.JSX.Element {
         )}
         {notionErr && <div className="warn selectable" style={{ marginTop: 10, background: 'var(--again-soft)' }}>{notionErr}</div>}
       </Section>
+
+      <ClaudeSection />
 
       <Section title={t('int.quick')} badge={settings.quickAdd ? 'active' : 'available'}>
         <div className="set-row" style={{ padding: 0, borderBottom: 0 }}>

@@ -3316,3 +3316,16 @@ svg.lucide {
 .skin-name { display: flex; align-items: center; gap: 5px; font-size: 0.8125rem; padding: 0 2px; }
 .color-input { width: 38px; height: 30px; padding: 0; border: 1px solid var(--border-strong); border-radius: 8px; background: transparent; cursor: pointer; }
 .set-row .d { font-size: 0.8125rem; color: var(--muted); }
+
+/* Commandes à copier (connexion de Claude) */
+.code-box {
+  margin: 8px 0;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: 12px/1.5 ui-monospace, 'Cascadia Code', Menlo, monospace;
+  white-space: pre-wrap;
+  word-break: break-all;
+  user-select: text;
+}

@@ -1,7 +1,8 @@
 import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
 import { readFileSync, writeFileSync } from 'fs'
-import { extname } from 'path'
+import { extname, join } from 'path'
 import type { Api } from '../shared/api'
+import type { BridgeInfo } from '../shared/types-extra'
 import { cancelDownload, deleteModel, downloadModel, localStatus, setLocalAiSink } from './localai'
 import { deleteDocument, documentSummary, documentText as docTextOf, listDocuments, makeCards, makeSummary, openDocument } from './documents'
 import { autoLogin, doLogin, electronHttp, hasSavedLogin, logout, openLoginWindow } from './prepa-electron'
@@ -28,6 +29,7 @@ import {
   startMarkdownWatch
 } from './integrations'
 import * as nb from './notebook'
+import { bridgeState, startBridge, stopBridge } from './bridge'
 import * as repo from './repo'
 import { getStats } from './stats'
 import * as study from './study'
@@ -42,6 +44,20 @@ const TITLEBAR = {
 
 type AsyncApi = {
   [K in keyof Api]: (...a: Parameters<Api[K]>) => ReturnType<Api[K]> | Promise<ReturnType<Api[K]>>
+}
+
+/** Ce qu'il faut pour brancher Claude : le serveur MCP livré avec Mnémo et la façon de le lancer. */
+function bridgeInfo(): BridgeInfo {
+  const st = bridgeState()
+  const script = app.isPackaged ? join(process.resourcesPath, 'mcp', 'mnemo-mcp.mjs') : join(app.getAppPath(), 'mcp', 'mnemo-mcp.mjs')
+  return {
+    enabled: getSettings().bridgeEnabled,
+    running: st.running,
+    port: st.port,
+    script,
+    command: app.isPackaged ? process.execPath : 'node',
+    env: app.isPackaged ? { ELECTRON_RUN_AS_NODE: '1' } : {}
+  }
 }
 
 export function emit(win: BrowserWindow | null, type: string, payload?: unknown): void {
@@ -348,7 +364,14 @@ export function registerHandlers(getWindow: () => BrowserWindow | null): void {
     'notion.connect': (token) => notionConnect(token),
     'notion.pageText': (id) => notionPageText(id),
     'notion.forget': () => notionForget(),
-    'notion.status': () => notionStatus()
+    'notion.status': () => notionStatus(),
+    'bridge.status': () => bridgeInfo(),
+    'bridge.set': async (enabled) => {
+      setSettings({ bridgeEnabled: enabled })
+      if (enabled) await startBridge(() => emit(getWindow(), 'data-changed'))
+      else await stopBridge()
+      return bridgeInfo()
+    }
   }
 
   for (const [channel, fn] of Object.entries(handlers)) {

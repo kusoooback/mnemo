@@ -40,6 +40,8 @@ export interface Settings {
   reminderTime: string
   // Intégrations
   quickAdd: boolean
+  /** Passerelle locale (127.0.0.1) pour connecter Claude / un assistant. Désactivée par défaut. */
+  bridgeEnabled: boolean
   obsidianFolder: string
   obsidianWatch: boolean
   prepaUrl: string
@@ -81,6 +83,7 @@ export const DEFAULT_SETTINGS: Settings = {
   reminderEnabled: false,
   reminderTime: '18:00',
   quickAdd: true,
+  bridgeEnabled: false,
   obsidianFolder: '',
   obsidianWatch: false,
   prepaUrl: 'https://cahier-de-prepa.fr/ecg1-clemenceau/',

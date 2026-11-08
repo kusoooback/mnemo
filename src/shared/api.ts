@@ -30,6 +30,7 @@ import type {
   NoteInput,
   NoteRecord,
   NotionPage,
+  BridgeInfo,
   PlanItem,
   Rating,
   SearchQuery,
@@ -187,6 +188,8 @@ export interface Api {
   'notion.pageText': (id: string) => string
   'notion.forget': () => void
   'notion.status': () => boolean
+  'bridge.status': () => BridgeInfo
+  'bridge.set': (enabled: boolean) => BridgeInfo
 }
 
 export type ApiName = keyof Api

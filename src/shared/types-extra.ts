@@ -187,6 +187,18 @@ export interface DuplicateGroup {
   notes: { id: string; front: string; back: string; deckName: string; reviews: number }[]
 }
 
+export interface BridgeInfo {
+  enabled: boolean
+  running: boolean
+  port: number
+  /** Fichier du serveur MCP à brancher dans Claude. */
+  script: string
+  /** Programme qui l'exécute (Mnémo lui-même une fois installé : Node n'est pas nécessaire). */
+  command: string
+  /** Variables d'environnement nécessaires (vide en développement). */
+  env: Record<string, string>
+}
+
 export interface NotionPage {
   id: string
   title: string

@@ -31,6 +31,7 @@ Et **uniquement parce que tu l'as demandé**, jamais en arrière-plan sans que t
 | **Cahier de Prépa** (import et synchro de tes cours) | **Le site de ta classe**, à l'adresse que tu as saisie | Tes identifiants vont **uniquement** à ce site, comme dans un navigateur. Les cours téléchargés sont stockés chez toi. La synchro automatique ne s'active qu'après ton premier import manuel. | Non |
 | **IA en ligne (optionnel)** : OpenRouter, Groq, Google Gemini, OpenAI, Claude… | Le fournisseur que **tu** as choisi, avec **ta propre clé** | Le texte que tu demandes de transformer en cartes ou en fiches. **Il quitte alors ton ordinateur.** Garde l'IA intégrée pour les documents confidentiels. | Non (IA intégrée par défaut) |
 | **Ollama** (optionnel) | Ton propre ordinateur (`localhost`) | Rien ne sort de ta machine | Non |
+| **Connexion de Claude** (optionnel, [section 5](#brancher-claude-sur-mnémo)) | Rien : une « porte » locale (`127.0.0.1`) que **tu** ouvres | Rien ne sort de ta machine par Mnémo ; c'est le programme de Claude, sur ton PC, qui y dépose des cartes | Non (désactivée) |
 | **Notion** (optionnel) | Notion, avec ton jeton | Ton jeton, pour **lire** les pages que tu importes (Mnémo n'écrit rien dans Notion) | Non |
 | **Ouvrir un lien** (par exemple openrouter.ai) | Ton navigateur habituel, quand tu cliques | Rien de la part de Mnémo | Sur clic |
 
@@ -438,6 +439,18 @@ Mnémo te recommande le bon selon ton ordinateur. Sans carte graphique, ça marc
 4. **Confidentialité** : avec OpenRouter, le texte de tes cours est envoyé à OpenRouter et au fournisseur du modèle choisi, et les modèles gratuits peuvent conserver les échanges. Garde le modèle intégré pour les documents confidentiels.
 
 Tu peux aussi brancher Groq, Google Gemini, Ollama ou ta propre clé Claude / OpenAI (*Fournisseur : OpenAI / compatible*). Le plafond de dépense reste réglable.
+
+### Brancher Claude sur Mnémo
+
+Tu utilises Claude (Claude Code ou Claude Desktop) ? Tu peux lui **dicter ou coller tout ton cours** et lui demander de créer **les cartes et les fiches directement dans Mnémo**, chapitre par chapitre. C'est la solution la plus puissante pour un gros volume (par exemple tout un cahier d'histoire-géo recopié depuis le début de l'année).
+
+1. Dans Mnémo : **Réglages → Intégrations → Claude (assistant IA)**, active **Autoriser Claude à créer des cartes**. Mnémo ouvre alors une « porte » **uniquement sur ton ordinateur** (`127.0.0.1`, jamais visible sur le réseau, protégée par un jeton secret qui change à chaque lancement). Désactive l'interrupteur et elle se referme.
+2. **Une seule fois**, copie la commande affichée dans ce même écran et colle-la dans un terminal (pour Claude Code : `claude mcp add mnemo -- node <chemin>/mcp/mnemo-mcp.mjs`). Pour Claude Desktop, copie le bloc de configuration à la place. Relance Claude.
+3. Garde **Mnémo ouvert** et parle à Claude : « Voici mon cours d'HGG sur la Première Guerre mondiale : fais-moi des cartes et une fiche. » Claude range les cartes dans un deck (par exemple `HGG::Chapitre 1`), écarte les doublons et crée la fiche dans **Fiches**. Tu vois chaque ajout dans l'activité de Mnémo.
+
+Claude peut : lister tes decks, créer un deck, ajouter des cartes (question/réponse, à trous, réversibles), créer une fiche (avec encadrés *À retenir*, *Définition*, *Piège*…) et chercher des cartes existantes. Il **ne supprime ni ne modifie** rien de ce qui existe déjà.
+
+**Confidentialité** : Mnémo n'envoie rien. Mais le texte que tu donnes à Claude est traité par Claude (Anthropic) comme dans n'importe quelle conversation : pour des documents confidentiels, garde l'IA intégrée de Mnémo.
 
 ---
 
