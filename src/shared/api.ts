@@ -139,6 +139,7 @@ export interface Api {
   'ai.generate': (text: string, count: number, lang: 'fr' | 'en', hint: string) => AiCardProposal[]
   'ai.diagnose': (front: string, back: string, kind: string) => AiDiagnosis
   'ai.explain': (cardId: string) => string
+  'ai.distractors': (items: { id: string; q: string; a: string }[]) => Record<string, string[]>
   'ai.makeSheet': (title: string, text: string) => string
   'ai.pickFile': () => { name: string; text: string } | null
   'ai.log': () => AiCallRow[]

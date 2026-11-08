@@ -11,7 +11,7 @@ import { runImportJob, runPrepaAuto } from './prepa-auto'
 import { exportPdf, revealFile } from './exportpdf'
 import { cancelJob, cancelKind, clearEndedJobs, listJobs, setJobsSink, startJob, type JobHandle } from './jobs'
 import { documentFilePath, addDocumentPaths, addMarkdownDocument, setDocumentCategory, addDocumentsDialog, documentInfo, documentSource, rereadDocument, saveDocumentNotes, saveDocumentSource } from './docfiles'
-import { openrouterModels, aiConfigure, aiDiagnose, aiEstimate, aiExplain, aiCardsFromText, aiSummarize, aiLog, aiPickFile, aiStatus, aiTest } from './ai'
+import { openrouterModels, aiConfigure, aiDiagnose, aiDistractors, aiEstimate, aiExplain, aiCardsFromText, aiSummarize, aiLog, aiPickFile, aiStatus, aiTest } from './ai'
 import { buildApkg, importApkg } from './anki'
 import { ankiProfiles, documentText, inspectSource, pickSource, runImport } from './importer'
 import { createSample, exportCsv, exportJson, exportMarkdown, importCsv, saveImage } from './data'
@@ -235,6 +235,7 @@ export function registerHandlers(getWindow: () => BrowserWindow | null): void {
     },
     'ai.diagnose': (f, b, k) => aiDiagnose(f, b, k),
     'ai.explain': (id) => aiExplain(id),
+    'ai.distractors': (items) => aiDistractors(items),
     'ai.pickFile': () => aiPickFile(getWindow()),
     'ai.log': () => aiLog(),
 

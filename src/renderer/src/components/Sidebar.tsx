@@ -16,7 +16,8 @@ import {
   Upload,
   MessageCircle,
   Compass,
-  Share2
+  Share2,
+  ListChecks
 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useT } from '../i18n'
@@ -125,6 +126,10 @@ export function Sidebar(): React.JSX.Element {
         <button className={`nav-item ${is('resources') ? 'active' : ''}`} onClick={() => go({ name: 'resources' })}>
           <Compass size={18} />
           <span className="label">{t('nav.resources')}</span>
+        </button>
+        <button className={`nav-item ${is('quiz') ? 'active' : ''}`} onClick={() => go({ name: 'quiz' })}>
+          <ListChecks size={18} />
+          <span className="label">{t('nav.quiz')}</span>
         </button>
         <button className={`nav-item ${is('packs') ? 'active' : ''}`} onClick={() => go({ name: 'packs' })}>
           <Share2 size={18} />

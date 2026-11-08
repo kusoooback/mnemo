@@ -15,6 +15,7 @@ export type Route =
   | { name: 'assistant' }
   | { name: 'resources' }
   | { name: 'packs' }
+  | { name: 'quiz' }
   | { name: 'sync' }
   | { name: 'integrations' }
   | { name: 'prepa' }

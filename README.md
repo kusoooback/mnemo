@@ -497,12 +497,24 @@ Menu **Paquets**. Un paquet est **un seul fichier** qui contient un deck (avec s
 
 ### Ressources : où trouver de bons cours
 
-Menu **Ressources** : plus de quarante sites choisis pour la prépa et le supérieur, classés par matière : Python (psim.fr, documentation officielle, France-IOI, Python Tutor, Project Euler…), mathématiques (Exo7, annales…), physique-chimie, histoire-géographie et géopolitique, économie, lettres, langues, concours et annales.
+Menu **Ressources** : plus de cinquante sites choisis pour la prépa et le supérieur, classés par matière : Python (PyCime, Basthon et Thonny pour programmer, documentation officielle, France-IOI, Python Tutor, Project Euler…), mathématiques (Exo7, Mathraining, APMEP…), physique-chimie, histoire-géographie et géopolitique, économie, lettres, langues, et **concours et méthodologie pour la prépa ECG** (BCE et Ecricome : calendriers, règlement des concours, inscriptions ; Major-Prépa : méthodes, oraux, annales, rapports de jury ; Onisep ; sites des écoles).
 
 - **Chercher** (sans tenir compte des accents), filtrer par matière, mettre en **favori** ⭐, **ajouter tes propres sources** (adresses `https://` uniquement).
 - **Copier ma liste / Importer une liste** : partage tes favoris et tes sources avec un ami en collant un texte.
 - **Lire et créer des cartes** : Mnémo télécharge **cette seule page** (au clic), puis l'assistant te propose des cartes, une fiche ou des exercices à partir de son texte.
-- Les adresses ont été testées depuis un ordinateur, mais un site peut changer ou bloquer les programmes : celles qu'on n'a pas pu vérifier (par exemple psim.fr, injoignable depuis notre environnement de test) portent la mention **non vérifié**. Tu peux proposer une correction ou un ajout dans `src/shared/resources.ts`.
+- Les adresses ont été testées depuis un ordinateur, mais un site peut changer ou bloquer les programmes : celles qu'on n'a pas pu vérifier (par exemple Gallica ou Cairn, qui refusent les programmes) portent la mention **non vérifié**. Tu peux proposer une correction ou un ajout dans `src/shared/resources.ts`.
+
+### Quiz : QCM, Vrai / Faux et textes à trous
+
+Menu **Quiz**. Mnémo fabrique des quiz **à partir de tes propres cartes**, sans rien à écrire :
+
+- **QCM** : la question de la carte, quatre réponses. Les mauvaises réponses viennent de **tes autres cartes**, choisies pour ressembler à la bonne (des années pour une année, des formules pour une formule).
+- **Vrai / Faux** : on te propose une réponse, juste ou fausse, et tu tranches.
+- **Texte à trous à choix** : pour tes cartes à trous, on cache le mot et tu le retrouves parmi plusieurs.
+- **Mélange** des trois, sur un deck ou toute ta collection, avec 5, 10, 20 ou 50 questions, au hasard ou **sur tes cartes les plus difficiles**.
+- **Réponses piégeuses par l'IA** (facultatif) : l'IA invente de mauvaises réponses plus crédibles. Tes questions sont alors envoyées à l'IA que tu as choisie ; sans IA, les mauvaises réponses viennent de tes cartes.
+- À la fin : ton score, tes erreurs corrigées, et un bouton pour **refaire seulement les erreurs**. Au clavier : `1` à `4` ou `A` à `D`, `V` / `F`, `Entrée`.
+- **Compter dans ma révision** (désactivé par défaut) : une bonne réponse compte « Bien », une erreur « À revoir ». Par défaut, un quiz **ne touche pas** à ton planning de révision.
 
 ### Formules mathématiques
 

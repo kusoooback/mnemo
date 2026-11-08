@@ -13,10 +13,19 @@ describe('Catalogue de ressources', () => {
     expect(RESOURCES.length).toBeGreaterThanOrEqual(40)
   })
 
-  it('contient les sources demandées (psim.fr pour Python, géopolitique, annales)', () => {
+  it('contient les sources demandées (PyCime, Basthon, Thonny, Mathraining, géopolitique, annales, concours ECG)', () => {
     const ids = RESOURCES.map((r) => r.id)
-    expect(ids).toEqual(expect.arrayContaining(['psim', 'geoconf', 'exo7', 'bce', 'ccinp']))
-    expect(RESOURCES.find((r) => r.id === 'psim')?.unchecked).toBe(true)
+    expect(ids).toEqual(expect.arrayContaining(['pycime', 'basthon', 'thonny', 'mathraining', 'geoconf', 'exo7', 'bce', 'ccinp', 'ecricome', 'majorprepa']))
+    expect(ids).not.toContain('psim')
+    expect(RESOURCES.find((r) => r.id === 'pycime')?.url).toBe('https://www.pycime.fr')
+    expect(RESOURCES.find((r) => r.id === 'pycime')?.unchecked).toBeUndefined()
+  })
+
+  it('retrouve les sources par ce qu’on cherche (même avec la faute « mattraining »)', () => {
+    expect(searchResources(RESOURCES, 'mattraining', '').map((r) => r.id)).toContain('mathraining')
+    expect(searchResources(RESOURCES, 'éditeur', 'python').map((r) => r.id)).toEqual(expect.arrayContaining(['basthon', 'thonny']))
+    expect(searchResources(RESOURCES, 'règlement', 'concours').map((r) => r.id)).toEqual(expect.arrayContaining(['bce', 'ecricome']))
+    expect(searchResources(RESOURCES, 'méthodologie', '').map((r) => r.id)).toContain('majorprepa')
   })
 
   it('cherche sans tenir compte des accents ni de la casse, et filtre par catégorie', () => {

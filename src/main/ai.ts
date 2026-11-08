@@ -1,3 +1,4 @@
+import { norm as normText } from '../shared/quiz'
 import { AUDIO_EXTENSIONS, IMAGE_EXTENSIONS, TEXT_EXTENSIONS, VIDEO_EXTENSIONS } from '../shared/docs'
 import { dialog, type BrowserWindow } from 'electron'
 import { readFileSync } from 'fs'
@@ -642,6 +643,57 @@ export async function aiExplain(cardId: string): Promise<string> {
   const f = JSON.parse(row.fields) as Record<string, string>
   const system = `Tu es un tuteur bienveillant. L'élève vient de rater une carte de révision. Explique en 4 phrases maximum pourquoi la réponse est correcte, donne un exemple concret ou un moyen mnémotechnique, et suggère un lien avec une notion voisine. Pas de préambule. Markdown autorisé. Réponds dans la langue de la carte.`
   return (await call('explication d’une erreur', system, `Carte (${row.kind}) :\n${Object.entries(f).map(([k, v]) => `${k}: ${v}`).join('\n')}`, 600, false)).trim()
+}
+
+const DISTRACTOR_SCHEMA = {
+  type: 'object',
+  properties: { items: { type: 'array', items: { type: 'object', properties: { id: { type: 'string' }, wrong: { type: 'array', items: { type: 'string' } } }, required: ['id', 'wrong'] } } },
+  required: ['items']
+}
+
+/**
+ * Quiz : pour chaque question, 3 mauvaises réponses PLAUSIBLES (les pièges qu'un élève confond vraiment).
+ * Renvoie ce qui a pu être fabriqué ; l'appelant complète avec les réponses des autres cartes.
+ */
+export async function aiDistractors(items: { id: string; q: string; a: string }[]): Promise<Record<string, string[]>> {
+  if (!aiStatus().ready) throw new Error('L’IA n’est pas prête : active-la dans Réglages → IA, ou décoche « Réponses piégeuses ».')
+  const online = ['openrouter', 'openai', 'anthropic'].includes(getSettings().aiProvider)
+  const per = online ? 12 : 5
+  const clean = items.slice(0, 60).map((i) => ({ id: String(i.id), q: String(i.q).slice(0, 400), a: String(i.a).slice(0, 240) }))
+  const out: Record<string, string[]> = {}
+  let lastError: Error | null = null
+  const system =
+    'Tu fabriques des QCM pour réviser. Pour chaque question, propose 3 MAUVAISES réponses plausibles : des pièges crédibles qu’un élève pourrait confondre avec la bonne, ' +
+    'de même nature, de même forme et de longueur proche. Elles ne doivent JAMAIS être correctes ni répéter la bonne réponse. Garde la mise en forme de la bonne réponse ' +
+    '(par exemple du LaTeX entre $…$). Même langue que les questions. Réponds uniquement avec du JSON : {"items":[{"id":"…","wrong":["…","…","…"]}]}.'
+  for (let i = 0; i < clean.length; i += per) {
+    const chunk = clean.slice(i, i + per)
+    try {
+      const raw = await call('QCM : réponses piégeuses', system, JSON.stringify(chunk.map((c) => ({ id: c.id, question: c.q, bonne_reponse: c.a }))), 250 + chunk.length * 160, true, DISTRACTOR_SCHEMA)
+      const json = raw.slice(raw.indexOf('{'), raw.lastIndexOf('}') + 1)
+      const parsed = JSON.parse(json) as { items?: { id?: unknown; wrong?: unknown }[] }
+      for (const it of parsed.items ?? []) {
+        const src = chunk.find((c) => c.id === String(it.id))
+        if (!src || !Array.isArray(it.wrong)) continue
+        const seen = new Set([normText(src.a)])
+        const wrong: string[] = []
+        for (const w of it.wrong) {
+          const t = typeof w === 'string' ? w.trim() : ''
+          const k = normText(t)
+          if (!t || t.length > 240 || !k || seen.has(k)) continue
+          seen.add(k)
+          wrong.push(t)
+          if (wrong.length === 3) break
+        }
+        if (wrong.length) out[src.id] = wrong
+      }
+    } catch (e) {
+      lastError = e as Error
+      if (Object.keys(out).length === 0) break
+    }
+  }
+  if (Object.keys(out).length === 0 && lastError) throw lastError
+  return out
 }
 
 /* ---------- Lecture de documents ---------- */

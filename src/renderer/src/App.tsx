@@ -14,6 +14,7 @@ import { AiPage } from './pages/AiPage'
 import { Assistant } from './pages/Assistant'
 import { Resources } from './pages/Resources'
 import { Packs } from './pages/Packs'
+import { Quiz } from './pages/Quiz'
 import { ShortcutsHelp } from './components/ShortcutsHelp'
 import { Home } from './pages/Home'
 import { Integrations } from './pages/Integrations'
@@ -253,6 +254,7 @@ export default function App(): React.JSX.Element | null {
           {route.name === 'assistant' && <Assistant />}
           {route.name === 'resources' && <Resources />}
           {route.name === 'packs' && <Packs />}
+          {route.name === 'quiz' && <Quiz />}
           {route.name === 'sync' && <SyncPage />}
           {route.name === 'integrations' && <Integrations />}
           {route.name === 'prepa' && <Prepa />}

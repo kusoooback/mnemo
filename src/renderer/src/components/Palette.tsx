@@ -1,4 +1,4 @@
-import { Compass, Keyboard, Share2, MessageCircle, BarChart3, BookOpen, CalendarDays, CornerDownLeft, FileText, Library, Moon, Play, Plug, Plus, RefreshCw, ScrollText, Search, Settings, Sparkles, Sun, Upload } from 'lucide-react'
+import { Compass, Keyboard, ListChecks, Share2, MessageCircle, BarChart3, BookOpen, CalendarDays, CornerDownLeft, FileText, Library, Moon, Play, Plug, Plus, RefreshCw, ScrollText, Search, Settings, Sparkles, Sun, Upload } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { CardRow } from '@shared/types'
 import { call } from '../api'
@@ -59,6 +59,7 @@ export function Palette(): React.JSX.Element {
       { id: 'g-ai', group: t('pal.go'), label: t('nav.ai'), icon: <Sparkles size={17} />, run: () => go({ name: 'ai' }) },
       { id: 'g-assistant', group: t('pal.go'), label: t('nav.assistant'), icon: <MessageCircle size={17} />, run: () => go({ name: 'assistant' }) },
       { id: 'g-resources', group: t('pal.go'), label: t('nav.resources'), icon: <Compass size={17} />, run: () => go({ name: 'resources' }) },
+      { id: 'g-quiz', group: t('pal.go'), label: t('nav.quiz'), icon: <ListChecks size={17} />, run: () => go({ name: 'quiz' }) },
       { id: 'g-packs', group: t('pal.go'), label: t('nav.packs'), icon: <Share2 size={17} />, run: () => go({ name: 'packs' }) },
       { id: 'g-sheets', group: t('pal.go'), label: t('nav.sheets'), icon: <ScrollText size={17} />, run: () => go({ name: 'sheets' }) },
       { id: 'g-prepa', group: t('pal.go'), label: t('nav.prepa'), icon: <BookOpen size={17} />, run: () => go({ name: 'prepa' }) },

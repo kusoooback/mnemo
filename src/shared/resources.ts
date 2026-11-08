@@ -34,7 +34,9 @@ const r = (id: string, title: string, url: string, cat: ResourceCategory, desc: 
 
 export const RESOURCES: Resource[] = [
   // — Python & informatique —
-  r('psim', 'psim.fr', 'https://psim.fr', 'python', 'Ressources de Python pour les classes préparatoires (adresse indiquée par un utilisateur de Mnémo).', ['python', 'prépa', 'mp', 'pcsi', 'mpsi', 'info', 'cpge'], true),
+  r('pycime', 'PyCime', 'https://www.pycime.fr', 'python', 'Plateforme d’entraînement Python pour les étudiants du supérieur (classes préparatoires, écoles de commerce, masters) : exercices issus des concours, questions d’entretien et parcours de formation.', ['python', 'prépa', 'ecg', 'concours', 'entretien', 'exercices', 'info', 'cpge', 'commerce']),
+  r('basthon', 'Basthon', 'https://basthon.fr', 'python', 'Un bac à sable en ligne pour programmer en Python (et SQL, OCaml, JavaScript, C, R…) directement dans le navigateur, sans rien installer.', ['python', 'éditeur', 'notebook', 'sql', 'navigateur', 'sans installation']),
+  r('thonny', 'Thonny', 'https://thonny.org', 'python', 'Éditeur Python gratuit pensé pour débuter : débogueur pas à pas, variables visibles, installation simple (Windows, Mac, Linux).', ['python', 'éditeur', 'ide', 'débutant', 'débogueur']),
   r('pydoc', 'Documentation officielle de Python', 'https://docs.python.org/fr/3/', 'python', 'La référence du langage et de la bibliothèque standard, traduite en français.', ['python', 'doc', 'référence']),
   r('pytutor', 'Python Tutor', 'https://pythontutor.com', 'python', 'Visualise l’exécution d’un programme pas à pas (variables, pile d’appels, listes) : idéal pour comprendre la récursivité et les structures.', ['python', 'visualisation', 'débutant', 'récursivité']),
   r('franceioi', 'France-IOI', 'https://www.france-ioi.org', 'python', 'Cours et exercices d’algorithmique corrigés automatiquement, du niveau débutant aux olympiades.', ['algorithmique', 'python', 'exercices', 'concours']),
@@ -42,6 +44,8 @@ export const RESOURCES: Resource[] = [
   r('numpy', 'NumPy : documentation', 'https://numpy.org/doc/', 'python', 'Calcul numérique avec les tableaux : tout ce qu’il faut pour le programme d’informatique en prépa.', ['numpy', 'python', 'calcul']),
   r('mpl', 'Matplotlib : documentation', 'https://matplotlib.org', 'python', 'Tracer des courbes, nuages de points et histogrammes avec Python.', ['matplotlib', 'python', 'graphiques']),
   // — Mathématiques —
+  r('mathraining', 'Mathraining', 'https://www.mathraining.be', 'maths', 'Plateforme belge d’entraînement aux mathématiques : problèmes de difficulté croissante, en français, pour progresser en raisonnement et en rédaction.', ['maths', 'olympiades', 'problèmes', 'entraînement', 'mattraining', 'raisonnement']),
+  r('apmep', 'APMEP', 'https://www.apmep.fr', 'maths', 'Association des professeurs de mathématiques : annales, brochures et ressources pédagogiques.', ['maths', 'annales', 'professeurs']),
   r('exo7', 'Exo7', 'https://exo7.emath.fr', 'maths', 'Cours, exercices corrigés et vidéos de mathématiques du supérieur (algèbre, analyse, probabilités).', ['maths', 'cours', 'exercices', 'sup', 'algèbre', 'analyse']),
   r('bibmath', 'BibM@th', 'https://bibmath.net', 'maths', 'Bibliothèque de maths : cours, fiches, exercices et biographies de mathématiciens.', ['maths', 'fiches', 'cours', 'exercices']),
   r('mathcurve', 'MathCurve', 'https://www.mathcurve.com', 'maths', 'Encyclopédie des courbes et surfaces : équations, propriétés, constructions.', ['maths', 'courbes', 'géométrie']),
@@ -80,8 +84,13 @@ export const RESOURCES: Resource[] = [
   r('linguee', 'Linguee', 'https://www.linguee.fr', 'langues', 'Traductions avec des exemples réels en contexte (anglais, allemand, espagnol…).', ['traduction', 'anglais', 'langues']),
   // — Concours & annales —
   r('ccinp', 'Concours Commun INP', 'https://www.concours-commun-inp.fr', 'concours', 'Concours des filières scientifiques : programmes, sujets et rapports.', ['concours', 'annales', 'ccinp', 'mp', 'pc', 'psi']),
-  r('bce', 'Banque BCE', 'https://www.concours-bce.com', 'concours', 'Concours des écoles de commerce : programmes, annales, rapports de jury.', ['concours', 'annales', 'ecg', 'bce']),
-  r('ecricome', 'Ecricome', 'https://www.ecricome.org', 'concours', 'Concours d’écoles de commerce : épreuves, sujets et corrigés.', ['concours', 'annales', 'ecg']),
+  r('bce', 'Banque BCE', 'https://www.concours-bce.com', 'concours', 'Concours des écoles de commerce : calendriers, épreuves écrites et orales, droits d’inscription, charte d’éthique, aménagements d’épreuves et filière ECG (voie générale).', ['concours', 'annales', 'ecg', 'bce', 'règlement', 'calendrier', 'inscription', 'oraux', 'écoles de commerce']),
+  r('ecricome', 'Ecricome', 'https://www.ecricome.org', 'concours', 'Concours d’écoles de commerce (prépas ECG/ECT, Tremplin, Bachelor) : règlement des concours, pré-inscription, espace candidat, brochures.', ['concours', 'annales', 'ecg', 'règlement', 'inscription', 'écoles de commerce']),
+  r('majorprepa', 'Major-Prépa', 'https://major-prepa.com', 'concours', 'Le site de référence des prépas : guide de la rentrée, répertoires de maths et d’oraux, annales, rapports de jury, culture générale, HGG, classements et orientation.', ['prépa', 'ecg', 'méthodologie', 'méthode', 'concours', 'oraux', 'annales', 'rapports de jury', 'hgg', 'culture générale', 'orientation']),
+  r('onisep', 'Onisep', 'https://www.onisep.fr', 'concours', 'Information officielle sur l’orientation : fiches sur les classes préparatoires, les écoles de commerce et les débouchés.', ['orientation', 'prépa', 'ecg', 'écoles de commerce', 'débouchés']),
+  r('hec', 'HEC Paris', 'https://www.hec.edu', 'concours', 'Site de l’école : conditions d’admission sur concours après la prépa, formations et vie étudiante.', ['école', 'admission', 'ecg', 'concours', 'écoles de commerce']),
+  r('essec', 'ESSEC', 'https://www.essec.edu', 'concours', 'Site de l’école : admission sur concours après la prépa, programmes et vie étudiante.', ['école', 'admission', 'ecg', 'concours', 'écoles de commerce']),
+  r('edhec', 'EDHEC', 'https://www.edhec.edu', 'concours', 'Site de l’école : admission sur concours après la prépa, programmes et vie étudiante.', ['école', 'admission', 'ecg', 'concours', 'écoles de commerce']),
   r('scei', 'SCEI', 'https://www.scei-concours.fr', 'concours', 'Inscriptions et résultats des concours des grandes écoles d’ingénieurs.', ['concours', 'inscription', 'ingénieur']),
   r('e3a', 'e3a-Polytech', 'https://www.e3a-polytech.fr', 'concours', 'Concours Polytech : programmes, annales et rapports.', ['concours', 'annales', 'pt', 'mp', 'pc']),
   r('banquept', 'Banque PT', 'https://www.banquept.fr', 'concours', 'Concours de la filière PT : sujets, rapports, informations.', ['concours', 'annales', 'pt']),
