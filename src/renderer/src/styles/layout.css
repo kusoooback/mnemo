@@ -200,3 +200,34 @@
 .set-section .set-card + .section-head.set-sub {
   margin-top: 34px;
 }
+
+/* ---------- IA locale : où sont rangés les modèles ---------- */
+.la-where {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-lg);
+  background: var(--surface-2);
+  font-size: 0.8125rem;
+}
+.la-where-l {
+  flex: none;
+  color: var(--muted);
+}
+.la-where code,
+.la-file code {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-2);
+  word-break: break-all;
+}
+.la-file {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}

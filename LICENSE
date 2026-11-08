@@ -1,21 +1,85 @@
-MIT License
+Mnémo Source-Available License (MSAL) — version 1.0
 
-Copyright (c) 2026 Malo
+Copyright (c) 2026 Malo. All rights reserved, except as granted below.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Mnémo is "source-available": you may read the code and use the application
+for free, but the code and the Mnémo name remain the property of its author.
+This is NOT an OSI-approved open-source license.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+-------------------------------------------------------------------------------
+1. WHAT YOU MAY DO
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+  a) Read, study and audit the source code.
+  b) Download, install and use Mnémo, free of charge, for personal, educational
+     (students, teachers, schools) and other non-commercial purposes.
+  c) Modify a copy of the code for your own personal use, on your own
+     computer, without sharing the result.
+  d) Fork the repository on GitHub, and only on GitHub, solely in order to
+     propose changes back to the author (pull request). Such a fork may not
+     be promoted, released or used as a separate product.
+  e) Send contributions. By doing so you grant the author a perpetual,
+     worldwide, royalty-free right to use, modify and distribute them as part
+     of Mnémo, including under a different license.
+
+2. WHAT YOU MAY NOT DO, WITHOUT THE AUTHOR'S WRITTEN PERMISSION
+
+  a) Redistribute Mnémo, in whole or in part, in source or binary form,
+     modified or not (installers, archives, mirrors, package-manager
+     entries, app stores, re-uploads…).
+  b) Publish or distribute any modified version, derivative work or
+     "alternative version" of Mnémo, or any product built from a substantial
+     part of its code, design, texts or icons.
+  c) Sell, rent, sublicense, or otherwise make money from Mnémo or from a
+     derivative of it, including offering it as a paid or hosted service, or
+     bundling it in a paid product.
+  d) Remove or alter copyright notices, this license, or the attribution to
+     the author.
+  e) Use the name "Mnémo", its logo or its icon to name or promote another
+     product, or in any way suggesting that it is endorsed by the author.
+
+3. OFFICIAL DISTRIBUTION
+
+  The only official sources of Mnémo are the author's repository
+  (https://github.com/kusoooback/mnemo) and its "Releases" page. Anything
+  else is unofficial and unauthorized.
+
+4. THIRD-PARTY COMPONENTS
+
+  Mnémo includes third-party components (React, Electron, KaTeX, pdf.js,
+  better-sqlite3, node-llama-cpp, fonts…) that remain under their own
+  licenses. This license does not apply to them and does not restrict your
+  rights over them. Downloaded AI models keep the license of their authors.
+
+5. EARLIER VERSIONS
+
+  Versions of Mnémo published before this license took effect (8 November
+  2026) were released under the MIT license. Copies obtained under MIT keep
+  those MIT rights for those versions only. All later versions and all new
+  code are covered by this license.
+
+6. NO WARRANTY
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY ARISING FROM THE
+  USE OF THE SOFTWARE.
+
+7. TERMINATION
+
+  Any breach of section 2 ends your rights under this license automatically.
+
+For any other use (commercial, school-wide deployment, redistribution…),
+ask first: open an issue on the repository.
+
+-------------------------------------------------------------------------------
+RÉSUMÉ EN FRANÇAIS (le texte anglais ci-dessus fait foi)
+
+Mnémo est à code source visible, pas « open source » au sens strict.
+  ✔ Tu peux lire le code, utiliser Mnémo gratuitement (perso, études,
+    enseignement), le modifier pour toi, et proposer des corrections via une
+    « pull request » depuis un fork GitHub.
+  ✘ Tu ne peux pas le redistribuer, publier une version modifiée, le vendre,
+    en tirer de l'argent, retirer le copyright, ni réutiliser son nom ou son
+    logo pour un autre produit.
+Les versions publiées avant le 8 novembre 2026 étaient sous licence MIT.

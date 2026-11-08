@@ -1,4 +1,4 @@
-import { Check, Cpu, Download, Loader2, Trash2, Zap } from 'lucide-react'
+import { Check, Copy, Cpu, Download, FolderOpen, Loader2, Trash2, Zap } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import type { LocalAiStatus } from '@shared/types'
 import { call } from '../api'
@@ -48,6 +48,25 @@ export function LocalAiSetup({ onReady }: { onReady?: () => void }): React.JSX.E
             <Cpu size={14} />
             {st.gpu ? t('la.gpu', { vram: Math.round(st.vramMb / 1000) }) : t('la.cpu')}
           </p>
+          <div className="la-where">
+            <span className="la-where-l">{t('la.where')}</span>
+            <code className="selectable" title={st.dir}>{st.dir}</code>
+            <button className="btn btn-sm" onClick={() => void call('ai.local.reveal')}>
+              <FolderOpen size={14} />
+              {t('set.open')}
+            </button>
+            <button
+              className="icon-btn"
+              aria-label={t('la.copyPath')}
+              title={t('la.copyPath')}
+              onClick={() => {
+                void navigator.clipboard.writeText(st.dir)
+                toast(t('la.pathCopied'))
+              }}
+            >
+              <Copy size={15} />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -64,6 +83,14 @@ export function LocalAiSetup({ onReady }: { onReady?: () => void }): React.JSX.E
                   {m.recommended && <span className="tag" style={{ background: 'var(--accent-soft)', color: 'var(--accent-ink)' }}>{t('la.recommended')}</span>}
                 </div>
                 <div className="muted" style={{ fontSize: '0.8125rem' }}>{m.description}</div>
+                {m.installed && m.path && (
+                  <div className="la-file">
+                    <code className="selectable" title={m.path}>{m.path}</code>
+                    <button className="icon-btn" aria-label={t('la.reveal')} title={t('la.reveal')} onClick={() => void call('ai.local.reveal', m.id)}>
+                      <FolderOpen size={14} />
+                    </button>
+                  </div>
+                )}
                 {isDl && (
                   <div className="stackbar" style={{ marginTop: 8, height: 6 }}>
                     <i style={{ background: 'var(--accent)', flex: Math.max(0.001, active!.downloaded) }} />

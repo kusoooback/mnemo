@@ -234,7 +234,7 @@ const fr = {
   'set.noBackups': 'Aucune sauvegarde pour l’instant.',
   'set.about': 'À propos',
   'set.aboutText':
-    'Mnémo est libre et open source. Aucune télémétrie, aucun compte : tes données restent sur ton PC.',
+    'Mnémo est gratuit, à code source visible. Aucune télémétrie, aucun compte : tes données restent sur ton PC.',
   'set.version': 'Version',
   'set.shortcuts': 'Raccourcis',
 
@@ -491,7 +491,7 @@ const en: Dict = {
   'set.noBackups': 'No backups yet.',
   'set.about': 'About',
   'set.aboutText':
-    'Mnémo is free and open source. No telemetry, no account: your data stays on your PC.',
+    'Mnémo is free, with visible source code. No telemetry, no account: your data stays on your PC.',
   'set.version': 'Version',
   'set.shortcuts': 'Shortcuts',
 

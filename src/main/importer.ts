@@ -3,6 +3,7 @@ import { readFileSync, statSync } from 'fs'
 import { basename, extname } from 'path'
 import type { AnkiProfileInfo, ImportRequest, ImportResult, ImportSource, NoteKind } from '../shared/types'
 import { mapRow, parseText } from '../shared/textimport'
+import { AUDIO_EXTENSIONS, IMAGE_EXTENSIONS, TEXT_EXTENSIONS, VIDEO_EXTENSIONS } from '../shared/docs'
 import { readDocument } from './ai'
 import {
   findAnkiProfiles,
@@ -21,10 +22,21 @@ import { getSettings } from './util'
 /*
  * Import universel : on devine le format depuis le fichier, on montre ce qui va se passer, on importe.
  * Formats : Anki (.apkg/.colpkg et profil installé), texte/CSV/TSV (Anki « notes en texte », Quizlet,
- * Brainscape, tableurs), Markdown, sauvegarde Mnémo (JSON), documents (PDF/Word) à passer à l'IA.
+ * Brainscape, tableurs), Markdown, sauvegarde Mnémo (JSON), documents (PDF, Word, PowerPoint, LibreOffice, EPUB, RTF,
+ * HTML, LaTeX, notebooks, code) et photos (PNG, JPEG, WebP, BMP, GIF, TIFF : lues par reconnaissance de texte) à passer à l'IA.
  */
 
 const MAX_TEXT = 40 * 1024 * 1024
+
+/** Fichiers dont on lit le texte pour fabriquer des cartes avec l'IA : documents, présentations, photos (OCR), code, LaTeX… */
+const CARD_FORMATS = new Set(['csv', 'tsv', 'txt', 'tab', 'text', 'md', 'markdown', 'json'])
+const SCAN_EXTENSIONS = [...IMAGE_EXTENSIONS].filter((e) => e !== 'svg')
+const DOCUMENT_EXTENSIONS = new Set([
+  'pdf', 'docx', 'dotx', 'pptx', 'odt', 'odp', 'rtf', 'html', 'htm', 'epub', 'ipynb', 'pages',
+  ...SCAN_EXTENSIONS,
+  ...[...TEXT_EXTENSIONS].filter((e) => !CARD_FORMATS.has(e))
+])
+const isDocument = (ext: string): boolean => DOCUMENT_EXTENSIONS.has(ext.toLowerCase().replace(/^./, ''))
 
 export const ankiProfiles = (): AnkiProfileInfo[] => findAnkiProfiles()
 
@@ -86,28 +98,65 @@ export function inspectSource(path: string): ImportSource {
     }
     return { kind: 'unsupported', name, reason: 'Ce JSON n’est pas une sauvegarde Mnémo. Exporte plutôt en CSV ou en texte depuis l’autre application.' }
   }
-  if (['.pdf', '.docx'].includes(ext)) return { kind: 'document', name, path, text: '' }
+  if (isDocument(ext)) return { kind: 'document', name, path, text: '', image: SCAN_EXTENSIONS.includes(ext.slice(1)) }
+  if (VIDEO_EXTENSIONS.has(ext.slice(1)) || AUDIO_EXTENSIONS.has(ext.slice(1)))
+    return { kind: 'unsupported', name, reason: 'Les vidéos et les sons ne contiennent pas de texte à lire. Écris ou dicte le contenu (assistant), ou importe une photo, un PDF ou une présentation.' }
+  if (ext === '.svg') return { kind: 'unsupported', name, reason: 'Les images vectorielles (SVG) ne peuvent pas être lues. Exporte-la en PNG ou en JPEG, puis importe-la.' }
   if (['.xlsx', '.xls', '.ods'].includes(ext))
     return { kind: 'unsupported', name, reason: 'Enregistre d’abord ta feuille en CSV (Fichier → Enregistrer sous → CSV), puis importe-la.' }
   return { kind: 'unsupported', name, reason: `Le format « ${ext || 'inconnu'} » n’est pas reconnu. Essaie un export CSV, texte, Markdown ou .apkg.` }
 }
 
+/** Plusieurs fichiers d'un coup (par exemple les photos d'un cahier) : tous doivent être des documents ou des images. */
+export function inspectSources(paths: string[]): ImportSource {
+  if (paths.length === 1) return inspectSource(paths[0])
+  const found = paths.map((p) => inspectSource(p))
+  const bad = found.find((f) => f.kind !== 'document')
+  if (bad) return { kind: 'unsupported', name: bad.name, reason: 'Pour importer plusieurs fichiers à la fois, ils doivent tous être des documents ou des photos. Les cartes Anki, CSV et Markdown s’importent un par un.' }
+  return {
+    kind: 'document',
+    name: `${paths.length} fichiers`,
+    path: paths[0],
+    paths,
+    text: '',
+    image: found.every((f) => f.kind === 'document' && f.image)
+  }
+}
+
 export async function pickSource(win: BrowserWindow | null): Promise<ImportSource | null> {
   const opts = {
     title: 'Importer des cartes',
-    properties: ['openFile' as const],
+    properties: ['openFile' as const, 'multiSelections' as const],
     filters: [
-      { name: 'Tous les formats pris en charge', extensions: ['apkg', 'colpkg', 'csv', 'tsv', 'txt', 'md', 'markdown', 'json', 'pdf', 'docx'] },
+      { name: 'Tous les formats pris en charge', extensions: ['apkg', 'colpkg', 'csv', 'tsv', 'txt', 'md', 'markdown', 'json', ...DOCUMENT_EXTENSIONS] },
+      { name: 'Photos et images', extensions: SCAN_EXTENSIONS },
+      { name: 'Documents', extensions: ['pdf', 'docx', 'pptx', 'odt', 'odp', 'rtf', 'epub', 'html', 'tex'] },
       { name: 'Tous les fichiers', extensions: ['*'] }
     ]
   }
   const res = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts)
   if (res.canceled || !res.filePaths[0]) return null
-  return inspectSource(res.filePaths[0])
+  return inspectSources(res.filePaths)
 }
 
-export async function documentText(path: string): Promise<string> {
-  return readDocument(path)
+const NL = String.fromCharCode(10)
+const EMPTY = 'Aucun texte lisible dans ce fichier. Pour une photo, prends-la bien droite, nette et bien éclairée ; pour un schéma sans texte, ajoute-le plutôt dans une carte (bouton image).'
+
+export async function documentText(path: string, more: string[] = []): Promise<string> {
+  const all = [path, ...more.filter((p) => p !== path)]
+  if (all.length === 1) {
+    const text = await readDocument(path)
+    if (!text.trim()) throw new Error(EMPTY)
+    return text
+  }
+  // Plusieurs fichiers : on garde l'ordre choisi, chaque fichier introduit par son nom.
+  const parts: string[] = []
+  for (const p of all) {
+    const text = (await readDocument(p)).trim()
+    if (text) parts.push(`# ${basename(p)}${NL}${NL}${text}`)
+  }
+  if (parts.length === 0) throw new Error(EMPTY)
+  return parts.join(NL + NL)
 }
 
 function kindFromCell(cell: string): NoteKind | null {

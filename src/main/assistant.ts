@@ -20,7 +20,7 @@ import { webPage, webSearch } from './web'
 
 export const KNOWLEDGE = `GUIDE DE MNÉMO (tu connais l'application par cœur et tu peux l'expliquer, étape par étape)
 
-Mnémo est une application gratuite et open source de cartes mémoire (répétition espacée FSRS), qui fonctionne sur Windows et Mac, hors ligne, sans compte. Tout reste sur l'ordinateur de l'utilisateur.
+Mnémo est une application gratuite, à code source visible (licence Mnémo : redistribution et revente interdites), de cartes mémoire (répétition espacée FSRS), qui fonctionne sur Windows et Mac, hors ligne, sans compte. Tout reste sur l'ordinateur de l'utilisateur.
 
 PAGES (barre latérale) : Aujourd'hui (accueil, cartes à réviser), Bibliothèque (toutes les cartes : recherche, filtres par deck / état / étiquette, déplacer, suspendre, doublons), Statistiques, Importer, Cahier de Prépa, Cahier de texte, Génération IA, Assistant (cette conversation), Ressources, Paquets, Fiches. Réglages : roue dentée en bas de la barre latérale. Palette de commandes : Ctrl+K (⌘K sur Mac). Nouvelle carte : Ctrl+N. Barre latérale : Ctrl+B.
 

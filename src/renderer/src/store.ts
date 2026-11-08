@@ -34,6 +34,10 @@ export interface Toast {
   text: string
   kind?: 'error'
   action?: { label: string; run: () => void }
+  /** Vrai pendant l'animation de sortie, juste avant que la notification disparaisse. */
+  leaving?: boolean
+  /** Durée d'affichage en ms (sert aussi à la barre de progression). */
+  life?: number
 }
 
 interface Store {
@@ -54,7 +58,7 @@ interface Store {
   /** Visite guidée (premier lancement, ou rejouée à la demande). */
   tour: boolean
   /** Assistant d'import ouvert (éventuellement sur un fichier déposé ou pour un deck précis). */
-  importer: { path?: string; deckId?: string | null } | null
+  importer: { path?: string; paths?: string[]; deckId?: string | null } | null
   toasts: Toast[]
   /** Incrémenté à chaque modification de données pour que les écrans se rechargent. */
   rev: number
@@ -71,7 +75,7 @@ interface Store {
   setAiSeed: (text: string | null) => void
   setOnboarding: (on: boolean) => void
   setTour: (on: boolean) => void
-  openImport: (state: { path?: string; deckId?: string | null } | null) => void
+  openImport: (state: { path?: string; paths?: string[]; deckId?: string | null } | null) => void
   toast: (text: string, opts?: Partial<Omit<Toast, 'id' | 'text'>>) => void
 }
 
@@ -116,8 +120,11 @@ export const useStore = create<Store>((set, get) => ({
   openImport: (importer) => set({ importer, palette: false }),
   toast: (text, opts) => {
     const id = toastId++
-    set((s) => ({ toasts: [...s.toasts, { id, text, ...opts }] }))
-    setTimeout(() => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })), opts?.action ? 6000 : 3200)
+    const life = opts?.action ? 6000 : opts?.kind === 'error' ? 5000 : 3200
+    set((s) => ({ toasts: [...s.toasts, { id, text, life, ...opts }] }))
+    // Fondu de sortie (260 ms) avant de retirer la notification.
+    setTimeout(() => set((s) => ({ toasts: s.toasts.map((t) => (t.id === id ? { ...t, leaving: true } : t)) })), life)
+    setTimeout(() => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })), life + 260)
     void get
   }
 }))

@@ -1,10 +1,10 @@
 {
   "name": "mnemo",
   "version": "1.0.0",
-  "description": "Mnémo — révision par répétition espacée, locale et open source",
+  "description": "Mnémo — révision par répétition espacée, locale, à code source visible",
   "main": "./out/main/index.js",
   "author": "Malo",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "productName": "Mnemo",
   "scripts": {
     "format": "prettier --write .",

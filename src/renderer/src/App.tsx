@@ -272,11 +272,10 @@ export default function App(): React.JSX.Element | null {
       e.preventDefault()
       depth = 0
       setDragging(false)
-      const f = e.dataTransfer?.files[0]
-      if (f) {
-        const path = window.mnemo.pathForFile(f)
-        if (path) openImport({ path })
-      }
+      const files = [...(e.dataTransfer?.files ?? [])]
+      const paths = files.map((f) => window.mnemo.pathForFile(f)).filter(Boolean)
+      if (paths.length > 1) openImport({ paths })
+      else if (paths[0]) openImport({ path: paths[0] })
     }
     window.addEventListener('dragenter', enter)
     window.addEventListener('dragover', over)
@@ -361,9 +360,11 @@ export default function App(): React.JSX.Element | null {
 
       <div className="toasts">
         {toasts.map((x) => (
-          <div key={x.id} className={`toast ${x.kind ?? ''}`}>
-            {x.text}
+          <div key={x.id} className={`toast ${x.kind ?? ''} ${x.leaving ? 'leaving' : ''}`} role={x.kind === 'error' ? 'alert' : 'status'} style={{ ['--life' as string]: `${x.life ?? 3200}ms` }}>
+            <i className="toast-dot" />
+            <span>{x.text}</span>
             {x.action && <button onClick={x.action.run}>{x.action.label}</button>}
+            <b className="toast-bar" />
           </div>
         ))}
       </div>

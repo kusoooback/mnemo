@@ -191,3 +191,108 @@
 .pill-btn:active {
   transform: translateY(1px);
 }
+
+/* ---------- Notifications : apparition en fondu, halo coloré, sortie en fondu ---------- */
+.toast {
+  position: relative;
+  overflow: hidden;
+  padding: 11px 18px 13px 14px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--text) 86%, #ffffff) 0%, var(--text) 55%, color-mix(in srgb, var(--text) 82%, #000000) 100%);
+  border: 0.5px solid color-mix(in srgb, var(--accent-btn) 40%, transparent);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 12px 28px -10px rgba(0, 0, 0, 0.45), 0 0 22px -2px var(--btn-glow);
+  animation: toast-in 0.42s cubic-bezier(0.2, 0.9, 0.3, 1.25) both, toast-glow 2.4s ease-in-out 0.4s infinite;
+  max-width: min(520px, calc(100vw - 32px));
+}
+.toast.leaving {
+  animation: toast-out 0.26s ease-in both;
+}
+.toast-dot {
+  width: 9px;
+  height: 9px;
+  flex: none;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--btn-hi), var(--accent-btn) 60%, var(--btn-lo));
+  box-shadow: 0 0 10px 1px var(--btn-glow);
+}
+.toast button {
+  color: var(--btn-hi);
+  padding: 2px 8px;
+  margin: -2px -6px -2px 0;
+  border-radius: 8px;
+  transition: background 0.12s;
+}
+.toast button:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+.toast-bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  transform-origin: left;
+  background: linear-gradient(90deg, var(--btn-lo), var(--btn-hi));
+  opacity: 0.85;
+  animation: toast-life var(--life, 3200ms) linear both;
+}
+.toast.error {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--danger) 70%, #ffffff) 0%, var(--danger) 50%, color-mix(in srgb, var(--danger) 80%, #000000) 100%);
+  border-color: transparent;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset, 0 12px 28px -10px rgba(0, 0, 0, 0.4), 0 0 22px -2px color-mix(in srgb, var(--danger) 55%, transparent);
+  animation: toast-in 0.42s cubic-bezier(0.2, 0.9, 0.3, 1.25) both, toast-shake 0.4s ease 0.3s 1 both;
+}
+.toast.error.leaving {
+  animation: toast-out 0.26s ease-in both;
+}
+.toast.error .toast-dot {
+  background: #ffffff;
+  box-shadow: 0 0 10px 1px rgba(255, 255, 255, 0.7);
+}
+.toast.error .toast-bar {
+  background: rgba(255, 255, 255, 0.7);
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.92);
+    filter: blur(3px);
+  }
+}
+@keyframes toast-out {
+  to {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+    filter: blur(2px);
+  }
+}
+@keyframes toast-glow {
+  50% {
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 12px 28px -10px rgba(0, 0, 0, 0.45), 0 0 34px 2px var(--btn-glow);
+  }
+}
+@keyframes toast-life {
+  to {
+    transform: scaleX(0);
+  }
+}
+@keyframes toast-shake {
+  30% {
+    transform: translateX(-4px);
+  }
+  60% {
+    transform: translateX(4px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .toast,
+  .toast.error {
+    animation: none !important;
+  }
+  .toast.leaving {
+    opacity: 0;
+  }
+  .toast-bar {
+    animation: none;
+  }
+}

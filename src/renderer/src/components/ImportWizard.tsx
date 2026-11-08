@@ -231,9 +231,9 @@ export function ImportWizard(): React.JSX.Element | null {
     setPasting(false)
     setError('')
     void call('import.profiles').then(setProfiles)
-    if (importer.path) {
+    if (importer.path || importer.paths) {
       setBusy(true)
-      void call('import.inspect', importer.path)
+      void (importer.paths ? call('import.inspectMany', importer.paths) : call('import.inspect', importer.path as string))
         .then(setSource)
         .catch((e) => setError(errText(e)))
         .finally(() => setBusy(false))
@@ -472,7 +472,7 @@ export function ImportWizard(): React.JSX.Element | null {
             {source.kind === 'document' && (
               <>
                 <div className="serif" style={{ fontSize: '1.5rem', marginBottom: 6 }}>{t('imp.doc.title')}</div>
-                <p className="muted">{t('imp.doc.text')}</p>
+                <p className="muted">{source.image ? t('imp.doc.photo') : t('imp.doc.text')}</p>
                 {error && <div className="warn selectable" style={{ background: 'var(--again-soft)', marginTop: 12 }}>{error}</div>}
                 <div className="row" style={{ marginTop: 16 }}>
                   <span className="spacer" />
@@ -482,7 +482,7 @@ export function ImportWizard(): React.JSX.Element | null {
                     onClick={async () => {
                       setBusy(true)
                       try {
-                        setAiSeed(await call('import.documentText', source.path))
+                        setAiSeed(await call('import.documentText', source.path, source.paths))
                         close()
                         go({ name: 'ai' })
                         toast(source.name)

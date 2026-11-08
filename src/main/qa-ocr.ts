@@ -15,7 +15,13 @@ export async function runOcr(win: BrowserWindow, outDir: string): Promise<void> 
     const t = Date.now()
     const text = await ocrImage(png)
     log.push(`texte lu : « ${text} » (${Date.now() - t} ms)`)
-    log.push(/Bonjour/i.test(text) && /2026/.test(text) ? 'ok     OCR fonctionne' : 'ECHEC  OCR illisible')
+    log.push(/Bonjour/i.test(text) && /2026/.test(text) ? 'ok     OCR fonctionne (PNG)' : 'ECHEC  OCR illisible (PNG)')
+    const jpg = await win.webContents.executeJavaScript(
+      `(() => { const c = document.createElement('canvas'); c.width = 900; c.height = 160; const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, 900, 160); x.fillStyle = '#000'; x.font = '56px sans-serif'; x.fillText('Photo du cahier 1989', 30, 100); return c.toDataURL('image/jpeg', 0.8) })()`
+    )
+    const jtext = await ocrImage(Buffer.from(String(jpg).split(',')[1], 'base64'))
+    log.push(`texte lu (JPEG) : « ${jtext} »`)
+    log.push(/cahier/i.test(jtext) && /1989/.test(jtext) ? 'ok     OCR fonctionne (JPEG)' : 'ECHEC  OCR illisible (JPEG)')
     const dyn = new Function('s', 'return import(s)') as (s: string) => Promise<any> // eslint-disable-line @typescript-eslint/no-explicit-any
     const { getLlama } = await dyn('node-llama-cpp')
     const llama = await getLlama({ gpu: false, build: 'never' })

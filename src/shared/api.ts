@@ -105,7 +105,8 @@ export interface Api {
   'import.pick': () => ImportSource | null
   'import.inspect': (path: string) => ImportSource
   'import.run': (req: ImportRequest) => ImportResult
-  'import.documentText': (path: string) => string
+  'import.documentText': (path: string, more?: string[]) => string
+  'import.inspectMany': (paths: string[]) => ImportSource
   'anki.import': () => AnkiImportReport | null
   'anki.export': (deckId: string | null) => string | null
 
@@ -147,6 +148,7 @@ export interface Api {
   'ai.local.status': () => LocalAiStatus
   'ai.local.download': (id: string) => void
   'ai.local.cancel': () => void
+  'ai.local.reveal': (id?: string) => void
   'ai.local.delete': (id: string) => void
   'ai.local.select': (id: string) => AiStatus
 

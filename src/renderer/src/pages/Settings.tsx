@@ -572,6 +572,9 @@ export function Settings(): React.JSX.Element {
               <p className="faint" style={{ marginTop: 10, fontSize: '0.8125rem' }}>
                 {t('set.version')} {info?.version} · SQLite · FSRS
               </p>
+              <p className="faint" style={{ marginTop: 4, fontSize: '0.8125rem' }}>
+                © 2026 Malo · {t('set.license')}
+              </p>
             </div>
           )}
         </div>

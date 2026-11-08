@@ -103,6 +103,7 @@ export async function localStatus(selected: string): Promise<LocalAiStatus> {
     vramMb: h.vramMb,
     ramMb,
     selected,
+    dir: modelsDir(),
     loaded: !!engine,
     downloading: downloading ? { id: downloading.id, downloaded: downloading.downloaded, total: downloading.total } : null,
     models: MODELS.map((m) => ({
@@ -111,9 +112,17 @@ export async function localStatus(selected: string): Promise<LocalAiStatus> {
       description: m.description,
       sizeMb: m.sizeMb,
       installed: !!installedFile(m),
+      path: installedFile(m) ?? '',
       recommended: m.id === rec
     }))
   }
+}
+
+/** Chemin du fichier d'un modèle installé, ou du dossier des modèles s'il n'est pas (encore) là. */
+export function modelLocation(id?: string): { file: string | null; dir: string } {
+  const def = MODELS.find((m) => m.id === id)
+  mkdirSync(modelsDir(), { recursive: true })
+  return { file: def ? installedFile(def) : null, dir: modelsDir() }
 }
 
 /** Le meilleur modèle déjà installé sur le PC (pour reprendre la main quand le fournisseur en ligne échoue). */

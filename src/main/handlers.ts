@@ -3,7 +3,7 @@ import { readFileSync, writeFileSync } from 'fs'
 import { extname, join } from 'path'
 import type { Api } from '../shared/api'
 import type { BridgeInfo } from '../shared/types-extra'
-import { cancelDownload, deleteModel, downloadModel, localStatus, setLocalAiSink } from './localai'
+import { cancelDownload, deleteModel, downloadModel, localStatus, modelLocation, setLocalAiSink } from './localai'
 import { deleteDocument, documentSummary, documentText as docTextOf, listDocuments, makeCards, makeSummary, openDocument } from './documents'
 import { autoLogin, doLogin, electronHttp, hasSavedLogin, logout, openLoginWindow } from './prepa-electron'
 import { normalizeBase, scanSite } from './prepa'
@@ -13,7 +13,7 @@ import { cancelJob, cancelKind, clearEndedJobs, listJobs, setJobsSink, startJob,
 import { documentFilePath, addDocumentPaths, addMarkdownDocument, setDocumentCategory, addDocumentsDialog, documentInfo, documentSource, rereadDocument, saveDocumentNotes, saveDocumentSource } from './docfiles'
 import { openrouterModels, aiConfigure, aiDiagnose, aiDistractors, aiEstimate, aiExplain, aiCardsFromText, aiSummarize, aiLog, aiPickFile, aiStatus, aiTest } from './ai'
 import { buildApkg, importApkg } from './anki'
-import { ankiProfiles, documentText, inspectSource, pickSource, runImport } from './importer'
+import { ankiProfiles, documentText, inspectSource, inspectSources, pickSource, runImport } from './importer'
 import { createSample, exportCsv, exportJson, exportMarkdown, importCsv, saveImage } from './data'
 import { createBackup, dataDir, dbPath, listBackups, restoreBackup } from './db'
 import {
@@ -154,7 +154,8 @@ export function registerHandlers(getWindow: () => BrowserWindow | null): void {
     'import.pick': () => pickSource(getWindow()),
     'import.inspect': (path) => inspectSource(path),
     'import.run': (req) => runImport(req),
-    'import.documentText': (path) => documentText(path),
+    'import.documentText': (path, more) => documentText(path, more),
+    'import.inspectMany': (paths) => inspectSources(paths),
     'anki.import': async () => {
       const win = getWindow()
       const opts = {
@@ -256,6 +257,11 @@ export function registerHandlers(getWindow: () => BrowserWindow | null): void {
         })
     },
     'ai.local.cancel': () => void cancelDownload(),
+    'ai.local.reveal': (id) => {
+      const { file, dir } = modelLocation(id)
+      if (file) shell.showItemInFolder(file)
+      else void shell.openPath(dir)
+    },
     'ai.local.delete': (id) => deleteModel(id),
     'ai.local.select': (id) => {
       setSettings({ aiProvider: 'builtin', aiModel: id })

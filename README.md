@@ -18,7 +18,7 @@ Tes cartes restent sur ton ordinateur. Elle remplace Anki avec une interface plu
 Toutes les versions : [page des téléchargements](https://github.com/kusoooback/mnemo/releases/latest). Installation pas à pas, expliquée simplement : [Windows](#sur-windows-pas-à-pas) ou [Mac](#sur-mac-pas-à-pas).
 
 
-> Projet libre et **non commercial** (licence MIT). Son interface s'inspire de celle de Claude par admiration pour son design : Mnémo n'a aucun lien avec Anthropic, n'utilise ni son nom ni son logo.
+> Code source **visible** et application **gratuite**, non commercial (licence Mnémo : redistribution et revente interdites, voir [LICENSE](LICENSE)). Son interface s'inspire de celle de Claude par admiration pour son design : Mnémo n'a aucun lien avec Anthropic, n'utilise ni son nom ni son logo.
 
 ---
 
@@ -32,7 +32,7 @@ Toutes les versions : [page des téléchargements](https://github.com/kusoooback
 - **Pas de vérification de mise à jour cachée.** Mnémo ne se met pas à jour tout seul et ne « téléphone » pas pour demander s'il existe une nouvelle version. Tu télécharges toi-même la nouvelle version quand tu le décides.
 - **Tout est stocké en local** : cartes, cours, notes, historique de révision, réglages, dans un dossier de ton ordinateur (voir [où sont mes données ?](#si-tu-veux-savoir-où-sont-tes-données)). Si tu supprimes Mnémo et ce dossier, il ne reste rien nulle part.
 - **Fonctionne 100 % hors ligne.** Les polices, la reconnaissance de texte (OCR) et l'interface sont dans l'application. Tu peux couper internet : tout marche.
-- **Open source (licence MIT).** Tu n'as pas à me croire sur parole : le code est ici, lisible par tout le monde. L'interface elle-même est verrouillée pour ne parler à aucun serveur externe (la politique de sécurité de la fenêtre n'autorise que les fichiers de l'application).
+- **Code source visible (licence Mnémo).** Tu n'as pas à me croire sur parole : le code est ici, lisible par tout le monde. Il m'appartient : tu peux le lire, l'utiliser gratuitement et proposer des corrections, mais pas le redistribuer ni le revendre. L'interface elle-même est verrouillée pour ne parler à aucun serveur externe (la politique de sécurité de la fenêtre n'autorise que les fichiers de l'application).
 
 ### Les seuls cas où Mnémo se connecte à internet
 
@@ -381,7 +381,8 @@ Clique sur **Importer** (menu de gauche) **ou glisse un fichier dans la fenêtre
 | **Quizlet** | *Exporter* ton jeu, copie le texte, puis **Importer → Coller du texte**. |
 | **Excel, Google Sheets, Brainscape…** | Enregistre en **CSV**, glisse le fichier, dis dans l'aperçu ce que contient chaque colonne. |
 | **Obsidian, Markdown** | **Importer → Dossier de notes**. |
-| **Un cours en PDF ou Word** | Glisse le fichier : l'IA propose des cartes, tu valides. |
+| **Un cours en PDF, Word, PowerPoint, LibreOffice, EPUB, page web, LaTeX…** | Glisse le fichier : l'IA propose des cartes, tu valides. |
+| **Des photos de ton cahier (PNG, JPEG, WebP…)** | Glisse une ou **plusieurs photos à la fois** : Mnémo lit le texte (reconnaissance de texte, sur ton PC, rien n'est envoyé), puis l'IA propose des cartes. Mieux vaut une photo droite, nette et bien éclairée. Les vidéos et les sons ne sont pas pris en charge. |
 
 **Tu peux utiliser les deux applications en parallèle.** Relance l'import quand tu veux : Mnémo n'ajoute que les nouvelles cartes et les révisions faites entre-temps, sans doublon. L'audio n'est pas encore repris.
 
@@ -608,4 +609,4 @@ npm run build:mac    # installateurs Mac .dmg et .zip : à lancer sur un Mac (ma
 
 ## Licence et crédits
 
-MIT, projet non commercial. Polices embarquées : Inter, Newsreader, JetBrains Mono, Atkinson Hyperlegible (licence SIL OFL). Bibliothèques : React, KaTeX, highlight.js, marked, DOMPurify, ts-fsrs, node-llama-cpp, pdf.js, fflate. Modèles d'IA : Qwen 2.5 (Alibaba, Apache 2.0 pour les petites tailles), téléchargés au premier usage.
+© 2026 Malo. Tous droits réservés, sauf ce que la [licence Mnémo](LICENSE) autorise : lire le code, utiliser Mnémo gratuitement, le modifier pour soi, proposer des corrections. **Interdit** : redistribuer Mnémo (original ou modifié), publier une « autre version », le vendre ou en tirer de l'argent, retirer le copyright, réutiliser son nom ou son logo. Les versions publiées avant le 8 novembre 2026 étaient sous licence MIT. Polices embarquées : Inter, Newsreader, JetBrains Mono, Atkinson Hyperlegible (licence SIL OFL). Bibliothèques : React, KaTeX, highlight.js, marked, DOMPurify, ts-fsrs, node-llama-cpp, pdf.js, fflate. Modèles d'IA : Qwen 2.5 (Alibaba, Apache 2.0 pour les petites tailles), téléchargés au premier usage.

@@ -314,7 +314,7 @@ export type ImportSource =
   | { kind: 'text'; name: string; path: string; text: string }
   | { kind: 'markdown'; name: string; path: string; cards: number; sample: { front: string; back: string }[] }
   | { kind: 'mnemo'; name: string; path: string; decks: number; notes: number; reviews: number }
-  | { kind: 'document'; name: string; path: string; text: string }
+  | { kind: 'document'; name: string; path: string; text: string; paths?: string[]; image?: boolean }
   | { kind: 'unsupported'; name: string; reason: string }
 
 export interface TextImportRequest {
@@ -360,6 +360,8 @@ export interface LocalModelInfo {
   description: string
   sizeMb: number
   installed: boolean
+  /** Chemin complet du fichier du modèle sur le disque (vide s'il n'est pas installé). */
+  path: string
   recommended: boolean
 }
 
@@ -369,6 +371,8 @@ export interface LocalAiStatus {
   ramMb: number
   models: LocalModelInfo[]
   selected: string
+  /** Dossier où sont rangés les modèles. */
+  dir: string
   downloading: { id: string; downloaded: number; total: number } | null
   loaded: boolean
 }
