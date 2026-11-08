@@ -21,11 +21,13 @@ import { SkinPicker } from '../components/SkinPicker'
 import { Switch, useConfirm } from '../components/ui'
 import { useT, type Key } from '../i18n'
 import { formatBytes } from '../lib/format'
+import { usePage } from '../lib/keepalive'
 import { useStore } from '../store'
 
 export function Settings(): React.JSX.Element {
   const t = useT()
   const { settings, patchSettings, toast, go, setTour } = useStore()
+  const { shown } = usePage()
   const [info, setInfo] = useState<AppInfo | null>(null)
   const [backups, setBackups] = useState<BackupInfo[]>([])
   const [name, setName] = useState(settings.userName)
@@ -34,7 +36,7 @@ export function Settings(): React.JSX.Element {
   useEffect(() => {
     void call('app.info').then(setInfo)
     void call('backup.list').then(setBackups)
-  }, [])
+  }, [shown])
 
   const themes: { v: ThemeMode; k: 'set.theme.light' | 'set.theme.dark' | 'set.theme.system' }[] = [
     { v: 'light', k: 'set.theme.light' },

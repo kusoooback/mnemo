@@ -4,12 +4,13 @@ import type { Job, PrepaAutoEvent } from '@shared/types'
 import { call } from './api'
 import { Sidebar } from './components/Sidebar'
 import { useT } from './i18n'
+import { KeptPage, pruneKept } from './lib/keepalive'
 import { Home } from './pages/Home'
 import { Review } from './pages/Review'
 import { skinById } from '@shared/skins'
 import { shortcut } from './lib/platform'
 import { SKIN_VAR_NAMES, skinVars } from './lib/skins'
-import { useStore } from './store'
+import { useStore, type Route } from './store'
 
 // Les écrans secondaires ne sont chargés qu'à la première visite : démarrage plus rapide, moins de mémoire.
 const DeckPage = lazy(() => import('./pages/DeckPage').then((m) => ({ default: m.DeckPage })))
@@ -41,6 +42,13 @@ const Palette = lazy(() => import('./components/Palette').then((m) => ({ default
 const ShortcutsHelp = lazy(() =>
   import('./components/ShortcutsHelp').then((m) => ({ default: m.ShortcutsHelp }))
 )
+
+/** Identifiant d'un écran : deux écrans du même type mais de contenu différent (deck, document…) sont distincts. */
+function pageKey(r: Route): string {
+  if (r.name === 'deck' || r.name === 'doc') return `${r.name}:${r.id}`
+  if (r.name === 'library') return `library:${r.deckId ?? ''}:${r.text ?? ''}`
+  return r.name
+}
 
 const jobStatus = new Map<string, Job['status']>()
 
@@ -192,6 +200,7 @@ export default function App(): React.JSX.Element | null {
     go
   } = useStore()
   const [dragging, setDragging] = useState(false)
+  const kept = useRef(new Map<string, Route>())
   useAppearance()
   useGlobalShortcuts()
   const narrow = useNarrow()
@@ -291,6 +300,14 @@ export default function App(): React.JSX.Element | null {
 
   if (!ready) return null
   const reviewing = route.name === 'review'
+  const activeKey = pageKey(route)
+  // Les écrans visités restent montés (cachés) : on ne perd rien en changeant d'onglet.
+  if (route.name !== 'review') {
+    kept.current.delete(activeKey)
+    kept.current.set(activeKey, route)
+    const keys = pruneKept([...kept.current.keys()], activeKey)
+    for (const k of [...kept.current.keys()]) if (!keys.includes(k)) kept.current.delete(k)
+  }
 
   return (
     <div
@@ -314,30 +331,26 @@ export default function App(): React.JSX.Element | null {
       <main className="main">
         {route.name === 'review' && <Review deckId={route.deckId} />}
         <Suspense fallback={null}>
-          <div
-            className="main-scroll"
-            hidden={reviewing}
-            key={route.name + ('id' in route ? route.id : '')}
-          >
-            {route.name === 'home' && <Home />}
-            {route.name === 'deck' && <DeckPage id={route.id} />}
-            {route.name === 'library' && (
-              <Library initialDeck={route.deckId} initialText={route.text} />
-            )}
-            {route.name === 'stats' && <Stats />}
-            {route.name === 'settings' && <Settings />}
-            {route.name === 'notebook' && <Notebook />}
-            {route.name === 'ai' && <AiPage />}
-            {route.name === 'assistant' && <Assistant />}
-            {route.name === 'resources' && <Resources />}
-            {route.name === 'packs' && <Packs />}
-            {route.name === 'quiz' && <Quiz />}
-            {route.name === 'sync' && <SyncPage />}
-            {route.name === 'integrations' && <Integrations />}
-            {route.name === 'prepa' && <Prepa />}
-            {route.name === 'doc' && <DocViewer id={route.id} />}
-            {route.name === 'sheets' && <Sheets />}
-          </div>
+          {[...kept.current.entries()].map(([k, r]) => (
+            <KeptPage key={k} active={!reviewing && k === activeKey} hidden={reviewing}>
+              {r.name === 'home' && <Home />}
+              {r.name === 'deck' && <DeckPage id={r.id} />}
+              {r.name === 'library' && <Library initialDeck={r.deckId} initialText={r.text} />}
+              {r.name === 'stats' && <Stats />}
+              {r.name === 'settings' && <Settings />}
+              {r.name === 'notebook' && <Notebook />}
+              {r.name === 'ai' && <AiPage />}
+              {r.name === 'assistant' && <Assistant />}
+              {r.name === 'resources' && <Resources />}
+              {r.name === 'packs' && <Packs />}
+              {r.name === 'quiz' && <Quiz />}
+              {r.name === 'sync' && <SyncPage />}
+              {r.name === 'integrations' && <Integrations />}
+              {r.name === 'prepa' && <Prepa />}
+              {r.name === 'doc' && <DocViewer id={r.id} />}
+              {r.name === 'sheets' && <Sheets />}
+            </KeptPage>
+          ))}
         </Suspense>
       </main>
 

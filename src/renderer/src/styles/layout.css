@@ -231,3 +231,8 @@
   gap: 4px;
   margin-top: 4px;
 }
+
+/* Pages gardées en vie mais cachées (voir lib/keepalive.tsx). */
+.main-kept {
+  display: none !important;
+}

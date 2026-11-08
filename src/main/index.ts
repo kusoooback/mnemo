@@ -45,6 +45,9 @@ function createWindow(): void {
     minWidth: 600,
     minHeight: 480,
     show: false,
+    // Tests automatiques : fenêtre jamais affichée ni mise au premier plan (rien ne vient déranger l'utilisateur).
+    skipTaskbar: !!process.env.MNEMO_QA_DIR,
+    focusable: !process.env.MNEMO_QA_DIR,
     backgroundColor: bg,
     title: 'Mnémo',
     ...(is.dev ? { icon: nativeImage.createFromPath(join(__dirname, '../../resources/icon.png')) } : {}),
@@ -62,13 +65,15 @@ function createWindow(): void {
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
-      contextIsolation: true
+      contextIsolation: true,
+      backgroundThrottling: !process.env.MNEMO_QA_DIR
     }
   })
 
   if (!process.env.MNEMO_QA_DIR) trackWinState(mainWindow)
   watchAutoZoom(mainWindow)
   mainWindow.on('ready-to-show', () => {
+    if (process.env.MNEMO_QA_DIR) return
     if (saved.maximized) mainWindow?.maximize()
     if (saved.fullscreen) mainWindow?.setFullScreen(true)
     mainWindow?.show()
@@ -196,7 +201,7 @@ if (!app.requestSingleInstanceLock()) {
     if (process.env.MNEMO_QA_DIR && mainWindow) {
       const win = mainWindow
       win.webContents.once('did-finish-load', () => {
-        const load = process.env.MNEMO_QA_BUTTONS ? import('./qa-buttons').then((m) => m.runButtons) : process.env.MNEMO_QA_OCR ? import('./qa-ocr').then((m) => m.runOcr) : process.env.MNEMO_QA_PERF ? import('./qa-perf').then((m) => m.runPerf) : process.env.MNEMO_QA_TOUR ? import('./qa-tour').then((m) => m.runTour) : process.env.MNEMO_QA_ECO ? import('./qa-eco').then((m) => m.runEco) : process.env.MNEMO_QA_MATH ? import('./qa-math').then((m) => m.runMath) : process.env.MNEMO_QA_QUIZ ? import('./qa-quiz').then((m) => m.runQuiz) : process.env.MNEMO_QA_ASSISTANT ? import('./qa-assistant').then((m) => m.runAssistant) : process.env.MNEMO_QA_BRIDGE ? import('./qa-bridge').then((m) => m.runBridge) : process.env.MNEMO_QA_SKINS ? import('./qa-skins').then((m) => m.runSkins) : process.env.MNEMO_QA_OCCLUSION ? import('./qa-occlusion').then((m) => m.runOcclusion) : process.env.MNEMO_QA_KEY ? import('./qa-key').then((m) => m.runKey) : process.env.MNEMO_QA_PDFEXPORT ? import('./qa-pdf').then((m) => m.runPdfExport) : process.env.MNEMO_QA_SHEET ? import('./qa-sheet').then((m) => m.runSheet) : process.env.MNEMO_QA_COLORS ? import('./qa-colors').then((m) => m.runColors) : process.env.MNEMO_QA_LAYOUT ? import('./qa-layout').then((m) => m.runLayout) : process.env.MNEMO_QA_REVIEW ? import('./qa-review').then((m) => m.runReview) : process.env.MNEMO_QA_CARDS ? import('./qa-cards').then((m) => m.runCards) : process.env.MNEMO_QA_TRIAGE ? import('./qa-triage').then((m) => m.runTriage) : process.env.MNEMO_QA_HOME ? import('./qa-home').then((m) => m.runHome) : process.env.MNEMO_QA_VIEWER ? import('./qa-viewer').then((m) => m.runViewer) : process.env.MNEMO_QA_SIZES ? import('./qa-sizes').then((m) => m.runSizes) : import('./qa').then((m) => m.runQa)
+        const load = process.env.MNEMO_QA_KEEP ? import('./qa-keep').then((m) => m.runKeep) : process.env.MNEMO_QA_BUTTONS ? import('./qa-buttons').then((m) => m.runButtons) : process.env.MNEMO_QA_OCR ? import('./qa-ocr').then((m) => m.runOcr) : process.env.MNEMO_QA_PERF ? import('./qa-perf').then((m) => m.runPerf) : process.env.MNEMO_QA_TOUR ? import('./qa-tour').then((m) => m.runTour) : process.env.MNEMO_QA_ECO ? import('./qa-eco').then((m) => m.runEco) : process.env.MNEMO_QA_MATH ? import('./qa-math').then((m) => m.runMath) : process.env.MNEMO_QA_QUIZ ? import('./qa-quiz').then((m) => m.runQuiz) : process.env.MNEMO_QA_ASSISTANT ? import('./qa-assistant').then((m) => m.runAssistant) : process.env.MNEMO_QA_BRIDGE ? import('./qa-bridge').then((m) => m.runBridge) : process.env.MNEMO_QA_SKINS ? import('./qa-skins').then((m) => m.runSkins) : process.env.MNEMO_QA_OCCLUSION ? import('./qa-occlusion').then((m) => m.runOcclusion) : process.env.MNEMO_QA_KEY ? import('./qa-key').then((m) => m.runKey) : process.env.MNEMO_QA_PDFEXPORT ? import('./qa-pdf').then((m) => m.runPdfExport) : process.env.MNEMO_QA_SHEET ? import('./qa-sheet').then((m) => m.runSheet) : process.env.MNEMO_QA_COLORS ? import('./qa-colors').then((m) => m.runColors) : process.env.MNEMO_QA_LAYOUT ? import('./qa-layout').then((m) => m.runLayout) : process.env.MNEMO_QA_REVIEW ? import('./qa-review').then((m) => m.runReview) : process.env.MNEMO_QA_CARDS ? import('./qa-cards').then((m) => m.runCards) : process.env.MNEMO_QA_TRIAGE ? import('./qa-triage').then((m) => m.runTriage) : process.env.MNEMO_QA_HOME ? import('./qa-home').then((m) => m.runHome) : process.env.MNEMO_QA_VIEWER ? import('./qa-viewer').then((m) => m.runViewer) : process.env.MNEMO_QA_SIZES ? import('./qa-sizes').then((m) => m.runSizes) : import('./qa').then((m) => m.runQa)
         load
           .then((run) => run(win, process.env.MNEMO_QA_DIR as string))
           .catch((e) => console.error('QA', e))

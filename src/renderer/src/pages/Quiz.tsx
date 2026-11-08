@@ -14,6 +14,7 @@ import {
 } from '@shared/quiz'
 import { call } from '../api'
 import { useT } from '../i18n'
+import { usePage } from '../lib/keepalive'
 import { renderInline, renderMarkdown } from '../lib/render'
 import { useStore } from '../store'
 
@@ -51,7 +52,8 @@ const loadPrefs = (): Prefs => {
 
 export function Quiz(): React.JSX.Element {
   const t = useT()
-  const { decks, toast } = useStore()
+  const { decks, toast, rev } = useStore()
+  const { active: pageActive } = usePage()
   const [prefs, setPrefs] = useState<Prefs>(loadPrefs)
   const [deckId, setDeckId] = useState('')
   const [cards, setCards] = useState<QuizCard[]>([])
@@ -88,7 +90,7 @@ export function Quiz(): React.JSX.Element {
     return () => {
       alive = false
     }
-  }, [deckId])
+  }, [deckId, rev])
 
   const usable = useMemo(() => usableCards(cards, prefs.mode), [cards, prefs.mode])
 
@@ -177,9 +179,11 @@ export function Quiz(): React.JSX.Element {
       } else if (/^[1-4]$/.test(k)) choose(Number(k) - 1)
       else if (/^[a-d]$/.test(k)) choose(k.charCodeAt(0) - 97)
     }
+    // La page reste en vie quand on va ailleurs : ses raccourcis clavier doivent alors se taire.
+    if (!pageActive) return
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [phase, picked, q, choose, next])
+  }, [phase, picked, q, choose, next, pageActive])
 
   const sum = summarize(results)
   const wrongQuestions = questions.filter((qq) => results.some((r) => r.questionId === qq.id && !r.correct))

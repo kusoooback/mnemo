@@ -72,6 +72,8 @@ nsis:
   uninstallerIcon: build/icon.ico
   installerHeaderIcon: build/icon.ico
   oneClick: false
+  # Les cartes vivent dans %APPDATA%Mnemo : ni une mise à jour ni une désinstallation ne les touche.
+  deleteAppDataOnUninstall: false
   allowToChangeInstallationDirectory: true
   language: '1036'
   artifactName: ${name}-${version}-setup.${ext}

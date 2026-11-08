@@ -8,6 +8,7 @@ import { PdfButton } from '../components/PdfButton'
 import { useT, type Key } from '../i18n'
 import { renderMarkdown } from '../lib/render'
 import { texToMarkdown } from '../lib/tex'
+import { usePage } from '../lib/keepalive'
 import { useStore } from '../store'
 
 pdfjs.GlobalWorkerOptions.workerPort = new Worker(new URL('../pdf.worker.ts', import.meta.url), { type: 'module' })
@@ -161,6 +162,7 @@ function PdfView({ id, deckId }: { id: string; deckId: string | null }): React.J
 function TextEditor({ info, onSelect }: { info: DocInfo; onSelect: (s: string) => void }): React.JSX.Element {
   const t = useT()
   const { toast } = useStore()
+  const { active: pageActive } = usePage()
   const [src, setSrc] = useState<string | null>(null)
   const [saved, setSaved] = useState('')
   const [preview, setPreview] = useState(['md', 'markdown'].includes(info.ext)) // une fiche s'ouvre directement en belle page
@@ -192,9 +194,10 @@ function TextEditor({ info, onSelect }: { info: DocInfo; onSelect: (s: string) =
         void save()
       }
     }
+    if (!pageActive) return
     window.addEventListener('keydown', on)
     return () => window.removeEventListener('keydown', on)
-  }, [save])
+  }, [save, pageActive])
 
   if (src === null) return <div className="center-pad"><Loader2 className="spin" size={20} /></div>
   const dirty = src !== saved

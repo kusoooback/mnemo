@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import type { SyncStatus } from '@shared/types'
 import { call } from '../api'
 import { useT } from '../i18n'
+import { usePage } from '../lib/keepalive'
 import { useStore } from '../store'
 
 const errText = (e: unknown): string =>
@@ -11,6 +12,7 @@ const errText = (e: unknown): string =>
 export function SyncPage(): React.JSX.Element {
   const t = useT()
   const { settings, patchSettings, bump, toast } = useStore()
+  const { shown } = usePage()
   const [st, setSt] = useState<SyncStatus | null>(null)
   const [folder, setFolder] = useState('')
   const [pass, setPass] = useState('')
@@ -22,7 +24,7 @@ export function SyncPage(): React.JSX.Element {
   const load = async (): Promise<void> => setSt(await call('sync.status'))
   useEffect(() => {
     void load()
-  }, [])
+  }, [shown])
 
   const lang = settings.language === 'fr' ? 'fr-FR' : 'en-GB'
   const when = (ts: number | null): string =>
