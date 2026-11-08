@@ -12,7 +12,7 @@ import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { gzipSync } from 'node:zlib'
+import { gunzipSync, gzipSync } from 'node:zlib'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', 'community')
 const src = join(root, 'src')
@@ -60,10 +60,23 @@ for (const file of readdirSync(src).filter((f) => f.endsWith('.json')).sort()) {
   }
   const pack = { format: 1, app: 'mnemo', name: s.title, description: s.description ?? '', author: s.author ?? '', created: 0, notes, media: {} }
   const buf = Buffer.concat([Buffer.from('MNDK1\n'), gzipSync(Buffer.from(JSON.stringify(pack), 'utf8'), { level: 9 })])
-  const sha256 = createHash('sha256').update(buf).digest('hex')
+  const json = JSON.stringify(pack)
   const target = join(out, `${s.id}.mnemodeck`)
+  let sha256 = createHash('sha256').update(buf).digest('hex')
   if (check) {
-    if (!existsSync(target) || createHash('sha256').update(readFileSync(target)).digest('hex') !== sha256) {
+    // Les octets gzip dépendent de la version de zlib (Windows, Linux, macOS) : on compare le CONTENU décompressé,
+    // et l'empreinte annoncée dans l'index est celle du fichier réellement publié.
+    let same = false
+    if (existsSync(target)) {
+      const pub = readFileSync(target)
+      sha256 = createHash('sha256').update(pub).digest('hex')
+      try {
+        same = pub.subarray(0, 6).toString('latin1') === 'MNDK1\n' && gunzipSync(pub.subarray(6)).toString('utf8') === json
+      } catch {
+        same = false
+      }
+    }
+    if (!same) {
       console.error(`✗ ${s.id} : le paquet publié ne correspond pas à sa source (relance « node scripts/build-pack.mjs »)`)
       bad++
     }
@@ -76,7 +89,7 @@ for (const file of readdirSync(src).filter((f) => f.endsWith('.json')).sort()) {
 const indexJson = `${JSON.stringify({ version: 1, packs: index }, null, 2)}\n`
 const indexPath = join(root, 'index.json')
 if (check) {
-  if (!existsSync(indexPath) || readFileSync(indexPath, 'utf8') !== indexJson) {
+  if (!existsSync(indexPath) || readFileSync(indexPath, 'utf8').replace(/\r\n/g, '\n') !== indexJson) {
     console.error('✗ index.json n’est pas à jour')
     bad++
   }
