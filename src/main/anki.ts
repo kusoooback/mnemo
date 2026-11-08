@@ -531,7 +531,8 @@ export function importAnkiSource(src: AnkiSource): AnkiImportReport {
     // --- historique de révision (seulement ce qui manque), puis recalcul de l'état des cartes concernées
     const revCards = new Set<string>()
     const hasAny = db.prepare('SELECT 1 FROM review WHERE card_id = ? LIMIT 1')
-    const exists = db.prepare('SELECT 1 FROM review WHERE card_id = ? AND reviewed_at = ?')
+    // Tolérance de quelques ms : à l'export, une collision d'identifiant a pu décaler la révision de 1 ms ou plus.
+    const exists = db.prepare('SELECT 1 FROM review WHERE card_id = ? AND reviewed_at BETWEEN ? AND ?')
     const firstSeen = new Map<string, boolean>()
     const insRev = db.prepare(
       `INSERT INTO review(id, card_id, reviewed_at, rating, duration_ms, state_before, was_new, prev_state)
@@ -540,7 +541,7 @@ export function importAnkiSource(src: AnkiSource): AnkiImportReport {
     for (const r of [...coll.revlog].sort((a, b) => a.id - b.id)) {
       const cid = cardMap.get(r.cid)
       if (!cid || r.ease < 1 || r.ease > 4) continue
-      if (exists.get(cid, r.id)) continue
+      if (exists.get(cid, r.id - 10, r.id + 10)) continue
       if (!firstSeen.has(cid)) firstSeen.set(cid, !hasAny.get(cid))
       const isFirst = firstSeen.get(cid) === true
       firstSeen.set(cid, false)
@@ -682,6 +683,15 @@ export function buildApkg(deckId: string | null): { data: Buffer; notes: number;
   const insRev = mem.prepare('INSERT INTO revlog VALUES (?, ?, -1, ?, ?, ?, 2500, ?, ?)')
   let nNotes = 0
   let nCards = 0
+  // L'identifiant d'une révision Anki est son horodatage en ms et doit être unique dans toute la collection :
+  // deux révisions tombées dans la même milliseconde (cartes différentes) sont décalées de 1 ms.
+  const usedRevIds = new Set<number>()
+  const uniqueRevId = (t: number): number => {
+    let id = t
+    while (usedRevIds.has(id)) id++
+    usedRevIds.add(id)
+    return id
+  }
   const strip = (h: string): string => h.replace(/<[^>]+>/g, '').trim()
   // L'occlusion d'image n'existe pas dans Anki : chaque zone devient une note recto/verso dont les images ont les zones peintes.
   interface Unit {
@@ -735,7 +745,7 @@ export function buildApkg(deckId: string | null): { data: Buffer; notes: number;
           .all(c.id) as { reviewed_at: number; rating: number; duration_ms: number; prev_state: number }[]
         let last = 0
         for (const r of revs) {
-          insRev.run(r.reviewed_at, cid, r.rating, last, last, r.duration_ms, r.prev_state === 1 ? 0 : r.prev_state === 3 ? 2 : 1)
+          insRev.run(uniqueRevId(r.reviewed_at), cid, r.rating, last, last, r.duration_ms, r.prev_state === 1 ? 0 : r.prev_state === 3 ? 2 : 1)
           last = Math.round(c.scheduled_days as number)
         }
       }
