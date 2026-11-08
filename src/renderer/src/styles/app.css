@@ -2263,11 +2263,18 @@ svg.lucide {
 .btn:hover {
   background: var(--hover);
 }
+/* Le bloc « .btn { background: transparent } » ci-dessus écrasait le fond du bouton principal : on le rétablit. */
 .btn-primary {
+  background: var(--accent-btn);
   border-color: transparent;
+  color: var(--accent-btn-text);
 }
 .btn-primary:hover {
+  background: var(--accent-btn-hover);
   border-color: transparent;
+}
+.btn-primary:disabled {
+  opacity: 0.5;
 }
 .btn-dark {
   background: var(--text);
@@ -3893,4 +3900,55 @@ svg.lucide {
 .cs-preview .rv-a.md {
   font-size: calc(1rem * var(--card-scale, 1));
   margin: 6px 0 0;
+}
+
+/* Aide des raccourcis */
+.sc-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 32px;
+  padding: 8px 24px 24px;
+  max-height: 70vh;
+  overflow: auto;
+}
+.sc-group .eyebrow {
+  margin: 14px 0 6px;
+}
+.sc-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 5px 0;
+  font-size: 0.875rem;
+}
+.sc-keys {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+@media (max-width: 720px) {
+  .sc-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Texte d'aide discret des pages Ressources, Paquets, carnet de dessin et thème sur mesure (« .d » n'a pas de style global) */
+.pk-block .d,
+.pk-preview .d,
+.rs-main .d,
+.rs-form .d,
+.rs-list .d,
+.dp-foot .d,
+.ct .d,
+.page > .d {
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+.pk-block .pk-h + .d {
+  margin: -6px 0 12px;
+}
+.pk-block > .link-btn {
+  display: inline-flex;
+  margin-left: 14px;
 }

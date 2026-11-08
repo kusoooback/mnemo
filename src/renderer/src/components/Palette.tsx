@@ -1,4 +1,4 @@
-import { Compass, Share2, MessageCircle, BarChart3, BookOpen, CalendarDays, CornerDownLeft, FileText, Library, Moon, Play, Plug, Plus, RefreshCw, ScrollText, Search, Settings, Sparkles, Sun, Upload } from 'lucide-react'
+import { Compass, Keyboard, Share2, MessageCircle, BarChart3, BookOpen, CalendarDays, CornerDownLeft, FileText, Library, Moon, Play, Plug, Plus, RefreshCw, ScrollText, Search, Settings, Sparkles, Sun, Upload } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { CardRow } from '@shared/types'
 import { call } from '../api'
@@ -50,6 +50,7 @@ export function Palette(): React.JSX.Element {
           void patchSettings({ theme: dark ? 'light' : 'dark', skin: '' })
         }
       },
+      { id: 'a-keys', group: t('pal.actions'), label: t('sc.title'), icon: <Keyboard size={17} />, run: () => useStore.getState().setShortcuts(true) },
       { id: 'g-home', group: t('pal.go'), label: t('nav.today'), icon: <Sun size={17} />, run: () => go({ name: 'home' }) },
       { id: 'g-lib', group: t('pal.go'), label: t('nav.library'), icon: <Library size={17} />, run: () => go({ name: 'library' }) },
       { id: 'g-nb', group: t('pal.go'), label: t('nav.notebook'), icon: <CalendarDays size={17} />, run: () => go({ name: 'notebook' }) },

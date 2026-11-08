@@ -48,7 +48,7 @@ export function DrawPad({ onSave, onClose }: { onSave: (png: Blob) => void; onCl
   const [redo, setRedo] = useState<Item[]>([])
   const [under, setUnder] = useState<HTMLImageElement | null>(null)
   const [draft, setDraft] = useState<Item | null>(null)
-  const [textBox, setTextBox] = useState<{ at: Pt; css: [number, number]; value: string } | null>(null)
+  const [textBox, setTextBox] = useState<{ at: Pt; css: [number, number]; scale: number; value: string } | null>(null)
   const [askDiscard, setAskDiscard] = useState(false)
   const main = useRef<HTMLCanvasElement>(null)
   const layer = useMemo(() => {
@@ -117,7 +117,7 @@ export function DrawPad({ onSave, onClose }: { onSave: (png: Blob) => void; onCl
     if (prefs.tool === 'text') {
       const r = main.current!.getBoundingClientRect()
       e.preventDefault() // sinon le canvas reprend le focus et ferme aussitôt la zone de texte
-      setTextBox({ at: p, css: [e.clientX - r.left, e.clientY - r.top], value: '' })
+      setTextBox({ at: p, css: [e.clientX - r.left, e.clientY - r.top], scale: r.width / CANVAS_W, value: '' })
       return
     }
     e.currentTarget.setPointerCapture(e.pointerId)
@@ -284,7 +284,7 @@ export function DrawPad({ onSave, onClose }: { onSave: (png: Blob) => void; onCl
           <input
             autoFocus
             className="dp-text"
-            style={{ left: textBox.css[0], top: textBox.css[1], color: prefs.color, fontSize: Math.max(12, (fontSize(prefs.size) * (main.current?.getBoundingClientRect().width ?? CANVAS_W)) / CANVAS_W) }}
+            style={{ left: textBox.css[0], top: textBox.css[1], color: prefs.color, fontSize: Math.max(12, fontSize(prefs.size) * textBox.scale) }}
             value={textBox.value}
             placeholder={t('dp.textHint')}
             onChange={(e) => setTextBox({ ...textBox, value: e.target.value })}

@@ -14,6 +14,7 @@ import { AiPage } from './pages/AiPage'
 import { Assistant } from './pages/Assistant'
 import { Resources } from './pages/Resources'
 import { Packs } from './pages/Packs'
+import { ShortcutsHelp } from './components/ShortcutsHelp'
 import { Home } from './pages/Home'
 import { Integrations } from './pages/Integrations'
 import { Notebook } from './pages/Notebook'
@@ -113,6 +114,12 @@ function useGlobalShortcuts(): void {
   const { sidebarOpen, setSidebar, setPalette, palette, openEditor, editor, route } = useStore()
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
+      // « ? » ouvre l'aide des raccourcis, sauf quand on est en train d'écrire.
+      if (e.key === '?' && !e.ctrlKey && !e.metaKey && !e.altKey && !(e.target as HTMLElement).closest('input,textarea,select,[contenteditable]')) {
+        e.preventDefault()
+        useStore.getState().setShortcuts(!useStore.getState().shortcuts)
+        return
+      }
       if (!(e.ctrlKey || e.metaKey) || e.altKey) return
       const k = e.key.toLowerCase()
       if (k === 'k') {
@@ -133,7 +140,7 @@ function useGlobalShortcuts(): void {
 
 export default function App(): React.JSX.Element | null {
   const t = useT()
-  const { ready, init, route, sidebarOpen, setSidebar, palette, editor, toasts, onboarding, bump, openEditor, toast, importer, openImport, go } = useStore()
+  const { ready, init, route, sidebarOpen, setSidebar, palette, shortcuts, editor, toasts, onboarding, bump, openEditor, toast, importer, openImport, go } = useStore()
   const [dragging, setDragging] = useState(false)
   useAppearance()
   useGlobalShortcuts()
@@ -256,6 +263,7 @@ export default function App(): React.JSX.Element | null {
 
       {editor && <Editor />}
       {palette && <Palette />}
+      {shortcuts && <ShortcutsHelp />}
       {onboarding && <Onboarding />}
       {importer && <ImportWizard />}
       {dragging && (

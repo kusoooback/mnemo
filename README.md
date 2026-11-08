@@ -32,9 +32,11 @@ Et **uniquement parce que tu l'as demandé**, jamais en arrière-plan sans que t
 | **IA en ligne (optionnel)** : OpenRouter, Groq, Google Gemini, OpenAI, Claude… | Le fournisseur que **tu** as choisi, avec **ta propre clé** | Le texte que tu demandes de transformer en cartes ou en fiches. **Il quitte alors ton ordinateur.** Garde l'IA intégrée pour les documents confidentiels. | Non (IA intégrée par défaut) |
 | **Ollama** (optionnel) | Ton propre ordinateur (`localhost`) | Rien ne sort de ta machine | Non |
 | **Assistant, recherche web** (optionnelle, case à cocher dans la conversation) | Wikipédia, ou la page web dont tu donnes l'adresse | Les mots de la recherche (ou l'adresse de la page), rien d'autre. Ton cours n'est envoyé qu'à l'IA que tu as choisie (voir la ligne « IA en ligne ») | Non (case décochée) |
+| **Ressources → Lire et créer des cartes** (sur clic) | Le site de la ressource sur laquelle tu cliques | Une seule requête pour télécharger cette page, sans identifiant ni cookie. Le texte lu n'est envoyé qu'à l'IA que tu as choisie (voir la ligne « IA en ligne ») | Non, sur clic |
+| **Paquets → Catalogue communautaire** (facultatif) | `raw.githubusercontent.com` : le dossier [`community/`](community/) de ce dépôt public | Une requête pour la liste, puis une par paquet que tu ouvres, sans identifiant ni cookie. Comme pour tout site, GitHub voit l'adresse IP de la connexion. Chaque paquet est vérifié (empreinte, format, images) | Non, sur clic |
 | **Connexion de Claude** (optionnel, [section 5](#brancher-claude-sur-mnémo)) | Rien : une « porte » locale (`127.0.0.1`) que **tu** ouvres | Rien ne sort de ta machine par Mnémo ; c'est le programme de Claude, sur ton PC, qui y dépose des cartes | Non (désactivée) |
 | **Notion** (optionnel) | Notion, avec ton jeton | Ton jeton, pour **lire** les pages que tu importes (Mnémo n'écrit rien dans Notion) | Non |
-| **Ouvrir un lien** (par exemple openrouter.ai) | Ton navigateur habituel, quand tu cliques | Rien de la part de Mnémo | Sur clic |
+| **Ouvrir un lien** (par exemple openrouter.ai, ou « Ouvrir » dans Ressources) | Ton navigateur habituel, quand tu cliques | Rien de la part de Mnémo | Sur clic |
 
 À part ça : **aucune connexion**. Au premier lancement, tant que tu n'as rien activé de la liste ci-dessus, Mnémo ne contacte aucun serveur.
 
@@ -62,10 +64,11 @@ Et **uniquement parce que tu l'as demandé**, jamais en arrière-plan sans que t
 3. [Passer d'Anki (ou d'autre chose) à Mnémo](#3-passer-danki-ou-dautre-chose-à-mnémo)
 4. [Récupérer ses cours du Cahier de Prépa](#4-récupérer-ses-cours-du-cahier-de-prépa)
 5. [L'IA gratuite et illimitée](#5-lia-gratuite-et-illimitée)
-6. [Le cahier de texte et la « garantie avant le DS »](#6-le-cahier-de-texte-et-la-garantie-avant-le-ds)
-7. [Utiliser deux ordinateurs](#7-utiliser-deux-ordinateurs)
-8. [Ça ne marche pas ?](#8-ça-ne-marche-pas-)
-9. [Pour les développeurs](#9-pour-les-développeurs)
+6. [Partager, dessiner, personnaliser](#6-partager-dessiner-personnaliser)
+7. [Le cahier de texte et la « garantie avant le DS »](#7-le-cahier-de-texte-et-la-garantie-avant-le-ds)
+8. [Utiliser deux ordinateurs](#8-utiliser-deux-ordinateurs)
+9. [Ça ne marche pas ?](#9-ça-ne-marche-pas-)
+10. [Pour les développeurs](#10-pour-les-développeurs)
 
 ---
 
@@ -317,7 +320,7 @@ Tout reste **sur ton ordinateur**, nulle part ailleurs : cartes, cours, notes, r
 - **Windows** : `C:\Users\<ton nom>\AppData\Roaming\Mnemo` (ou dans Mnémo : **Réglages → Dossier de données → Ouvrir**).
 - **Mac** : `~/Bibliothèque/Application Support/Mnemo`.
 
-Une **sauvegarde automatique** est faite chaque jour : **Réglages → Sauvegardes**. Pour passer de Windows à Mac, ou pour utiliser deux ordinateurs, voir la [section 7](#7-utiliser-deux-ordinateurs).
+Une **sauvegarde automatique** est faite chaque jour : **Réglages → Sauvegardes**. Pour passer de Windows à Mac, ou pour utiliser deux ordinateurs, voir la [section 8](#8-utiliser-deux-ordinateurs).
 
 ---
 
@@ -332,6 +335,7 @@ Au premier lancement, Mnémo te propose trois choses, toutes facultatives : impo
 | Créer une carte | **Nouvelle carte** en haut à gauche (ou `Ctrl + N`) |
 | Ajouter plein de cartes d'un coup | Coller un texte dans la grande zone de l'accueil, puis la flèche |
 | Réviser | **Commencer la révision** sur l'accueil |
+| Partager un deck, dessiner un schéma, changer les couleurs | Voir le [chapitre 6](#6-partager-dessiner-personnaliser) |
 
 ![Révision](docs/screenshots/revision.png)
 
@@ -465,7 +469,47 @@ Claude peut : lister tes decks, créer un deck, ajouter des cartes (question/ré
 
 ---
 
-## 6. Le cahier de texte et la « garantie avant le DS »
+## 6. Partager, dessiner, personnaliser
+
+Tout ce chapitre marche **sans internet** (sauf la ligne « catalogue » du tableau des [connexions](#les-seuls-cas-où-mnémo-se-connecte-à-internet)).
+
+### Partager ses cartes : les paquets `.mnemodeck`
+
+Menu **Paquets**. Un paquet est **un seul fichier** qui contient un deck (avec ses sous-decks), ses cartes, ses étiquettes et ses images.
+
+- **Donner un deck à un ami ou à une classe** : *Partager un deck* → choisis le deck (ou toute ta collection), donne-lui un nom → **Créer le fichier**. Envoie-le comme tu veux (clé USB, mail, messagerie). Le fichier ne contient **ni ton historique de révision, ni tes réglages, ni tes clés** : seulement le contenu des cartes.
+- **Recevoir un paquet** : *Ouvrir un paquet reçu* → choisis le fichier. Mnémo **te montre d'abord ce qu'il contient** (nombre de cartes, de sous-decks, d'images, quelques exemples) et combien de cartes tu possèdes déjà (elles seront ignorées). Tu choisis le deck de destination, puis **Ajouter à ma collection**. Rien n'est ajouté avant ton clic.
+- **Sécurité** : un paquet reçu est considéré comme **non fiable**. Mnémo vérifie le format, ne garde que des cartes valables et de vraies images (PNG, JPEG, GIF, WebP : le SVG est refusé), contrôle l'empreinte de chaque image et ignore le reste. Un paquet ne peut ni écrire ailleurs que dans tes decks, ni modifier un réglage. Son texte est affiché comme celui de tes propres cartes : nettoyé (aucun script) et sans image venue d'internet, donc sans pistage possible.
+- **Catalogue communautaire** (facultatif) : *Parcourir le catalogue* télécharge la liste des paquets proposés par d'autres élèves (hébergés dans le dossier [`community/`](community/) de ce dépôt public). Rien n'est contacté tant que tu ne cliques pas. Chaque paquet est vérifié par son empreinte SHA-256 avant d'être affiché. Un premier paquet est fourni : **Python, les bases pour la prépa** (50 notes ; toutes les valeurs de code qu'il annonce ont été vérifiées en exécutant Python). **Proposer le tien** : voir [`community/README.md`](community/README.md).
+
+### Ressources : où trouver de bons cours
+
+Menu **Ressources** : plus de quarante sites choisis pour la prépa et le supérieur, classés par matière : Python (psim.fr, documentation officielle, France-IOI, Python Tutor, Project Euler…), mathématiques (Exo7, annales…), physique-chimie, histoire-géographie et géopolitique, économie, lettres, langues, concours et annales.
+
+- **Chercher** (sans tenir compte des accents), filtrer par matière, mettre en **favori** ⭐, **ajouter tes propres sources** (adresses `https://` uniquement).
+- **Copier ma liste / Importer une liste** : partage tes favoris et tes sources avec un ami en collant un texte.
+- **Lire et créer des cartes** : Mnémo télécharge **cette seule page** (au clic), puis l'assistant te propose des cartes, une fiche ou des exercices à partir de son texte.
+- Les adresses ont été testées depuis un ordinateur, mais un site peut changer ou bloquer les programmes : celles qu'on n'a pas pu vérifier (par exemple psim.fr, injoignable depuis notre environnement de test) portent la mention **non vérifié**. Tu peux proposer une correction ou un ajout dans `src/shared/resources.ts`.
+
+### Dessiner à la main (et à la souris, au doigt, au stylet)
+
+Dans l'éditeur de carte, le bouton **Dessiner** (crayon) ouvre un **carnet de dessin** : stylo, surligneur, gomme, trait, flèche, rectangle, ellipse et texte ; **couleurs libres** (neuf couleurs prêtes + n'importe quelle autre), cinq épaisseurs, fond blanc, crème, ardoise, quadrillé ou ligné ; **annuler / rétablir** ; et possibilité d'**annoter une image** (choisis un fichier ou colle une capture avec `Ctrl + V`). Le résultat est une image PNG insérée dans la carte. Pour une occlusion d'image, tu peux aussi dessiner le schéma de départ à la main. Les raccourcis (P, M, E, L, A, R, O, T, `Ctrl + Z`) sont listés dans l'aide.
+
+> Le dessin est 100 % manuel : aucune IA ne « regarde » tes dessins (les modèles branchés dans Mnémo ne lisent que du texte). L'IA t'aide sur le texte des cartes, pas sur le tracé.
+
+### Personnaliser
+
+**Réglages → Apparence** :
+
+- **Mon thème** : choisis trois couleurs (fond, texte, accent), Mnémo déduit tout le reste (surfaces, bordures, textes discrets…) et **corrige automatiquement** un texte qui serait illisible sur ton fond. Le **code** affiché (par exemple `custom:f4efe6:2b2b2b:c0562b`) se copie : colle-le à un ami et il retrouve exactement tes couleurs. La barre latérale suit toujours la couleur du fond.
+- **Cartes pendant la révision** : police (livre, moderne, machine, très lisible), taille et alignement (gauche ou centré), avec un aperçu en direct.
+- 13 thèmes colorés prêts à l'emploi, une couleur d'accent au choix, la taille générale du texte et un mode dyslexie.
+
+**Aide** : tape `?` n'importe où (hors d'un champ de texte) ou cherche « Raccourcis » dans `Ctrl + K` pour voir tous les raccourcis clavier.
+
+---
+
+## 7. Le cahier de texte et la « garantie avant le DS »
 
 ![Planning](docs/screenshots/planning.png)
 
@@ -478,7 +522,7 @@ Ajoute une **échéance** (DS, concours blanc, colle, devoir) avec sa date et le
 
 ---
 
-## 7. Utiliser deux ordinateurs
+## 8. Utiliser deux ordinateurs
 
 Sans compte ni serveur : il suffit d'un dossier que OneDrive, Dropbox ou Google Drive synchronise déjà sur tes deux PC.
 
@@ -489,7 +533,7 @@ Tout est chiffré dans le dossier. Les révisions des deux PC s'additionnent, ri
 
 ---
 
-## 8. Ça ne marche pas ?
+## 9. Ça ne marche pas ?
 
 | Problème | Solution |
 | --- | --- |
@@ -510,7 +554,7 @@ Pour demander de l'aide, joins une **capture d'écran** et décris ce que tu as 
 
 ---
 
-## 9. Pour les développeurs
+## 10. Pour les développeurs
 
 Electron + React + TypeScript, SQLite (better-sqlite3), FSRS (`ts-fsrs`), IA locale par `node-llama-cpp` (modèles Qwen 2.5).
 

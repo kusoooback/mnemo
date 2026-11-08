@@ -22,7 +22,7 @@ export const KNOWLEDGE = `GUIDE DE MNÉMO (tu connais l'application par cœur et
 
 Mnémo est une application gratuite et open source de cartes mémoire (répétition espacée FSRS), qui fonctionne sur Windows et Mac, hors ligne, sans compte. Tout reste sur l'ordinateur de l'utilisateur.
 
-PAGES (barre latérale) : Aujourd'hui (accueil, cartes à réviser), Bibliothèque (toutes les cartes : recherche, filtres par deck / état / étiquette, déplacer, suspendre, doublons), Statistiques, Importer, Cahier de Prépa, Cahier de texte, Génération IA, Assistant (cette conversation), Fiches. Réglages : roue dentée en bas de la barre latérale. Palette de commandes : Ctrl+K (⌘K sur Mac). Nouvelle carte : Ctrl+N. Barre latérale : Ctrl+B.
+PAGES (barre latérale) : Aujourd'hui (accueil, cartes à réviser), Bibliothèque (toutes les cartes : recherche, filtres par deck / état / étiquette, déplacer, suspendre, doublons), Statistiques, Importer, Cahier de Prépa, Cahier de texte, Génération IA, Assistant (cette conversation), Ressources, Paquets, Fiches. Réglages : roue dentée en bas de la barre latérale. Palette de commandes : Ctrl+K (⌘K sur Mac). Nouvelle carte : Ctrl+N. Barre latérale : Ctrl+B.
 
 DECKS : paquets de cartes, hiérarchiques avec « :: » (ex. « HGG::Chapitre 1 »). Créer avec le « + » à côté de « Decks ». Chaque deck a son nombre de nouvelles cartes par jour (sinon le réglage global, 20 par défaut).
 
@@ -44,7 +44,11 @@ CONNEXION DE CLAUDE : Réglages → Intégrations → Claude : permet à Claude 
 
 SYNCHRONISATION entre deux ordinateurs : dossier partagé (OneDrive, Dropbox, clé USB…) avec fichier chiffré et phrase secrète (page Synchronisation). SAUVEGARDES : une par jour automatiquement (30 gardées), Réglages → Sauvegardes → Restaurer. Données : dossier « Mnemo » dans AppData (Windows) ou Application Support (Mac) ; Réglages → Dossier de données → Ouvrir.
 
-PERSONNALISATION : 13 thèmes + couleur d'accent, taille du texte, police pour dyslexiques, français / anglais, rappel quotidien, ajout rapide global (Ctrl+Maj+C : crée une carte depuis le texte copié).
+PAQUETS (page « Paquets ») : partager un deck dans un seul fichier .mnemodeck (cartes, étiquettes, images ; jamais l'historique de révision ni les réglages) et ouvrir ceux qu'on reçoit, avec un aperçu et le repérage des doublons avant tout ajout. Catalogue communautaire facultatif (paquets proposés par d'autres élèves, vérifiés, téléchargés seulement au clic). RESSOURCES (page « Ressources ») : une quarantaine de sites utiles à la prépa et au supérieur (Python dont psim.fr, maths, physique-chimie, histoire-géo et géopolitique, économie, lettres, langues, annales), avec recherche, favoris, sources personnelles, et « Lire et créer des cartes » qui envoie le texte d'une page à cette conversation.
+
+DESSIN : dans l'éditeur de carte, le bouton « Dessiner » (crayon) ouvre un carnet de dessin : stylo, surligneur, gomme, trait, flèche, rectangle, ellipse, texte, couleurs libres, fonds (blanc, crème, ardoise, quadrillé, ligné), annuler / rétablir, annotation d'une image ; le résultat est une image dans la carte. C'est un dessin manuel : tu ne peux pas voir les dessins.
+
+PERSONNALISATION : 13 thèmes + « Mon thème » (trois couleurs : fond, texte, accent ; un code à copier pour le partager) + couleur d'accent, taille du texte, police pour dyslexiques, police / taille / alignement des cartes en révision (Réglages → Apparence), français / anglais, rappel quotidien, ajout rapide global (Windows+Maj+C ou Ctrl+Alt+Maj+C, ⌘⌥⇧C sur Mac, si activé dans les réglages : crée une carte depuis le texte copié). La touche « ? » affiche tous les raccourcis clavier.
 
 CONFIDENTIALITÉ : aucune télémétrie, aucun compte, aucun serveur de l'auteur. Mnémo ne se connecte à internet que pour les fonctions que l'utilisateur active (modèle IA en ligne, Cahier de Prépa, Notion, recherche web de cette conversation).`
 

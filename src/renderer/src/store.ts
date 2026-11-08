@@ -44,6 +44,8 @@ interface Store {
   jobs: Job[]
   setJobs: (jobs: Job[]) => void
   palette: boolean
+  /** Fenêtre d'aide des raccourcis clavier. */
+  shortcuts: boolean
   editor: EditorState | null
   /** Texte transmis à la page de génération IA (Notion, fichier…). */
   aiSeed: string | null
@@ -61,6 +63,7 @@ interface Store {
   patchSettings: (patch: Partial<Settings>) => Promise<void>
   setSidebar: (open: boolean) => void
   setPalette: (open: boolean) => void
+  setShortcuts: (open: boolean) => void
   openEditor: (state: EditorState | null) => void
   setAiSeed: (text: string | null) => void
   setOnboarding: (on: boolean) => void
@@ -79,6 +82,7 @@ export const useStore = create<Store>((set, get) => ({
   jobs: [],
   setJobs: (jobs) => set({ jobs }),
   palette: false,
+  shortcuts: false,
   editor: null,
   aiSeed: null,
   onboarding: false,
@@ -99,6 +103,7 @@ export const useStore = create<Store>((set, get) => ({
   patchSettings: async (patch) => set({ settings: await call('settings.set', patch) }),
   setSidebar: (sidebarOpen) => set({ sidebarOpen }),
   setPalette: (palette) => set({ palette }),
+  setShortcuts: (shortcuts) => set({ shortcuts, palette: false }),
   openEditor: (editor) => set({ editor, palette: false }),
   setAiSeed: (aiSeed) => set({ aiSeed }),
   setOnboarding: (onboarding) => set({ onboarding }),

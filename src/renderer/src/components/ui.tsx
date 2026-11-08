@@ -22,6 +22,9 @@ export function Logo({ size = 26 }: { size?: number }): React.JSX.Element {
   )
 }
 
+/** Fenêtres ouvertes, de la plus ancienne à la plus récente. */
+const modalStack: symbol[] = []
+
 export function Modal({
   title,
   onClose,
@@ -38,9 +41,18 @@ export function Modal({
   width?: number
 }): React.JSX.Element {
   const t = useT()
+  // Plusieurs fenêtres peuvent être empilées (le carnet de dessin ouvert depuis l'éditeur) : Échap ne ferme que celle du dessus.
+  const me = useRef(Symbol('modal'))
+  useEffect(() => {
+    const id = me.current
+    modalStack.push(id)
+    return () => {
+      modalStack.splice(modalStack.indexOf(id), 1)
+    }
+  }, [])
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape') {
+      if (e.key === 'Escape' && modalStack[modalStack.length - 1] === me.current) {
         e.stopPropagation()
         onClose()
       }
