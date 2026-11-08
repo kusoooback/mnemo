@@ -7,6 +7,17 @@ Tes cartes restent sur ton ordinateur. Elle remplace Anki avec une interface plu
 
 ![Accueil](docs/screenshots/accueil.png)
 
+## ⬇️ Télécharger Mnémo
+
+| Ton ordinateur | Clique ici |
+| --- | --- |
+| **Windows** | [**Télécharger pour Windows**](https://github.com/kusoooback/mnemo/releases/latest/download/mnemo-1.0.0-setup.exe) (`mnemo-1.0.0-setup.exe`) |
+| **Mac récent** (puce Apple M1, M2, M3…) | [**Télécharger pour Mac (Apple)**](https://github.com/kusoooback/mnemo/releases/latest/download/mnemo-1.0.0-arm64.dmg) (`mnemo-1.0.0-arm64.dmg`) |
+| **Mac plus ancien** (processeur Intel) | [**Télécharger pour Mac (Intel)**](https://github.com/kusoooback/mnemo/releases/latest/download/mnemo-1.0.0-x64.dmg) (`mnemo-1.0.0-x64.dmg`) |
+
+Toutes les versions : [page des téléchargements](https://github.com/kusoooback/mnemo/releases/latest). Installation pas à pas, expliquée simplement : [Windows](#sur-windows-pas-à-pas) ou [Mac](#sur-mac-pas-à-pas).
+
+
 > Projet libre et **non commercial** (licence MIT). Son interface s'inspire de celle de Claude par admiration pour son design : Mnémo n'a aucun lien avec Anthropic, n'utilise ni son nom ni son logo.
 
 ---
