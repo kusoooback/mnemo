@@ -493,7 +493,7 @@ Menu **Ressources** : plus de quarante sites choisis pour la prépa et le supér
 
 ### Formules mathématiques
 
-Écris tes formules comme tu veux : `$x^2$`, `$$\int_0^1 f$$`, `\(x^2\)`, `\[ … \]` ou un bloc `egin{pmatrix} … \end{pmatrix}`. Mnémo les **affiche toujours en vraies formules** (révision, bibliothèque, recherche, doublons, aperçus, cartes importées d'Anki ou écrites par l'IA), jamais en code brut. Un `$` isolé (« 5 $ et 6 $ ») reste du texte.
+Écris tes formules comme tu veux : `$x^2$`, `$$\int_0^1 f$$`, `\(x^2\)`, `\[ … \]` ou un bloc `\begin{pmatrix} … \end{pmatrix}`. Mnémo les **affiche toujours en vraies formules** (révision, bibliothèque, recherche, doublons, aperçus, cartes importées d'Anki ou écrites par l'IA), jamais en code brut. Un `$` isolé (« 5 $ et 6 $ ») reste du texte.
 
 ### Dessiner à la main (et à la souris, au doigt, au stylet)
 
