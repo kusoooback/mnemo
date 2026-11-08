@@ -10,7 +10,7 @@ import { useStore } from '../store'
 
 export function Settings(): React.JSX.Element {
   const t = useT()
-  const { settings, patchSettings, toast, go } = useStore()
+  const { settings, patchSettings, toast, go, setTour } = useStore()
   const [info, setInfo] = useState<AppInfo | null>(null)
   const [backups, setBackups] = useState<BackupInfo[]>([])
   const [name, setName] = useState(settings.userName)
@@ -344,6 +344,9 @@ export function Settings(): React.JSX.Element {
         <h2>{t('set.about')}</h2>
         <div className="card card-pad">
           <p className="muted selectable">{t('set.aboutText')}</p>
+          <button className="btn" style={{ marginTop: 10 }} onClick={() => setTour(true)} data-testid="set-tour">
+            {t('tour.replay')}
+          </button>
           <p className="faint" style={{ marginTop: 10, fontSize: '0.8125rem' }}>
             {t('set.version')} {info?.version} · SQLite · FSRS
           </p>

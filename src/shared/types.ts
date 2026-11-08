@@ -25,6 +25,8 @@ export interface Settings {
   cardAlign: 'left' | 'center'
   showTimer: boolean
   onboarded: boolean
+  /** La visite guidée du premier lancement a été vue (ou passée). */
+  tourDone: boolean
   // IA (la clé d'API n'est jamais ici : elle est dans le coffre du système)
   aiProvider: 'none' | 'builtin' | 'ollama' | 'openai' | 'anthropic'
   aiModel: string
@@ -77,6 +79,7 @@ export const DEFAULT_SETTINGS: Settings = {
   cardAlign: 'left',
   showTimer: false,
   onboarded: false,
+  tourDone: false,
   aiProvider: 'builtin',
   aiModel: 'balanced',
   aiBaseUrl: '',

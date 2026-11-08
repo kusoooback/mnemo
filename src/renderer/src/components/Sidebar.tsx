@@ -84,22 +84,22 @@ export function Sidebar(): React.JSX.Element {
           <span className="kbd">{shortcut('Ctrl K')}</span>
         </button>
 
-        <button className="nav-item new" onClick={() => openEditor({ deckId: activeDeck })}>
+        <button data-nav="new" className="nav-item new" onClick={() => openEditor({ deckId: activeDeck })}>
           <span className="new-dot">
             <Plus size={14} />
           </span>
           <span className="label">{t('nav.new')}</span>
           <span className="kbd">{shortcut('Ctrl N')}</span>
         </button>
-        <button className={`nav-item ${is('home') ? 'active' : ''}`} onClick={() => go({ name: 'home' })}>
+        <button className={`nav-item ${is('home') ? 'active' : ''}`} onClick={() => go({ name: 'home' })} data-nav="home">
           <Sun size={18} />
           <span className="label">{t('nav.today')}</span>
         </button>
-        <button className={`nav-item ${is('library') ? 'active' : ''}`} onClick={() => go({ name: 'library' })}>
+        <button className={`nav-item ${is('library') ? 'active' : ''}`} onClick={() => go({ name: 'library' })} data-nav="library">
           <Library size={18} />
           <span className="label">{t('nav.library')}</span>
         </button>
-        <button className={`nav-item ${is('stats') ? 'active' : ''}`} onClick={() => go({ name: 'stats' })}>
+        <button className={`nav-item ${is('stats') ? 'active' : ''}`} onClick={() => go({ name: 'stats' })} data-nav="stats">
           <BarChart3 size={18} />
           <span className="label">{t('nav.stats')}</span>
         </button>
@@ -107,35 +107,35 @@ export function Sidebar(): React.JSX.Element {
           <Upload size={18} />
           <span className="label">{t('nav.import')}</span>
         </button>
-        <button className={`nav-item ${is('prepa') ? 'active' : ''}`} onClick={() => go({ name: 'prepa' })}>
+        <button className={`nav-item ${is('prepa') ? 'active' : ''}`} onClick={() => go({ name: 'prepa' })} data-nav="prepa">
           <BookOpenCheck size={18} />
           <span className="label">{t('nav.prepa')}</span>
         </button>
-        <button className={`nav-item ${is('notebook') ? 'active' : ''}`} onClick={() => go({ name: 'notebook' })}>
+        <button className={`nav-item ${is('notebook') ? 'active' : ''}`} onClick={() => go({ name: 'notebook' })} data-nav="notebook">
           <CalendarDays size={18} />
           <span className="label">{t('nav.notebook')}</span>
         </button>
-        <button className={`nav-item ${is('ai') ? 'active' : ''}`} onClick={() => go({ name: 'ai' })}>
+        <button className={`nav-item ${is('ai') ? 'active' : ''}`} onClick={() => go({ name: 'ai' })} data-nav="ai">
           <Sparkles size={18} />
           <span className="label">{t('nav.ai')}</span>
         </button>
-        <button className={`nav-item ${is('assistant') ? 'active' : ''}`} onClick={() => go({ name: 'assistant' })}>
+        <button className={`nav-item ${is('assistant') ? 'active' : ''}`} onClick={() => go({ name: 'assistant' })} data-nav="assistant">
           <MessageCircle size={18} />
           <span className="label">{t('nav.assistant')}</span>
         </button>
-        <button className={`nav-item ${is('resources') ? 'active' : ''}`} onClick={() => go({ name: 'resources' })}>
+        <button className={`nav-item ${is('resources') ? 'active' : ''}`} onClick={() => go({ name: 'resources' })} data-nav="resources">
           <Compass size={18} />
           <span className="label">{t('nav.resources')}</span>
         </button>
-        <button className={`nav-item ${is('quiz') ? 'active' : ''}`} onClick={() => go({ name: 'quiz' })}>
+        <button className={`nav-item ${is('quiz') ? 'active' : ''}`} onClick={() => go({ name: 'quiz' })} data-nav="quiz">
           <ListChecks size={18} />
           <span className="label">{t('nav.quiz')}</span>
         </button>
-        <button className={`nav-item ${is('packs') ? 'active' : ''}`} onClick={() => go({ name: 'packs' })}>
+        <button className={`nav-item ${is('packs') ? 'active' : ''}`} onClick={() => go({ name: 'packs' })} data-nav="packs">
           <Share2 size={18} />
           <span className="label">{t('nav.packs')}</span>
         </button>
-        <button className={`nav-item ${is('sheets') ? 'active' : ''}`} onClick={() => go({ name: 'sheets' })}>
+        <button className={`nav-item ${is('sheets') ? 'active' : ''}`} onClick={() => go({ name: 'sheets' })} data-nav="sheets">
           <ScrollText size={18} />
           <span className="label">{t('nav.sheets')}</span>
         </button>
@@ -186,7 +186,7 @@ export function Sidebar(): React.JSX.Element {
             {settings.syncMode === 'folder' ? t('sync.active') : t('nav.localOnly')}
           </button>
         </div>
-        <button className={`icon-btn ${is('settings') ? 'on' : ''}`} onClick={() => go({ name: 'settings' })} aria-label={t('nav.settings')} title={t('nav.settings')}>
+        <button data-nav="settings" className={`icon-btn ${is('settings') ? 'on' : ''}`} onClick={() => go({ name: 'settings' })} aria-label={t('nav.settings')} title={t('nav.settings')}>
           <Settings size={18} />
         </button>
       </div>

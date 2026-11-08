@@ -5,6 +5,7 @@ import { call } from './api'
 import { Editor } from './components/Editor'
 import { ImportWizard } from './components/ImportWizard'
 import { Onboarding } from './components/Onboarding'
+import { Tour } from './components/Tour'
 import { Palette } from './components/Palette'
 import { Sidebar } from './components/Sidebar'
 import { useT } from './i18n'
@@ -141,7 +142,7 @@ function useGlobalShortcuts(): void {
 
 export default function App(): React.JSX.Element | null {
   const t = useT()
-  const { ready, init, route, sidebarOpen, setSidebar, palette, shortcuts, editor, toasts, onboarding, bump, openEditor, toast, importer, openImport, go } = useStore()
+  const { ready, init, route, sidebarOpen, setSidebar, palette, shortcuts, editor, toasts, onboarding, tour, bump, openEditor, toast, importer, openImport, go } = useStore()
   const [dragging, setDragging] = useState(false)
   useAppearance()
   useGlobalShortcuts()
@@ -266,7 +267,8 @@ export default function App(): React.JSX.Element | null {
       {editor && <Editor />}
       {palette && <Palette />}
       {shortcuts && <ShortcutsHelp />}
-      {onboarding && <Onboarding />}
+      {tour && <Tour />}
+      {onboarding && !tour && <Onboarding />}
       {importer && <ImportWizard />}
       {dragging && (
         <div className="drop-overlay">

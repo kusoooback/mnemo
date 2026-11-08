@@ -13,7 +13,7 @@ import { installMenu } from './menu'
 import { startBridge, stopBridge } from './bridge'
 import { loadWinState, trackWinState, watchAutoZoom } from './winstate'
 import { startAutoSync, stopAutoSync, syncOnQuit } from './syncctl'
-import { getSettings } from './util'
+import { getSettings, setSettings } from './util'
 import { skinById } from '../shared/skins'
 
 app.setPath('userData', process.env.MNEMO_USER_DATA || join(app.getPath('appData'), 'Mnemo'))
@@ -191,11 +191,12 @@ if (!app.requestSingleInstanceLock()) {
     ensureDailyBackup().catch((e) => console.error('Sauvegarde automatique échouée', e))
 
     app.on('browser-window-created', (_, window) => optimizer.watchWindowShortcuts(window))
+    if (process.env.MNEMO_QA_DIR && !process.env.MNEMO_QA_TOUR) setSettings({ tourDone: true })
     createWindow()
     if (process.env.MNEMO_QA_DIR && mainWindow) {
       const win = mainWindow
       win.webContents.once('did-finish-load', () => {
-        const load = process.env.MNEMO_QA_ECO ? import('./qa-eco').then((m) => m.runEco) : process.env.MNEMO_QA_MATH ? import('./qa-math').then((m) => m.runMath) : process.env.MNEMO_QA_QUIZ ? import('./qa-quiz').then((m) => m.runQuiz) : process.env.MNEMO_QA_ASSISTANT ? import('./qa-assistant').then((m) => m.runAssistant) : process.env.MNEMO_QA_BRIDGE ? import('./qa-bridge').then((m) => m.runBridge) : process.env.MNEMO_QA_SKINS ? import('./qa-skins').then((m) => m.runSkins) : process.env.MNEMO_QA_OCCLUSION ? import('./qa-occlusion').then((m) => m.runOcclusion) : process.env.MNEMO_QA_KEY ? import('./qa-key').then((m) => m.runKey) : process.env.MNEMO_QA_PDFEXPORT ? import('./qa-pdf').then((m) => m.runPdfExport) : process.env.MNEMO_QA_SHEET ? import('./qa-sheet').then((m) => m.runSheet) : process.env.MNEMO_QA_COLORS ? import('./qa-colors').then((m) => m.runColors) : process.env.MNEMO_QA_LAYOUT ? import('./qa-layout').then((m) => m.runLayout) : process.env.MNEMO_QA_REVIEW ? import('./qa-review').then((m) => m.runReview) : process.env.MNEMO_QA_CARDS ? import('./qa-cards').then((m) => m.runCards) : process.env.MNEMO_QA_TRIAGE ? import('./qa-triage').then((m) => m.runTriage) : process.env.MNEMO_QA_HOME ? import('./qa-home').then((m) => m.runHome) : process.env.MNEMO_QA_VIEWER ? import('./qa-viewer').then((m) => m.runViewer) : process.env.MNEMO_QA_SIZES ? import('./qa-sizes').then((m) => m.runSizes) : import('./qa').then((m) => m.runQa)
+        const load = process.env.MNEMO_QA_TOUR ? import('./qa-tour').then((m) => m.runTour) : process.env.MNEMO_QA_ECO ? import('./qa-eco').then((m) => m.runEco) : process.env.MNEMO_QA_MATH ? import('./qa-math').then((m) => m.runMath) : process.env.MNEMO_QA_QUIZ ? import('./qa-quiz').then((m) => m.runQuiz) : process.env.MNEMO_QA_ASSISTANT ? import('./qa-assistant').then((m) => m.runAssistant) : process.env.MNEMO_QA_BRIDGE ? import('./qa-bridge').then((m) => m.runBridge) : process.env.MNEMO_QA_SKINS ? import('./qa-skins').then((m) => m.runSkins) : process.env.MNEMO_QA_OCCLUSION ? import('./qa-occlusion').then((m) => m.runOcclusion) : process.env.MNEMO_QA_KEY ? import('./qa-key').then((m) => m.runKey) : process.env.MNEMO_QA_PDFEXPORT ? import('./qa-pdf').then((m) => m.runPdfExport) : process.env.MNEMO_QA_SHEET ? import('./qa-sheet').then((m) => m.runSheet) : process.env.MNEMO_QA_COLORS ? import('./qa-colors').then((m) => m.runColors) : process.env.MNEMO_QA_LAYOUT ? import('./qa-layout').then((m) => m.runLayout) : process.env.MNEMO_QA_REVIEW ? import('./qa-review').then((m) => m.runReview) : process.env.MNEMO_QA_CARDS ? import('./qa-cards').then((m) => m.runCards) : process.env.MNEMO_QA_TRIAGE ? import('./qa-triage').then((m) => m.runTriage) : process.env.MNEMO_QA_HOME ? import('./qa-home').then((m) => m.runHome) : process.env.MNEMO_QA_VIEWER ? import('./qa-viewer').then((m) => m.runViewer) : process.env.MNEMO_QA_SIZES ? import('./qa-sizes').then((m) => m.runSizes) : import('./qa').then((m) => m.runQa)
         load
           .then((run) => run(win, process.env.MNEMO_QA_DIR as string))
           .catch((e) => console.error('QA', e))

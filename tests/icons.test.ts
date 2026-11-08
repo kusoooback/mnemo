@@ -18,7 +18,7 @@ function files(dir: string, out: string[] = []): string[] {
 }
 
 /** Les seuls écrans où l'étincelle est autorisée : ils mènent tous à la génération par l'IA. */
-const ALLOWED = ['Sidebar.tsx', 'Palette.tsx', 'AiPage.tsx', 'Home.tsx', 'ImportWizard.tsx']
+const ALLOWED = ['Sidebar.tsx', 'Palette.tsx', 'AiPage.tsx', 'Home.tsx', 'ImportWizard.tsx', 'Tour.tsx']
 
 describe('Icônes', () => {
   it('l’étincelle est réservée à « Génération IA »', () => {

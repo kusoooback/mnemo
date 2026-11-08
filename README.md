@@ -243,7 +243,9 @@ Apple demande 99 $ par an aux développeurs pour « signer » leur application. 
 
 ### Premier lancement (Windows et Mac)
 
-La première fois, Mnémo affiche un écran d'accueil qui te propose **trois choses, toutes facultatives** :
+La toute première fois, Mnémo lance une **visite guidée animée** de 10 étapes (environ une minute) : créer des cartes, réviser, répétition espacée, quiz, assistant, partage, formules et dessin, personnalisation. Avance avec **Suivant**, les flèches ← → ou Entrée ; **Échap** (ou « Passer la visite ») la ferme. Pour la revoir quand tu veux : **Ctrl + K**, puis tape « visite guidée ». Si ton système est réglé sur « réduire les animations », les images restent fixes.
+
+Ensuite, Mnémo affiche un écran d'accueil qui te propose **trois choses, toutes facultatives** :
 
 1. **Importer un paquet de cartes** (si tu venais d'Anki) ;
 2. **Synchroniser deux ordinateurs** ;

@@ -51,6 +51,8 @@ interface Store {
   /** Texte transmis à la page de génération IA (Notion, fichier…). */
   aiSeed: string | null
   onboarding: boolean
+  /** Visite guidée (premier lancement, ou rejouée à la demande). */
+  tour: boolean
   /** Assistant d'import ouvert (éventuellement sur un fichier déposé ou pour un deck précis). */
   importer: { path?: string; deckId?: string | null } | null
   toasts: Toast[]
@@ -68,6 +70,7 @@ interface Store {
   openEditor: (state: EditorState | null) => void
   setAiSeed: (text: string | null) => void
   setOnboarding: (on: boolean) => void
+  setTour: (on: boolean) => void
   openImport: (state: { path?: string; deckId?: string | null } | null) => void
   toast: (text: string, opts?: Partial<Omit<Toast, 'id' | 'text'>>) => void
 }
@@ -87,13 +90,14 @@ export const useStore = create<Store>((set, get) => ({
   editor: null,
   aiSeed: null,
   onboarding: false,
+  tour: false,
   importer: null,
   toasts: [],
   rev: 0,
 
   init: async () => {
     const [settings, decks, jobs] = await Promise.all([call('settings.get'), call('deck.list'), call('jobs.list')])
-    set({ settings, decks, jobs, ready: true, onboarding: !settings.onboarded && decks.length === 0 })
+    set({ settings, decks, jobs, ready: true, onboarding: !settings.onboarded && decks.length === 0, tour: !settings.tourDone })
   },
   refreshDecks: async () => set({ decks: await call('deck.list') }),
   bump: async () => {
@@ -108,6 +112,7 @@ export const useStore = create<Store>((set, get) => ({
   openEditor: (editor) => set({ editor, palette: false }),
   setAiSeed: (aiSeed) => set({ aiSeed }),
   setOnboarding: (onboarding) => set({ onboarding }),
+  setTour: (tour) => set({ tour }),
   openImport: (importer) => set({ importer, palette: false }),
   toast: (text, opts) => {
     const id = toastId++
