@@ -460,6 +460,10 @@ export async function importPrepa(
   mkdirSync(documentsDir(), { recursive: true })
   const deckBySubject = new Map<string, string>()
   result.purged = purgeBadAutoCards()
+  // Un deck par matière du site (Allemand, Anglais…), même sans cours sélectionné : l'arborescence doit refléter le cahier de prépa.
+  for (const s of scan.subjects) {
+    if (s.name.trim() && !deckBySubject.has(s.name)) deckBySubject.set(s.name, createDeck([rootName, s.name].join('::'), null))
+  }
 
   const chaptersOf = (subject: string): string[] =>
     (db.prepare("SELECT DISTINCT chapter FROM document WHERE subject = ? AND chapter <> '' AND deleted_at IS NULL AND dup_of IS NULL").all(subject) as { chapter: string }[]).map((r) => r.chapter)
@@ -628,7 +632,7 @@ export async function importPrepa(
 
   // Cahier de texte d'abord : les matières liées à un deck le protègent du nettoyage des decks vides.
   if (opts.addToNotebook) result.events = addEventsToNotebook(scan, deckBySubject)
-  pruneEmptyDecks(rootName)
+  pruneEmptyDecks(rootName, new Set(scan.subjects.map((x) => x.name.toLowerCase())))
   if (opts.generateCards && !ai.ready) result.warnings.push('L’IA n’est pas prête : les documents ont été rangés, mais aucune carte n’a été créée.')
   progress({ phase: 'done', index: total, total, title: '' })
   return result
@@ -637,14 +641,15 @@ export async function importPrepa(
 /**
  * Supprime les decks vides (sans carte, sans sous-deck, sans document ni échéance) sous le deck racine de l'import :
  * ce qu'a laissé un ancien rangement erroné, ou un dossier du site qui ne contient finalement rien.
+ * Les decks de matière du site (enfants directs du deck racine, ex. « Allemand ») sont toujours conservés, même vides.
  */
-export function pruneEmptyDecks(rootName: string): number {
+export function pruneEmptyDecks(rootName: string, keepSubjects: ReadonlySet<string> = new Set()): number {
   const db = getDb()
   const root = db.prepare('SELECT id FROM deck WHERE deleted_at IS NULL AND parent_id IS NULL AND name = ? COLLATE NOCASE').get(rootName) as { id: string } | undefined
   if (!root) return 0
   let removed = 0
   for (let pass = 0; pass < 10; pass++) {
-    const rows = db
+    let rows = db
       .prepare(
         `WITH RECURSIVE sub(id) AS (SELECT id FROM deck WHERE parent_id = ? AND deleted_at IS NULL
            UNION ALL SELECT d.id FROM deck d JOIN sub ON d.parent_id = sub.id WHERE d.deleted_at IS NULL)
@@ -656,6 +661,13 @@ export function pruneEmptyDecks(rootName: string): number {
            AND NOT EXISTS (SELECT 1 FROM subject WHERE subject.deck_id = sub.id AND subject.deleted_at IS NULL)`
       )
       .all(root.id) as { id: string }[]
+    // Les matières du site (enfants directs de la racine) restent, même vides.
+    const keep = new Set(
+      (db.prepare('SELECT id, name FROM deck WHERE parent_id = ? AND deleted_at IS NULL').all(root.id) as { id: string; name: string }[])
+        .filter((d) => keepSubjects.has(d.name.toLowerCase()))
+        .map((d) => d.id)
+    )
+    rows = rows.filter((r) => !keep.has(r.id))
     if (rows.length === 0) break
     for (const r of rows) deleteDeck(r.id)
     removed += rows.length

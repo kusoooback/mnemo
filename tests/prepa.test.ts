@@ -249,6 +249,30 @@ describe('Cahier de Prépa : rangement et relecture', () => {
     expect(names).not.toContain('Prépa::Général::Chap 1')
     expect(names).toContain('Prépa::Anglais::Cellule')
   })
+
+  it('garde un deck pour chaque matière du site, même sans cours sélectionné ni carte (ex. Allemand)', async () => {
+    const { getDb } = await import('../src/main/db')
+    const { fetchHttp, scanSite, importPrepa, pruneEmptyDecks } = await import('../src/main/prepa')
+    const { listDecks, createDeck, deleteDeck } = await import('../src/main/repo')
+    const http = fetchHttp(fetch)
+    const scan = await scanSite(http, base, new Date(2026, 9, 10))
+    // On repart d'un état où le deck de la matière « Mathématiques » n'existe pas.
+    for (const d of listDecks().filter((x) => x.fullName === 'Prépa::Mathématiques')) deleteDeck(d.id)
+    expect(listDecks().map((d) => d.fullName)).not.toContain('Prépa::Mathématiques')
+    // On n'importe QUE le document d'anglais : la matière sans cours doit quand même apparaître.
+    await importPrepa(http, { baseUrl: base, remoteIds: ['11'], deckRoot: 'Prépa', addToNotebook: false, generateCards: false, makeSummary: false, cardsPerDoc: 6 }, () => undefined)
+    expect(scan.subjects.map((s) => s.name)).toContain('Mathématiques')
+    expect(listDecks().map((d) => d.fullName)).toContain('Prépa::Mathématiques')
+    // Le nettoyage supprime toujours un chapitre vide qui n'est pas une matière du site.
+    createDeck('Prépa::Mathématiques::Chapitre fantôme', null)
+    createDeck('Prépa::Divers inutile', null)
+    pruneEmptyDecks('Prépa', new Set(scan.subjects.map((s) => s.name.toLowerCase())))
+    const names = listDecks().map((d) => d.fullName)
+    expect(names).toContain('Prépa::Mathématiques')
+    expect(names).not.toContain('Prépa::Mathématiques::Chapitre fantôme')
+    expect(names).not.toContain('Prépa::Divers inutile')
+    expect(getDb()).toBeTruthy()
+  })
 })
 
 describe('Garantie avant l’échéance', () => {
