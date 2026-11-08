@@ -1,3 +1,5 @@
+<p align="center"><img src="resources/icon.png" alt="Logo de Mnémo" width="140"></p>
+
 # Mnémo
 
 **Une application de révision par cartes mémoire, gratuite, qui marche sans internet et sans compte.**

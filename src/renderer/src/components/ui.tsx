@@ -1,25 +1,10 @@
 import { X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import logoUrl from '../assets/logo.png'
 import { useT } from '../i18n'
 
 export function Logo({ size = 26 }: { size?: number }): React.JSX.Element {
-  return (
-    <svg width={size} height={size} viewBox="0 0 512 512" fill="none" aria-hidden>
-      <rect width="512" height="512" rx="112" fill="#C6613F" />
-      <g transform="translate(256 256)">
-        <rect x="-104" y="-132" width="208" height="264" rx="40" transform="rotate(-11)" fill="#FAF9F5" opacity="0.38" />
-        <rect x="-104" y="-132" width="208" height="264" rx="40" fill="#FAF9F5" />
-        <path
-          d="M-44 52V-18c0-18 12-28 28-28 15 0 26 10 26 28v70m0-70c0-18 12-28 28-28 15 0 26 10 26 28V52"
-          transform="translate(4 8)"
-          stroke="#C6613F"
-          strokeWidth="22"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </g>
-    </svg>
-  )
+  return <img src={logoUrl} width={size} height={size} alt="" aria-hidden draggable={false} style={{ objectFit: 'contain', display: 'block' }} />
 }
 
 /** Fenêtres ouvertes, de la plus ancienne à la plus récente. */

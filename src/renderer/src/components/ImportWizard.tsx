@@ -290,7 +290,7 @@ export function ImportWizard(): React.JSX.Element | null {
         {/* ---- Résultat ---- */}
         {result ? (
           <div style={{ textAlign: 'center', padding: '8px 0 4px' }}>
-            <Logo size={44} />
+            <Logo size={56} />
             <div className="serif" style={{ fontSize: '2rem', margin: '10px 0 2px' }}>{t('imp.done.added', { n: result.added })}</div>
             <div className="muted" style={{ marginBottom: 14 }}>{result.source}</div>
             <div className="row" style={{ justifyContent: 'center', flexWrap: 'wrap', gap: 8, marginBottom: 6 }}>

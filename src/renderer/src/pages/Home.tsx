@@ -63,7 +63,7 @@ export function Home(): React.JSX.Element {
         </>
       )}
       <div className="hello">
-        <Logo size={40} />
+        <Logo size={52} />
         <h1>
           {greeting}
           {name ? `, ${name}` : ''}

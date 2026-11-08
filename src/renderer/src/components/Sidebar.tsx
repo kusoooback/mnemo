@@ -71,7 +71,7 @@ export function Sidebar(): React.JSX.Element {
           <PanelLeft size={18} />
         </button>
         <div className="brand">
-          <Logo size={22} />
+          <Logo size={30} />
           Mnémo
         </div>
       </div>

@@ -297,7 +297,7 @@ export function Review({ deckId }: { deckId: string | null }): React.JSX.Element
       ) : (
         <div className="rv-scroll">
           <div className="done">
-            <Logo size={44} />
+            <Logo size={56} />
             <h2>{session.done > 0 ? t('review.doneTitle') : t('review.doneNone')}</h2>
             {session.done > 0 && <p className="muted">{t('review.doneText', { n: session.done })}</p>}
             {session.done > 0 && (

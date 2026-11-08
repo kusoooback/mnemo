@@ -30,7 +30,7 @@ export function Onboarding(): React.JSX.Element {
     <Modal title={t('ob.title')} onClose={() => void finish()} width={560}>
       <div className="modal-body">
         <div className="row" style={{ gap: 14, marginBottom: 16 }}>
-          <Logo size={44} />
+          <Logo size={56} />
           <p className="muted">{t('ob.sub')}</p>
         </div>
         {steps.map((s, i) => (
