@@ -449,7 +449,7 @@ Tu peux aussi brancher Groq, Google Gemini, Ollama ou ta propre clé Claude / Op
 
 Menu **Assistant** : une conversation avec l'IA que tu as choisie (voir ci-dessus). Elle **connaît toute l'application** (pages, raccourcis, imports, fiches, réglages) et l'état de tes decks, donc tu peux lui demander « comment j'importe mon paquet Anki ? » et elle te répond avec les bons clics.
 
-- **Dicter ou coller un cours** : clique sur **Dictée** (ou écris « je vais te dicter mon cours »), puis envoie ton cours en autant de messages que tu veux : l'assistant ne répond pas entre-temps et compte les mots. Écris **« c'est fini »**, puis choisis **Créer des cartes**, **Créer une fiche**, **Créer des exercices** ou **Cartes + fiche**. Un très gros cours (par exemple 50 copies doubles) est découpé automatiquement par l'application : rien n'est perdu et il n'y a pas de limite de longueur.
+- **Dicter ou coller un cours** : clique sur **Dictée** (ou écris « je vais te dicter mon cours »), puis envoie ton cours en autant de messages que tu veux : l'assistant ne répond pas entre-temps et compte les mots. Écris **« c'est fini »**, puis choisis **Créer des cartes**, **Créer une fiche**, **Créer des exercices** ou **Cartes + fiche**. Un très gros cours (par exemple 50 copies doubles) est découpé automatiquement par l'application : rien n'est perdu et il n'y a pas de limite de longueur. Une demande crée **au plus 200 cartes** : pour tout un cahier, travaille **chapitre par chapitre** (une dictée, une création, puis tu recommences avec le chapitre suivant). Avec une IA en ligne, compte environ 1 à 2 minutes de traitement par tranche de 10 000 mots ; avec le petit modèle installé sur le PC, plus lentement et avec des cartes de moindre qualité.
 - **Tu valides tout** : les cartes sont proposées dans la conversation (tu coches, tu choisis le deck, les doublons sont repérés), les fiches et les exercices (avec corrigé) sont enregistrés dans **Fiches**.
 - **Être interrogé** : **Joindre une fiche**, puis « interroge-moi ». L'assistant pose une question à la fois, corrige et adapte la difficulté.
 - **Compléter un cours** : coche **Recherche web** : l'assistant peut chercher sur Wikipédia ou lire une page dont tu donnes l'adresse, te montre ses sources, puis en tirer des cartes ou une fiche. Décoché, rien ne sort de l'ordinateur.
@@ -490,6 +490,10 @@ Menu **Ressources** : plus de quarante sites choisis pour la prépa et le supér
 - **Copier ma liste / Importer une liste** : partage tes favoris et tes sources avec un ami en collant un texte.
 - **Lire et créer des cartes** : Mnémo télécharge **cette seule page** (au clic), puis l'assistant te propose des cartes, une fiche ou des exercices à partir de son texte.
 - Les adresses ont été testées depuis un ordinateur, mais un site peut changer ou bloquer les programmes : celles qu'on n'a pas pu vérifier (par exemple psim.fr, injoignable depuis notre environnement de test) portent la mention **non vérifié**. Tu peux proposer une correction ou un ajout dans `src/shared/resources.ts`.
+
+### Formules mathématiques
+
+Écris tes formules comme tu veux : `$x^2$`, `$$\int_0^1 f$$`, `\(x^2\)`, `\[ … \]` ou un bloc `egin{pmatrix} … \end{pmatrix}`. Mnémo les **affiche toujours en vraies formules** (révision, bibliothèque, recherche, doublons, aperçus, cartes importées d'Anki ou écrites par l'IA), jamais en code brut. Un `$` isolé (« 5 $ et 6 $ ») reste du texte.
 
 ### Dessiner à la main (et à la souris, au doigt, au stylet)
 
