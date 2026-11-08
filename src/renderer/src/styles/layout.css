@@ -236,3 +236,94 @@
 .main-kept {
   display: none !important;
 }
+
+/* ---------- Survol de la barre latérale : lueur chaude, barre d'accent, icône qui s'éveille ---------- */
+.nav-item,
+.nav-group-head {
+  position: relative;
+  transition: background 0.22s ease, color 0.18s ease, box-shadow 0.28s ease, transform 0.22s cubic-bezier(0.2, 0.8, 0.3, 1.2);
+}
+.nav-item::before,
+.nav-group-head::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 3px;
+  height: 0;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(180deg, var(--btn-hi, var(--accent)), var(--accent));
+  box-shadow: 0 0 10px 1px color-mix(in srgb, var(--accent) 65%, transparent);
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: height 0.24s cubic-bezier(0.2, 0.8, 0.3, 1.2), opacity 0.18s ease;
+  pointer-events: none;
+}
+.nav-item:hover:not(.disabled),
+.nav-group-head:hover {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--accent) 17%, transparent) 0%, color-mix(in srgb, var(--accent) 6%, transparent) 55%, transparent 100%),
+    var(--hover);
+  box-shadow: 0 0 18px -4px color-mix(in srgb, var(--accent) 38%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--text);
+}
+.nav-item:hover:not(.disabled)::before,
+.nav-group-head:hover::before {
+  height: 14px;
+  opacity: 0.85;
+}
+.nav-item:hover:not(.disabled) {
+  transform: translateX(2px);
+}
+.nav-item svg {
+  transition: color 0.2s ease, transform 0.26s cubic-bezier(0.2, 0.8, 0.3, 1.4), filter 0.26s ease;
+}
+.nav-item:hover:not(.disabled) svg {
+  color: var(--accent);
+  transform: scale(1.12) rotate(-4deg);
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--accent) 55%, transparent));
+}
+.nav-group-head:hover .chev,
+.nav-group-head:hover .gi {
+  color: var(--accent);
+}
+.nav-item.active {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--accent) 22%, transparent) 0%, color-mix(in srgb, var(--accent) 8%, transparent) 60%, transparent 100%),
+    var(--active);
+  box-shadow: 0 0 20px -5px color-mix(in srgb, var(--accent) 45%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+.nav-item.active::before {
+  height: 18px;
+  opacity: 1;
+}
+.nav-item.active svg {
+  color: var(--accent);
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--accent) 45%, transparent));
+}
+.nav-item.new:hover {
+  transform: none;
+}
+.nav-item.new:hover svg {
+  transform: none;
+  filter: none;
+}
+.nav-item.new:hover .new-dot {
+  filter: brightness(1.1);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.45) inset, 0 0 14px 1px var(--btn-glow, var(--accent));
+}
+.nav-item:active:not(.disabled) {
+  transform: translateX(1px) scale(0.985);
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-item,
+  .nav-item svg,
+  .nav-item::before,
+  .nav-group-head::before {
+    transition: background 0.1s, color 0.1s;
+  }
+  .nav-item:hover:not(.disabled),
+  .nav-item:hover:not(.disabled) svg {
+    transform: none;
+  }
+}
