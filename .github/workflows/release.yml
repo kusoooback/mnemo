@@ -33,7 +33,13 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npx electron-vite build
-      - run: npx electron-builder ${{ matrix.args }} --publish never
+      - name: Construire l'installateur
+        # Sans secret de signature, GitHub fournit une chaîne VIDE : electron-builder la prend alors pour un chemin de fichier
+        # (« not a file »). On retire donc les variables vides pour retomber sur la signature « ad hoc ».
+        shell: bash
+        run: |
+          if [ -z "$CSC_LINK" ]; then unset CSC_LINK CSC_KEY_PASSWORD; fi
+          npx electron-builder ${{ matrix.args }} --publish never
         env:
           # Sans certificat Apple, la signature « ad hoc » de build/afterPack.js est appliquée.
           # Pour signer et notarier : ajouter CSC_LINK / CSC_KEY_PASSWORD (et APPLE_ID…) dans les secrets du dépôt.
