@@ -9,8 +9,52 @@ Tes cartes restent sur ton ordinateur. Elle remplace Anki avec une interface plu
 
 ---
 
+## 🔒 Vie privée : Mnémo ne récupère rien, jamais
+
+**Mnémo est « privacy first » : tout reste sur ton ordinateur.** Le développeur n'a aucun serveur, aucune base de données et aucun moyen de voir ce que tu fais. Il ne reçoit rien de toi, et ne pourrait rien recevoir même s'il le voulait.
+
+- **Pas de compte.** Pas d'inscription, pas d'adresse e-mail, pas de mot de passe pour utiliser Mnémo.
+- **Pas de télémétrie.** Aucune statistique d'usage, aucun rapport de plantage, aucun traceur, aucune publicité, aucun outil d'analyse.
+- **Pas de serveur à nous.** Aucune donnée n'est envoyée à l'auteur de Mnémo, ni à qui que ce soit d'autre, *par défaut*.
+- **Pas de vérification de mise à jour cachée.** Mnémo ne se met pas à jour tout seul et ne « téléphone » pas pour demander s'il existe une nouvelle version. Tu télécharges toi-même la nouvelle version quand tu le décides.
+- **Tout est stocké en local** : cartes, cours, notes, historique de révision, réglages, dans un dossier de ton ordinateur (voir [où sont mes données ?](#si-tu-veux-savoir-où-sont-tes-données)). Si tu supprimes Mnémo et ce dossier, il ne reste rien nulle part.
+- **Fonctionne 100 % hors ligne.** Les polices, la reconnaissance de texte (OCR) et l'interface sont dans l'application. Tu peux couper internet : tout marche.
+- **Open source (licence MIT).** Tu n'as pas à me croire sur parole : le code est ici, lisible par tout le monde. L'interface elle-même est verrouillée pour ne parler à aucun serveur externe (la politique de sécurité de la fenêtre n'autorise que les fichiers de l'application).
+
+### Les seuls cas où Mnémo se connecte à internet
+
+Et **uniquement parce que tu l'as demandé**, jamais en arrière-plan sans que tu aies activé la fonction :
+
+| Fonction | Se connecte à | Ce qui est envoyé | Par défaut ? |
+| --- | --- | --- | --- |
+| **Télécharger le modèle d'IA intégré** (une seule fois, quand tu cliques sur *Télécharger et activer*) | Hugging Face (le site qui héberge le modèle) | Rien de toi : seulement la demande du fichier du modèle. Ensuite l'IA tourne **sur ton PC**, sans internet. | Non, sur clic |
+| **Cahier de Prépa** (import et synchro de tes cours) | **Le site de ta classe**, à l'adresse que tu as saisie | Tes identifiants vont **uniquement** à ce site, comme dans un navigateur. Les cours téléchargés sont stockés chez toi. La synchro automatique ne s'active qu'après ton premier import manuel. | Non |
+| **IA en ligne (optionnel)** : OpenRouter, Groq, Google Gemini, OpenAI, Claude… | Le fournisseur que **tu** as choisi, avec **ta propre clé** | Le texte que tu demandes de transformer en cartes ou en fiches. **Il quitte alors ton ordinateur.** Garde l'IA intégrée pour les documents confidentiels. | Non (IA intégrée par défaut) |
+| **Ollama** (optionnel) | Ton propre ordinateur (`localhost`) | Rien ne sort de ta machine | Non |
+| **Notion** (optionnel) | Notion, avec ton jeton | Ton jeton, pour **lire** les pages que tu importes (Mnémo n'écrit rien dans Notion) | Non |
+| **Ouvrir un lien** (par exemple openrouter.ai) | Ton navigateur habituel, quand tu cliques | Rien de la part de Mnémo | Sur clic |
+
+À part ça : **aucune connexion**. Au premier lancement, tant que tu n'as rien activé de la liste ci-dessus, Mnémo ne contacte aucun serveur.
+
+### Ce qui est protégé en plus
+
+- Les **clés API et mots de passe** que tu enregistres sont chiffrés par le système (Windows / trousseau macOS) et jamais écrits en clair dans les fichiers de Mnémo.
+- La **synchronisation entre deux ordinateurs** passe par un dossier que *tu* choisis (OneDrive, Dropbox, clé USB…) et le fichier est **chiffré** avec ta phrase secrète (AES-256) : même le service de stockage ne peut pas le lire.
+- Les **sauvegardes** sont de simples fichiers sur ton disque.
+
+### Comment le vérifier toi-même
+
+- Coupe le Wi-Fi (ou mets ton PC en mode avion) : Mnémo fonctionne exactement pareil.
+- Utilise le pare-feu de ton système pour lui interdire l'accès à internet : rien ne change tant que tu n'utilises pas les fonctions de la liste.
+- Lis le code : tout est dans `src/`, et les seules adresses externes y figurent dans la liste ci-dessus.
+
+> **Soyons honnêtes sur ce que cette promesse ne couvre pas** : Mnémo ne contrôle pas ce que font les sites que *tu* choisis d'utiliser (le site de ta classe, un fournisseur d'IA). Si tu utilises une IA en ligne, **leurs** règles de confidentialité s'appliquent à ce que tu leur envoies. Et Windows et macOS, eux, ont leurs propres communications avec leurs fabricants : c'est en dehors de Mnémo.
+
+---
+
 ## Sommaire
 
+0. [Vie privée : Mnémo ne récupère rien](#-vie-privée--mnémo-ne-récupère-rien-jamais)
 1. [Installer Mnémo : guide pas à pas, Windows et Mac, même sans rien connaître](#1-installer-mnémo)
 2. [Premiers pas en 3 minutes](#2-premiers-pas-en-3-minutes)
 3. [Passer d'Anki (ou d'autre chose) à Mnémo](#3-passer-danki-ou-dautre-chose-à-mnémo)
