@@ -1,6 +1,6 @@
 {
   "name": "mnemo",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Mnémo — révision par répétition espacée, locale, à code source visible",
   "main": "./out/main/index.js",
   "author": "Malo",
