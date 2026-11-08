@@ -3664,3 +3664,67 @@ svg.lucide {
     align-items: stretch;
   }
 }
+
+/* Paquets (partage) */
+.pk-block {
+  margin-bottom: 14px;
+  max-width: 820px;
+}
+.pk-h {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-size: 1rem;
+}
+.pk-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.pk-wide {
+  grid-column: 1 / -1;
+}
+.pk-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+.pk-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+.pk-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+.pk-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 0;
+  border-top: 0.5px solid var(--border);
+}
+.pk-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pk-sample {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+@media (max-width: 720px) {
+  .pk-grid {
+    grid-template-columns: 1fr;
+  }
+}

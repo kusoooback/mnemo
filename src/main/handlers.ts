@@ -31,6 +31,7 @@ import {
 import * as nb from './notebook'
 import { webPage } from './web'
 import { bridgeState, startBridge, stopBridge } from './bridge'
+import { shareCancel, shareCatalog, shareExport, shareFetch, shareInstall, sharePick } from './share'
 import { assistantAddCards, assistantChat, assistantMakeCards, assistantMakeExercises, assistantMakeSheets } from './assistant'
 import * as repo from './repo'
 import { getStats } from './stats'
@@ -385,6 +386,16 @@ export function registerHandlers(getWindow: () => BrowserWindow | null): void {
       return r
     },
     'web.readPage': (url) => webPage(url, 60_000),
+    'share.export': (deckId, meta) => shareExport(getWindow(), deckId, meta),
+    'share.pick': () => sharePick(getWindow()),
+    'share.install': (token, root) => {
+      const r = shareInstall(token, root)
+      emit(getWindow(), 'data-changed')
+      return r
+    },
+    'share.cancel': (token) => shareCancel(token),
+    'share.catalog': () => shareCatalog(),
+    'share.fetch': (id) => shareFetch(id),
     'bridge.status': () => bridgeInfo(),
     'bridge.set': async (enabled) => {
       setSettings({ bridgeEnabled: enabled })

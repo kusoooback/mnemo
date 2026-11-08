@@ -245,6 +245,48 @@ export interface BridgeInfo {
   env: Record<string, string>
 }
 
+/* ---------- Partage de paquets (.mnemodeck) ---------- */
+export interface PackMeta {
+  name?: string
+  description?: string
+  author?: string
+}
+
+export interface PackPreview {
+  name: string
+  description: string
+  author: string
+  notes: number
+  decks: number
+  images: number
+  /** Cartes déjà présentes dans ta collection (elles seront ignorées). */
+  duplicates: number
+  sample: string[]
+}
+
+export interface PackOpened {
+  token: string
+  preview: PackPreview
+}
+
+export interface PackResult {
+  added: number
+  duplicates: number
+  skipped: number
+  deck: string
+}
+
+export interface CommunityPack {
+  id: string
+  title: string
+  description: string
+  author: string
+  lang: 'fr' | 'en'
+  tags: string[]
+  notes: number
+  sha256: string
+}
+
 export interface NotionPage {
   id: string
   title: string

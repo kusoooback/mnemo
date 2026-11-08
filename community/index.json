@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "packs": [
+    {
+      "id": "python-prepa-bases",
+      "title": "Python : les bases pour la prépa et le supérieur",
+      "description": "Syntaxe, listes, chaînes, fonctions, dictionnaires, récursivité, numpy et matplotlib : les réflexes et les pièges classiques du programme de Python en classes préparatoires.",
+      "author": "Mnémo",
+      "lang": "fr",
+      "tags": [
+        "python",
+        "prépa",
+        "informatique"
+      ],
+      "notes": 50,
+      "sha256": "29e25dae8bfcdaf1318db65c9b29b56e8f5b431d188e9f03d37fcda0f3162d74"
+    }
+  ]
+}

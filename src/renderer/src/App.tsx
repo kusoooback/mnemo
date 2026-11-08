@@ -13,6 +13,7 @@ import { DocViewer } from './pages/DocViewer'
 import { AiPage } from './pages/AiPage'
 import { Assistant } from './pages/Assistant'
 import { Resources } from './pages/Resources'
+import { Packs } from './pages/Packs'
 import { Home } from './pages/Home'
 import { Integrations } from './pages/Integrations'
 import { Notebook } from './pages/Notebook'
@@ -228,6 +229,7 @@ export default function App(): React.JSX.Element | null {
           {route.name === 'ai' && <AiPage />}
           {route.name === 'assistant' && <Assistant />}
           {route.name === 'resources' && <Resources />}
+          {route.name === 'packs' && <Packs />}
           {route.name === 'sync' && <SyncPage />}
           {route.name === 'integrations' && <Integrations />}
           {route.name === 'prepa' && <Prepa />}

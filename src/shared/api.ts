@@ -31,6 +31,10 @@ import type {
   NoteRecord,
   NotionPage,
   BridgeInfo,
+  CommunityPack,
+  PackMeta,
+  PackOpened,
+  PackResult,
   AssistantChatReq,
   AssistantChatRes,
   AssistantCard,
@@ -198,6 +202,12 @@ export interface Api {
   'assistant.makeSheets': (source: string, title: string) => AssistantSheet[]
   'assistant.makeExercises': (source: string, title: string, count: number) => AssistantSheet
   'web.readPage': (url: string) => { title: string; url: string; text: string }
+  'share.export': (deckId: string | null, meta: PackMeta) => { path: string; notes: number; images: number; bytes: number } | null
+  'share.pick': () => PackOpened | null
+  'share.install': (token: string, root: string) => PackResult
+  'share.cancel': (token: string) => void
+  'share.catalog': () => CommunityPack[]
+  'share.fetch': (id: string) => PackOpened
   'bridge.status': () => BridgeInfo
   'bridge.set': (enabled: boolean) => BridgeInfo
 }
