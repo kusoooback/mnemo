@@ -81,7 +81,7 @@ Et **uniquement parce que tu l'as demandé**, jamais en arrière-plan sans que t
 
 ### En 5 lignes (si tu es pressée)
 
-1. Ouvre la page **Releases** du projet (le lien t'a été envoyé avec ce guide).
+1. Ouvre la page des téléchargements : **https://github.com/kusoooback/mnemo/releases/latest** (c'est la page « Releases » du projet).
 2. Télécharge **le bon fichier** : `…setup.exe` pour **Windows**, `…arm64.dmg` ou `…x64.dmg` pour **Mac**.
 3. Ouvre le fichier téléchargé.
 4. Si l'ordinateur dit « application non reconnue », choisis **« Exécuter quand même »** (Windows) ou **« Ouvrir quand même »** (Mac) : c'est normal, expliqué plus bas.
@@ -113,7 +113,7 @@ Les explications détaillées commencent juste en dessous. Suis ton ordinateur :
 
 Mnémo se télécharge depuis une page du site **GitHub**, où les développeurs de logiciels libres mettent leurs fichiers. Tu n'as **pas besoin de compte GitHub** pour télécharger.
 
-1. Clique sur le lien **Releases** qu'on t'a envoyé (ou, sur la page principale du projet, clique sur **Releases** dans la colonne de droite).
+1. Ouvre **https://github.com/kusoooback/mnemo/releases/latest** (ou, sur la page principale du projet, clique sur **Releases** dans la colonne de droite).
 2. Tu arrives sur une page avec un titre du genre **« v1.0.0 »** (le numéro de la version). Si plusieurs versions sont listées, prends **la première**, tout en haut : c'est la plus récente.
 3. **Descends** avec la molette de la souris jusqu'à la rubrique **« Assets »** (parfois écrit **« Fichiers »**). Si on ne voit que « Assets » avec une petite flèche ▸, **clique dessus** pour déplier la liste.
 4. Tu vois une liste de fichiers. **Choisis un seul fichier**, selon ton ordinateur :
