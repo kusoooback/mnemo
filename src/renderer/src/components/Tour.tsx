@@ -207,6 +207,9 @@ function SceneFinish(): React.JSX.Element {
   )
 }
 
+/** Entrée de la barre latérale présentée à chaque étape (vide = aucune). */
+const NAVS = ['', 'new', 'home', '', 'quiz', 'assistant', 'packs', '', 'settings', '']
+
 export function Tour(): React.JSX.Element {
   const t = useT() as unknown as (k: string, vars?: Record<string, string | number>) => string
   const { setTour, patchSettings, openEditor, go, bump } = useStore()
@@ -243,7 +246,7 @@ export function Tour(): React.JSX.Element {
 
   // La zone de l'appli dont on parle brille dans la barre latérale.
   useEffect(() => {
-    const nav = steps[i].nav
+    const nav = NAVS[i]
     let el: HTMLElement | null = null
     // Une entrée rangée dans une rubrique repliée de la barre latérale : on ouvre la rubrique d'abord.
     if (nav) window.dispatchEvent(new CustomEvent('mnemo:nav-open', { detail: nav }))
@@ -255,7 +258,7 @@ export function Tour(): React.JSX.Element {
       window.clearTimeout(timer)
       el?.classList.remove('tour-hl')
     }
-  }, [i, steps])
+  }, [i])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {

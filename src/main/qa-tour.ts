@@ -44,6 +44,7 @@ async function inner(win: BrowserWindow, outDir: string, log: string[]): Promise
     await wait(900)
     titles.push(await title())
     navs.push(await hl())
+    log.push(`debug étape ${n}: hl=${await hl()} | nodes=${await js<string>(`[...document.querySelectorAll('[data-nav]')].map(e => e.getAttribute('data-nav') + ':' + e.className).filter(x => /hl/.test(x)).join(',')`)} | all=${await js<number>(`document.querySelectorAll('[data-nav]').length`)}`)
     await shot(`tour-${String(n).padStart(2, '0')}`)
   }
   check(new Set(titles).size === 10 && titles.every((x) => x.length > 2), `10 étapes aux titres différents : ${titles.join(' | ')}`)
