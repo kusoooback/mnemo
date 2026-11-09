@@ -67,7 +67,7 @@ async function inner(win: BrowserWindow, log: string[]): Promise<void> {
 
   // 4. Position de défilement des réglages.
   await go({ name: 'settings' })
-  const dims = await js<string>(`(() => { const e = document.querySelector('.main-scroll'); e.scrollTop = 900; return e.scrollHeight + '/' + e.clientHeight + '/' + e.scrollTop })()`)
+  const dims = await js<string>(`(() => { const e = document.querySelector('.main-scroll'); e.scrollTop = 900; e.dispatchEvent(new Event('scroll')); return e.scrollHeight + '/' + e.clientHeight + '/' + e.scrollTop })()`)
   log.push('info   Réglages scrollHeight/clientHeight/scrollTop = ' + dims)
   await wait(300)
   await go({ name: 'home' })

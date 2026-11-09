@@ -1,4 +1,4 @@
-import { ArrowUp, BookOpen, Check, Loader2, Mic, MicOff, Paperclip, Plus, RotateCcw, MessageCircle, Search, X } from 'lucide-react'
+import { ArrowUp, BookOpen, Check, FolderOpen, Loader2, Mic, MicOff, Paperclip, Plus, RotateCcw, MessageCircle, Search, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AiStatus, AssistantActionType, DocumentRow } from '@shared/types'
 import { call } from '../api'
@@ -91,7 +91,7 @@ function CardsBlock({ msg }: { msg: CardsMsg }): React.JSX.Element {
 
 export function Assistant(): React.JSX.Element {
   const t = useT()
-  const { go, toast } = useStore()
+  const { go, toast, settings, patchSettings } = useStore()
   const A = useAssistant()
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState<string | null>(null)
@@ -239,7 +239,7 @@ export function Assistant(): React.JSX.Element {
           <div className={`as-bubble assistant ${m.error ? 'err' : ''}`}>
             {m.trace?.map((tr, i) => (
               <div key={i} className="as-trace">
-                {tr.kind === 'sheet' ? <BookOpen size={13} /> : <Search size={13} />} {tr.kind === 'search' ? t('as.searched', { q: tr.label }) : tr.kind === 'page' ? t('as.read', { q: tr.label }) : t('as.readSheet', { q: tr.label })}
+                {tr.kind === 'sheet' ? <BookOpen size={13} /> : tr.kind === 'file' ? <FolderOpen size={13} /> : <Search size={13} />} {tr.kind === 'search' ? t('as.searched', { q: tr.label }) : tr.kind === 'page' ? t('as.read', { q: tr.label }) : tr.kind === 'file' ? t('as.readFile', { q: tr.label }) : t('as.readSheet', { q: tr.label })}
                 {tr.links.map((l) => (
                   <button key={l.url} className="link-btn" onClick={() => void call('app.openExternal', l.url)}>
                     {l.title}
@@ -387,6 +387,9 @@ export function Assistant(): React.JSX.Element {
             <button className="btn btn-sm" title={t('as.attachHelp')} onClick={() => void openPicker()}>
               <Paperclip size={14} /> {t('as.attach')}
             </button>
+            <button className={`btn btn-sm ${settings.assistantFolder ? 'btn-primary' : ''}`} title={t('as.folderHelp')} onClick={() => void call('assistant.pickFolder').then(async (f) => { if (f) await patchSettings({ assistantFolder: f }) })}>
+              <FolderOpen size={14} /> {t('as.folder')}
+            </button>
             <label className="as-web" title={t('as.webHelp')}>
               <input type="checkbox" checked={A.web} onChange={(e) => A.set({ web: e.target.checked })} /> {t('as.web')}
             </label>
@@ -397,6 +400,12 @@ export function Assistant(): React.JSX.Element {
           </div>
         </div>
         {A.web && <div className="d as-webnote">{t('as.webNote')}</div>}
+        {settings.assistantFolder && (
+          <div className="d as-webnote as-folder">
+            <FolderOpen size={13} /> <span>{t('as.folderNote', { p: settings.assistantFolder })}</span>
+            <button className="link-btn" onClick={() => void patchSettings({ assistantFolder: '' })}>{t('as.folderRemove')}</button>
+          </div>
+        )}
       </div>
     </div>
   )

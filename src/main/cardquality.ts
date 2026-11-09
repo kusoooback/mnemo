@@ -24,7 +24,7 @@ export function goodCard(c: CardLike, opts: { vocabulary?: boolean } = {}): bool
   if (c.kind === 'cloze') {
     const t = c.text.trim()
     const blanks = [...t.matchAll(HIDDEN)]
-    if (t.length < 25 || t.length > 450) return false
+    if (t.length < 25 || t.length > 320) return false
     if (blanks.length < 1 || blanks.length > 3) return false
     const hidden = blanks.reduce((a, m) => a + m[1].length, 0)
     const visible = t.replace(HIDDEN, '').replace(/[\s.,;:!?()\-–—'’"«»]/g, '')
@@ -36,7 +36,8 @@ export function goodCard(c: CardLike, opts: { vocabulary?: boolean } = {}): bool
   const f = c.front.trim()
   const b = c.back.trim()
   const minFront = opts.vocabulary ? 2 : 10
-  if (f.length < minFront || f.length > 350 || b.length < 1 || b.length > 450) return false
+  // Une carte se révise en quelques secondes : au-delà, c'est un paragraphe, pas une carte.
+  if (f.length < minFront || f.length > 240 || b.length < 1 || b.length > 300) return false
   if (f.toLowerCase() === b.toLowerCase()) return false
   if (/^[\W\d_]+$/.test(f)) return false
   if (LABEL.test(f)) return false

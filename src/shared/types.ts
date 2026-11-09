@@ -50,6 +50,8 @@ export interface Settings {
   /** Passerelle locale (127.0.0.1) pour connecter Claude / un assistant. Désactivée par défaut. */
   bridgeEnabled: boolean
   obsidianFolder: string
+  /** Dossier que l'assistant peut parcourir et lire en permanence (lecture seule). */
+  assistantFolder: string
   obsidianWatch: boolean
   prepaUrl: string
   prepaGuarantee: boolean
@@ -96,6 +98,7 @@ export const DEFAULT_SETTINGS: Settings = {
   quickAdd: true,
   bridgeEnabled: false,
   obsidianFolder: '',
+  assistantFolder: '',
   obsidianWatch: false,
   prepaUrl: 'https://cahier-de-prepa.fr/ecg1-clemenceau/',
   prepaGuarantee: true,

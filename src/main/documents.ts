@@ -102,6 +102,7 @@ export async function makeCards(id: string, count: number): Promise<number> {
   if (source.trim().length < 150) throw new Error('Pas assez de texte dans ce document (scan ou image ?).')
   const deckId = d.deck_id ?? createDeck(`Documents::${d.subject || 'Divers'}`, null)
   const job = startJob('cards', `Cartes : ${d.title}`, { detail: 'Création des cartes…' })
+  job.link({ name: 'deck', id: deckId })
   let cards: Awaited<ReturnType<typeof aiCardsFromText>>
   try {
     cards = await aiCardsFromText(source.slice(0, 14000), Math.max(3, Math.min(40, count)), getSettings().language, `Document « ${d.title} » (${d.subject}).`)

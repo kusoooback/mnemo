@@ -202,7 +202,7 @@ export interface AssistantAction {
 }
 
 export interface AssistantTrace {
-  kind: 'search' | 'page' | 'sheet'
+  kind: 'search' | 'page' | 'sheet' | 'file'
   label: string
   links: { title: string; url: string }[]
 }
@@ -475,6 +475,12 @@ export interface DocInfo {
 }
 
 /** Une tâche de fond (import, création de cartes, téléchargement du modèle…). */
+/** Où mène le clic sur une tâche terminée (le résultat de la tâche). */
+export type JobLink =
+  | { name: 'deck' | 'doc'; id: string }
+  | { name: 'library'; deckId?: string | null }
+  | { name: 'ai' | 'assistant' | 'prepa' | 'sheets' | 'home' }
+
 export interface Job {
   id: string
   kind: 'prepa' | 'cards' | 'summary' | 'model' | 'scan'
@@ -491,6 +497,8 @@ export interface Job {
   cancelRequested: boolean
   /** Document créé ou concerné par la tâche (fiche prête à ouvrir). */
   docId?: string
+  /** Écran à ouvrir en cliquant sur la tâche terminée ; à défaut, celui du type de tâche. */
+  link?: JobLink
 }
 
 export interface DocumentRow {

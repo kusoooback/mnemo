@@ -1,4 +1,5 @@
 import type { AiCardProposal, AssistantAction, AssistantActionType, AssistantCard, AssistantChatReq, AssistantChatRes, AssistantSheet, AssistantTrace } from '../shared/types'
+import { folderOverview, folderTool } from './assistant-folder'
 import { aiCardsFromText, aiChat, aiCall, aiStatus, aiSummarize } from './ai'
 import { addMarkdownDocument } from './docfiles'
 import { listDocuments, documentText } from './documents'
@@ -40,6 +41,8 @@ CAHIER DE PRÉPA : connecteur pour les classes préparatoires : on saisit l'adre
 
 IA (Réglages → Intégrations) : modèle intégré gratuit sur le PC (léger, équilibré, précis ; téléchargé une fois ; rien n'est envoyé), OpenRouter (modèles gratuits plus puissants, clé API gratuite), Ollama, Groq, Gemini, Claude ou OpenAI avec sa propre clé. Les clés sont chiffrées par le système. « Génération IA » transforme un texte ou un sujet en cartes à relire avant ajout.
 
+DOSSIER DE L'ASSISTANT : sous la zone de message de la page Assistant, le bouton « Dossier » connecte un dossier de l'ordinateur (cours, notes, Obsidian) que l'assistant peut parcourir, chercher et lire à tout moment, en lecture seule, sans rien modifier ; on le retire d'un clic. PDF, Word, PowerPoint, Markdown et texte sont lus.
+
 CONNEXION DE CLAUDE : Réglages → Intégrations → Claude : permet à Claude Code / Claude Desktop de créer des cartes et des fiches dans Mnémo (serveur MCP local, désactivé par défaut).
 
 SYNCHRONISATION entre deux ordinateurs : dossier partagé (OneDrive, Dropbox, clé USB…) avec fichier chiffré et phrase secrète (page Synchronisation). SAUVEGARDES : une par jour automatiquement (30 gardées), Réglages → Sauvegardes → Restaurer. Données : dossier « Mnemo » dans AppData (Windows) ou Application Support (Mac) ; Réglages → Dossier de données → Ouvrir.
@@ -63,6 +66,7 @@ Tu peux déclencher des actions en écrivant, sur une ligne à part, à la FIN d
 - [[recherche: bataille de Verdun causes]] : cherche sur Wikipédia (seulement si la recherche web est activée) ; tu recevras les résultats puis tu continueras.
 - [[page: https://exemple.fr/article]] : lit une page web publique donnée par l'utilisateur (si la recherche web est activée).
 - [[lire_fiche: titre de la fiche]] : charge le texte d'une fiche existante de l'utilisateur.
+- [[dossier: mots à chercher]] et [[lire_fichier: chemin du fichier]] : cherchent dans le dossier de cours que l'utilisateur a connecté à l'assistant, et lisent un fichier (seulement si un « DOSSIER CONNECTÉ » figure dans l'état actuel).
 source = dictée (le cours collé dans la conversation, par défaut), dernière (ta dernière réponse) ou fiche (les fiches jointes).
 
 RÈGLES
@@ -99,7 +103,7 @@ export function parseTags(reply: string): { text: string; tags: ParsedTag[] } {
   const text = reply
     .replace(/\[\[\s*([A-Za-zÀ-ÿ_ -]{2,20}?)\s*(?::\s*([^\]]*?))?\s*\]\]/g, (whole, name: string, arg?: string) => {
       const n = strip(name).replace(/[ -]+/g, '_')
-      const known = [...Object.keys(SOURCES), 'recherche', 'search', 'page', 'lire_fiche', 'lire']
+      const known = [...Object.keys(SOURCES), 'recherche', 'search', 'page', 'lire_fiche', 'lire', 'dossier', 'lire_fichier']
       if (!known.includes(n)) return whole
       tags.push({ name: n, arg: (arg ?? '').trim() })
       return ''
@@ -153,6 +157,8 @@ function liveContext(req: AssistantChatReq): string {
     `Fournisseur d'IA configuré : ${st.provider}${st.model ? ` (${st.model})` : ''}.`,
     `Recherche web pour cette conversation : ${req.web ? 'ACTIVÉE (Wikipédia et pages https)' : 'désactivée (si l’utilisateur la demande, dis-lui de cocher « Recherche web »)'}.`
   ]
+  const folder = getSettings().assistantFolder
+  if (folder) parts.push(folderOverview(folder))
   const src = req.source.trim()
   if (src) {
     const words = src.split(/\s+/).length
@@ -195,7 +201,7 @@ export async function assistantChat(req: AssistantChatReq): Promise<AssistantCha
     const parsed = parseTags(reply)
     text = parsed.text
     tags = parsed.tags
-    const tools = tags.filter((t) => ['recherche', 'search', 'page', 'lire_fiche', 'lire'].includes(t.name))
+    const tools = tags.filter((t) => ['recherche', 'search', 'page', 'lire_fiche', 'lire', 'dossier', 'lire_fichier'].includes(t.name))
     if (!tools.length || step === MAX_STEPS - 1) break
     const results: string[] = []
     for (const t of tools.slice(0, 2)) {
@@ -216,6 +222,15 @@ export async function assistantChat(req: AssistantChatReq): Promise<AssistantCha
           const p = await webPage(t.arg)
           trace.push({ kind: 'page', label: p.title, links: [{ title: p.title, url: p.url }] })
           results.push(`[page ${p.url}]\n${p.text}`)
+        } else if (t.name === 'dossier' || t.name === 'lire_fichier') {
+          const root = getSettings().assistantFolder
+          if (!root) {
+            results.push(`[${t.name}] Aucun dossier n'est connecté à l'assistant : dis à l'utilisateur de cliquer sur « Dossier » sous la zone de message.`)
+            continue
+          }
+          const r = await folderTool(root, t.name, t.arg)
+          trace.push({ kind: 'file', label: r.label, links: [] })
+          results.push(r.text)
         } else {
           const sheet = findSheet(t.arg)
           if (!sheet) {
@@ -268,6 +283,7 @@ export async function assistantMakeCards(source: string, count: number, hint: st
   const total = Math.max(5, Math.min(count > 0 ? count : Math.round(clean.length / 450), 200))
   const parts = splitSource(clean, sectionSize())
   const job = startJob('cards', 'Assistant : création des cartes', { cancellable: true, detail: `0 / ${parts.length} partie(s)` })
+  job.link({ name: 'assistant' })
   const out: AiCardProposal[] = []
   try {
     for (const [i, part] of parts.entries()) {

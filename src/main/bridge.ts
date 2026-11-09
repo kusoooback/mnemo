@@ -137,6 +137,7 @@ function addCards(body: Record<string, unknown>): { deck: string; deckId: string
     created = true
   }
   const job = startJob('cards', 'Claude : ajout de cartes', { detail: `${cards.length} carte(s) → ${deckRef}` })
+  job.link({ name: 'deck', id: deckId })
   const results: AddResult[] = []
   let added = 0
   let duplicates = 0

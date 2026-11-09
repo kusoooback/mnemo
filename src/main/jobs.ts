@@ -1,5 +1,5 @@
 import { newId } from './util'
-import type { Job } from '../shared/types'
+import type { Job, JobLink } from '../shared/types'
 
 /*
  * Tâches de fond (import du Cahier de Prépa, création de cartes, téléchargement du modèle IA…) :
@@ -51,6 +51,8 @@ export interface JobHandle {
   discard(): void
   /** Lie la tâche à un document (une fiche créée) : un bouton « Ouvrir » apparaît dans l'activité. */
   attach(docId: string): void
+  /** Écran qui s'ouvre quand on clique sur la tâche une fois terminée (le deck créé, la page de l'IA…). */
+  link(target: JobLink): void
   /** Vrai dès que l'utilisateur a demandé l'arrêt. */
   readonly cancelled: boolean
 }
@@ -90,6 +92,10 @@ export function startJob(kind: Job['kind'], title: string, opts: { cancellable?:
     },
     attach(docId) {
       entry.job.docId = docId
+      notify()
+    },
+    link(target) {
+      entry.job.link = target
       notify()
     },
     get cancelled() {

@@ -87,7 +87,7 @@ export function counts(deckId: string | null): StudyCounts {
   const avail = one('c.state = 0 AND c.buried_until <= @now', { now })
   return {
     newCount: Math.min(avail, Math.max(0, newLimit(deckId) - newStudiedToday(deckId))),
-    learnCount: one('c.state IN (1,3) AND c.due <= @la', { la: now + LEARN_AHEAD }),
+    learnCount: one('c.state IN (1,3) AND c.due <= @la AND c.buried_until <= @now', { la: now + LEARN_AHEAD, now }),
     dueCount: one('c.state = 2 AND c.due <= @end AND c.buried_until <= @now', {
       end: dayEnd(now),
       now
@@ -104,7 +104,8 @@ export function next(deckId: string | null): StudyCard | null {
     db.prepare(`${base} AND ${extra} LIMIT 1`).get({ ...scope.params, ...p }) as StudyRow | undefined
 
   // Ordre : apprentissage échu, révisions, nouvelles ; l'apprentissage « en avance » ne passe qu'en dernier.
-  let row = get('c.state IN (1,3) AND c.due <= @now ORDER BY c.due', { now })
+  // Une carte reportée à demain (même en apprentissage) n'apparaît plus avant le prochain jour d'étude.
+  let row = get('c.state IN (1,3) AND c.due <= @now AND c.buried_until <= @now ORDER BY c.due', { now })
   if (!row)
     row = get('c.state = 2 AND c.due <= @end AND c.buried_until <= @now ORDER BY c.due', {
       end: dayEnd(now),
@@ -112,7 +113,7 @@ export function next(deckId: string | null): StudyCard | null {
     })
   if (!row && newStudiedToday(deckId) < newLimit(deckId))
     row = get('c.state = 0 AND c.buried_until <= @now ORDER BY c.created_at, c.ord', { now })
-  if (!row) row = get('c.state IN (1,3) AND c.due <= @la ORDER BY c.due', { la: now + LEARN_AHEAD })
+  if (!row) row = get('c.state IN (1,3) AND c.due <= @la AND c.buried_until <= @now ORDER BY c.due', { la: now + LEARN_AHEAD, now })
   return row ? toStudyCard(row, new Date(now)) : null
 }
 

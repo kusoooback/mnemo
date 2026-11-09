@@ -208,6 +208,7 @@ export function registerHandlers(getWindow: () => BrowserWindow | null): void {
     'ai.estimate': (text, count) => aiEstimate(text, count),
     'ai.generate': async (text, count, lang, hint) => {
       const job = startJob('cards', 'Création des cartes', { detail: 'Démarrage…' })
+      job.link({ name: 'ai' })
       try {
         const cards = await aiCardsFromText(text, count, lang, hint, { onStep: (done, total, label) => job.set(done, total, label) })
         job.finish(`${cards.length} carte${cards.length > 1 ? 's' : ''} proposée${cards.length > 1 ? 's' : ''}.`)
@@ -376,6 +377,11 @@ export function registerHandlers(getWindow: () => BrowserWindow | null): void {
     'notion.forget': () => notionForget(),
     'notion.status': () => notionStatus(),
     'assistant.chat': (req) => assistantChat(req),
+    'assistant.pickFolder': async () => {
+      const f = await pickFolder(getWindow(), 'Choisir le dossier que l’assistant peut lire (cours, notes…)')
+      if (f) setSettings({ assistantFolder: f })
+      return f
+    },
     'assistant.makeCards': (source, count, hint) => assistantMakeCards(source, count, hint),
     'assistant.addCards': (deck, cards) => {
       const r = assistantAddCards(deck, cards)

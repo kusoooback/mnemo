@@ -327,3 +327,49 @@
     transform: none;
   }
 }
+
+/* ---------- Activité : les tâches terminées s'ouvrent d'un clic ---------- */
+.job.link {
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: background 0.15s ease;
+}
+.job.compact.link {
+  padding: 7px 8px;
+  margin: 0 -8px;
+}
+.job.link:hover,
+.job.link:focus-visible {
+  background: color-mix(in srgb, var(--accent) 9%, var(--hover));
+  outline: none;
+}
+.job.link .job-title {
+  transition: color 0.15s ease;
+}
+.job.link:hover .job-title {
+  color: var(--accent);
+}
+
+/* ---------- Bouton « barre latérale » (haut à gauche) ----------
+ * La bande de déplacement de la fenêtre (.titlebar, z-index 40) recouvrait le bouton : sa zone « no-drag » était
+ * peinte avant elle, donc ignorée, et le clic ne faisait rien. On remonte l'en-tête de la barre latérale au-dessus. */
+.sidebar-top {
+  position: relative;
+  z-index: 45;
+}
+
+/* ---------- Assistant : dossier connecté ---------- */
+.as-folder {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.as-folder svg {
+  flex: none;
+  color: var(--accent);
+}
+.as-folder span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}

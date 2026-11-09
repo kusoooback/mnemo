@@ -1,6 +1,6 @@
 import { Activity, AlertCircle, CheckCircle2, Loader2, Square, Trash2, XCircle } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import type { AiStatus, Job } from '@shared/types'
+import type { AiStatus, Job, JobLink } from '@shared/types'
 import { call } from '../api'
 import { useT } from '../i18n'
 import { useStore } from '../store'
@@ -10,6 +10,16 @@ const clock = (ms: number): string => {
   if (s < 60) return `${s} s`
   const m = Math.round(s / 60)
   return m < 60 ? `${m} min` : `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, '0')}`
+}
+
+/** Écran qu'ouvre la tâche terminée : celui de son résultat, sinon la page du type de tâche. */
+function jobTarget(job: Job): JobLink {
+  if (job.docId) return { name: 'doc', id: job.docId }
+  if (job.link) return job.link
+  if (job.kind === 'cards') return { name: 'library' }
+  if (job.kind === 'summary') return { name: 'sheets' }
+  if (job.kind === 'model') return { name: 'ai' }
+  return { name: 'prepa' }
 }
 
 function useNow(active: boolean): number {
@@ -32,8 +42,15 @@ export function JobRow({ job, compact = false }: { job: Job; compact?: boolean }
   const elapsed = (job.endedAt ?? now) - job.startedAt
   const eta = running && job.total > 0 && job.done >= 2 ? (elapsed / job.done) * (job.total - job.done) : null
   const Icon = running ? Loader2 : job.status === 'done' ? CheckCircle2 : job.status === 'cancelled' ? XCircle : AlertCircle
+  const open = !running ? (): void => go(jobTarget(job)) : undefined
   return (
-    <div className={`job s-${job.status} ${compact ? 'compact' : ''}`}>
+    <div
+      className={`job s-${job.status} ${compact ? 'compact' : ''} ${open ? 'link' : ''}`}
+      role={open ? 'button' : undefined}
+      tabIndex={open ? 0 : undefined}
+      onClick={open}
+      onKeyDown={open ? (e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), open()) : undefined}
+    >
       <Icon size={17} className={`job-ic ${running ? 'spin' : ''}`} />
       <div className="job-main">
         <div className="job-top">
@@ -46,7 +63,7 @@ export function JobRow({ job, compact = false }: { job: Job; compact?: boolean }
               <i style={pct === null ? undefined : { width: `${pct}%` }} />
             </div>
             <div className="job-detail">
-              {job.total > 0 && <span className="num">{job.done}/{job.total} · </span>}
+              {job.total > 0 && job.kind !== 'model' && <span className="num">{job.done}/{job.total} · </span>}
               {job.detail || t('act.working')}
               {eta !== null && <span> · {t('act.eta', { t: clock(eta) })}</span>}
               <span className="faint"> · {clock(elapsed)}</span>
@@ -59,7 +76,7 @@ export function JobRow({ job, compact = false }: { job: Job; compact?: boolean }
         )}
       </div>
       {!running && job.docId && (
-        <button className="btn btn-sm btn-dark" onClick={() => go({ name: 'doc', id: job.docId as string })}>
+        <button className="btn btn-sm btn-dark" onClick={(e) => (e.stopPropagation(), go({ name: 'doc', id: job.docId as string }))}>
           {t('act.open')}
         </button>
       )}

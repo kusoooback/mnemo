@@ -317,8 +317,9 @@ export function listDecks(): DeckInfo[] {
     now
   )
   const learn = group(
-    `SELECT deck_id, COUNT(*) n FROM card WHERE ${live} AND state IN (1,3) AND due <= ? GROUP BY deck_id`,
-    now + 20 * 60 * 1000
+    `SELECT deck_id, COUNT(*) n FROM card WHERE ${live} AND state IN (1,3) AND due <= ? AND buried_until <= ? GROUP BY deck_id`,
+    now + 20 * 60 * 1000,
+    now
   )
   const due = group(
     `SELECT deck_id, COUNT(*) n FROM card WHERE ${live} AND state = 2 AND due <= ? AND buried_until <= ? GROUP BY deck_id`,

@@ -47,6 +47,7 @@ Et **uniquement parce que tu l'as demandé**, jamais en arrière-plan sans que t
 | **IA en ligne (optionnel)** : OpenRouter, Groq, Google Gemini, OpenAI, Claude… | Le fournisseur que **tu** as choisi, avec **ta propre clé** | Le texte que tu demandes de transformer en cartes ou en fiches. **Il quitte alors ton ordinateur.** Garde l'IA intégrée pour les documents confidentiels. | Non (IA intégrée par défaut) |
 | **Ollama** (optionnel) | Ton propre ordinateur (`localhost`) | Rien ne sort de ta machine | Non |
 | **Assistant, recherche web** (optionnelle, case à cocher dans la conversation) | Wikipédia, ou la page web dont tu donnes l'adresse | Les mots de la recherche (ou l'adresse de la page), rien d'autre. Ton cours n'est envoyé qu'à l'IA que tu as choisie (voir la ligne « IA en ligne ») | Non (case décochée) |
+| **Assistant, dossier connecté** (optionnel, bouton « Dossier ») | Fichiers du dossier que tu as choisi (rien d'autre, jamais en dehors) | Les extraits que l'assistant lit pour répondre, envoyés uniquement à l'IA que tu as choisie | Non (aucun dossier connecté par défaut) |
 | **Ressources → Lire et créer des cartes** (sur clic) | Le site de la ressource sur laquelle tu cliques | Une seule requête pour télécharger cette page, sans identifiant ni cookie. Le texte lu n'est envoyé qu'à l'IA que tu as choisie (voir la ligne « IA en ligne ») | Non, sur clic |
 | **Paquets → Catalogue communautaire** (facultatif) | `raw.githubusercontent.com` : le dossier [`community/`](community/) de ce dépôt public | Une requête pour la liste, puis une par paquet que tu ouvres, sans identifiant ni cookie. Comme pour tout site, GitHub voit l'adresse IP de la connexion. Chaque paquet est vérifié (empreinte, format, images) | Non, sur clic |
 | **Connexion de Claude** (optionnel, [section 5](#brancher-claude-sur-mnémo)) | Rien : une « porte » locale (`127.0.0.1`) que **tu** ouvres | Rien ne sort de ta machine par Mnémo ; c'est le programme de Claude, sur ton PC, qui y dépose des cartes | Non (désactivée) |
@@ -396,6 +397,8 @@ Clique sur **Importer** (menu de gauche) **ou glisse un fichier dans la fenêtre
 
 **Tu peux utiliser les deux applications en parallèle.** Relance l'import quand tu veux : Mnémo n'ajoute que les nouvelles cartes et les révisions faites entre-temps, sans doublon. L'audio n'est pas encore repris.
 
+**Types de notes d'Anki** : les types « maison » (vocabulaire avec carte inverse facultative, question dans le deuxième champ, texte à trous avec titre…) sont repris tels que tu les voyais dans Anki, en suivant leurs modèles de carte. Les **échéances** de tes cartes, les cartes **reportées à demain** et la limite de **nouvelles cartes par jour** de chaque paquet sont conservées, pour que les compteurs correspondent à ceux d'Anki. Les **occlusions d'image** d'Anki ne sont pas importées (refais-les avec le type « Occlusion d'image » de Mnémo) ; l'import te le signale.
+
 ---
 
 ## 4. Récupérer ses cours du Cahier de Prépa
@@ -483,6 +486,7 @@ Menu **Assistant** : une conversation avec l'IA que tu as choisie (voir ci-dessu
 - **Tu valides tout** : les cartes sont proposées dans la conversation (tu coches, tu choisis le deck, les doublons sont repérés), les fiches et les exercices (avec corrigé) sont enregistrés dans **Fiches**.
 - **Être interrogé** : **Joindre une fiche**, puis « interroge-moi ». L'assistant pose une question à la fois, corrige et adapte la difficulté.
 - **Compléter un cours** : coche **Recherche web** : l'assistant peut chercher sur Wikipédia ou lire une page dont tu donnes l'adresse, te montre ses sources, puis en tirer des cartes ou une fiche. Décoché, rien ne sort de l'ordinateur.
+- **Un dossier toujours à portée** : le bouton **Dossier** (sous la zone de message) connecte un dossier de ton ordinateur (cours, notes, Obsidian…). L'assistant peut y chercher et y lire tes fichiers (Markdown, texte, PDF, Word, PowerPoint…) à tout moment, **en lecture seule** : il ne sort jamais du dossier et ne modifie rien. Seuls les passages utiles sont envoyés à l'IA que tu as choisie. Un clic sur **Retirer le dossier** le déconnecte.
 - La qualité dépend du modèle : pour un gros cours, un modèle puissant (OpenRouter gratuit, Claude, etc.) est bien meilleur que le petit modèle installé sur le PC.
 
 ### Brancher Claude sur Mnémo

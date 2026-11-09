@@ -12,7 +12,7 @@ import { getDb, mediaDir } from './db'
 import { addNote, createDeck } from './repo'
 import { renderOcclusion } from './occlusion'
 import { replayCard } from './replay'
-import { getSettings, newId } from './util'
+import { dayEnd, getSettings, newId } from './util'
 
 /* ------------------------------------------------------------------ */
 /* Outils : protobuf minimal (format .apkg récent) et HTML ⇄ Markdown  */
@@ -122,6 +122,8 @@ interface AnkiModel {
   cloze: boolean
   fields: string[]
   qfmts: string[]
+  /** Gabarits de réponse (même ordre que qfmts). */
+  afmts: string[]
 }
 interface AnkiNote {
   id: number
@@ -153,13 +155,15 @@ export interface AnkiCollection {
   crt: number
   models: Map<number, AnkiModel>
   decks: Map<number, string>
+  /** Nouvelles cartes par jour réglées dans Anki, par deck (absent = réglage par défaut). */
+  deckNewPerDay: Map<number, number>
   notes: AnkiNote[]
   cards: AnkiCard[]
   revlog: AnkiRev[]
 }
 
 function readLegacy(db: Database.Database): AnkiCollection {
-  const col = db.prepare('SELECT crt, models, decks FROM col').get() as { crt: number; models: string; decks: string }
+  const col = db.prepare('SELECT crt, models, decks, dconf FROM col').get() as { crt: number; models: string; decks: string; dconf: string }
   const models = new Map<number, AnkiModel>()
   for (const m of Object.values(JSON.parse(col.models) as Record<string, any>)) {
     models.set(Number(m.id), {
@@ -167,15 +171,28 @@ function readLegacy(db: Database.Database): AnkiCollection {
       name: m.name,
       cloze: m.type === 1,
       fields: (m.flds as { name: string; ord: number }[]).sort((a, b) => a.ord - b.ord).map((f) => f.name),
-      qfmts: (m.tmpls as { qfmt: string; ord: number }[]).sort((a, b) => a.ord - b.ord).map((t) => t.qfmt)
+      qfmts: (m.tmpls as { qfmt: string; ord: number }[]).sort((a, b) => a.ord - b.ord).map((t) => t.qfmt),
+      afmts: (m.tmpls as { afmt: string; ord: number }[]).sort((a, b) => a.ord - b.ord).map((t) => t.afmt ?? '')
     })
   }
   const decks = new Map<number, string>()
-  for (const d of Object.values(JSON.parse(col.decks) as Record<string, any>)) decks.set(Number(d.id), String(d.name))
+  const deckNewPerDay = new Map<number, number>()
+  let dconf: Record<string, any> = {}
+  try {
+    dconf = JSON.parse(col.dconf || '{}') as Record<string, any>
+  } catch {
+    /* pas de réglages de decks */
+  }
+  for (const d of Object.values(JSON.parse(col.decks) as Record<string, any>)) {
+    decks.set(Number(d.id), String(d.name))
+    const perDay = Number(dconf[String(d.conf)]?.new?.perDay)
+    if (Number.isFinite(perDay) && perDay > 0 && perDay < 100000) deckNewPerDay.set(Number(d.id), perDay)
+  }
   return {
     crt: col.crt,
     models,
     decks,
+    deckNewPerDay,
     notes: db.prepare('SELECT id, guid, mid, tags, flds FROM notes').all() as AnkiNote[],
     cards: db.prepare('SELECT id, nid, did, ord, type, queue, due, ivl, reps, lapses FROM cards').all() as AnkiCard[],
     revlog: db.prepare('SELECT id, cid, ease, time, type FROM revlog').all() as AnkiRev[]
@@ -196,19 +213,41 @@ function readModern(db: Database.Database): AnkiCollection {
     let kind = 0
     for (const f of pbFields(nt.config)) if (f.field === 1 && f.wire === 0) kind = f.num
     const fields = (fieldRows.get(Number(nt.id)) ?? []).sort((a, b) => a.ord - b.ord).map((x) => x.name)
-    const qfmts = (tmplRows.get(Number(nt.id)) ?? []).sort((a, b) => a.ord - b.ord).map((t) => {
-      for (const f of pbFields(t.config)) if (f.field === 1 && f.wire === 2) return f.bytes.toString('utf8')
+    const tmpls = (tmplRows.get(Number(nt.id)) ?? []).sort((a, b) => a.ord - b.ord)
+    const tmplField = (config: Buffer, num: number): string => {
+      for (const f of pbFields(config)) if (f.field === num && f.wire === 2) return f.bytes.toString('utf8')
       return ''
-    })
-    models.set(Number(nt.id), { id: Number(nt.id), name: nt.name, cloze: kind === 1, fields, qfmts })
+    }
+    const qfmts = tmpls.map((t) => tmplField(t.config, 1))
+    const afmts = tmpls.map((t) => tmplField(t.config, 2))
+    models.set(Number(nt.id), { id: Number(nt.id), name: nt.name, cloze: kind === 1, fields, qfmts, afmts })
   }
   const decks = new Map<number, string>()
   for (const d of db.prepare('SELECT id, name FROM decks').all() as { id: number; name: string }[])
     decks.set(Number(d.id), d.name.replace(/\x1f/g, '::'))
+  // Réglages « nouvelles cartes par jour » : deck -> configuration (protobuf), champ new_per_day = 9.
+  const deckNewPerDay = new Map<number, number>()
+  try {
+    const confNew = new Map<number, number>()
+    for (const r of db.prepare('SELECT id, config FROM deck_config').all() as { id: number; config: Buffer }[])
+      for (const f of pbFields(r.config)) if (f.field === 9 && f.wire === 0) confNew.set(Number(r.id), f.num)
+    for (const r of db.prepare('SELECT id, kind FROM decks').all() as { id: number; kind: Buffer }[]) {
+      for (const f of pbFields(r.kind)) {
+        if (f.field !== 1 || f.wire !== 2) continue // « deck normal » (les decks filtrés n'ont pas de réglage)
+        for (const g of pbFields(f.bytes)) {
+          const perDay = g.field === 1 && g.wire === 0 ? confNew.get(g.num) : undefined
+          if (perDay && perDay < 100000) deckNewPerDay.set(Number(r.id), perDay)
+        }
+      }
+    }
+  } catch {
+    /* version d'Anki sans ces tables : on garde le réglage de Mnémo */
+  }
   return {
     crt: col.crt,
     models,
     decks,
+    deckNewPerDay,
     notes: db.prepare('SELECT id, guid, mid, tags, flds FROM notes').all() as AnkiNote[],
     cards: db.prepare('SELECT id, nid, did, ord, type, queue, due, ivl, reps, lapses FROM cards').all() as AnkiCard[],
     revlog: db.prepare('SELECT id, cid, ease, time, type FROM revlog').all() as AnkiRev[]
@@ -246,6 +285,57 @@ const IMG_MIME: Record<string, string> = {
   gif: 'image/gif',
   webp: 'image/webp',
   svg: 'image/svg+xml'
+}
+
+const plainText = (h: string): string => h.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim()
+
+/**
+ * Applique un gabarit de carte d'Anki ({{Champ}}, {{#Champ}}…{{/Champ}}, {{^Champ}}…{{/Champ}}, {{FrontSide}}, {{text:Champ}}…)
+ * aux champs d'une note : on obtient exactement le HTML que montrait Anki, quel que soit le type de note.
+ */
+export function renderAnkiTemplate(tpl: string, fields: Map<string, string>, ctx: { frontSide?: string; tags?: string } = {}): string {
+  const filled = (name: string): boolean => plainText(fields.get(name.trim()) ?? '') !== ''
+  let s = tpl.replace(/\r/g, '')
+  // Sections affichées si le champ est rempli (#) ou vide (^), de la plus profonde à la plus externe.
+  const section = /\{\{([#^])\s*([^{}]+?)\s*\}\}((?:(?!\{\{[#^])[\s\S])*?)\{\{\/\s*\2\s*\}\}/
+  for (let i = 0; i < 100; i++) {
+    const m = section.exec(s)
+    if (!m) break
+    const show = m[1] === '#' ? filled(m[2]) : !filled(m[2])
+    s = s.slice(0, m.index) + (show ? m[3] : '') + s.slice(m.index + m[0].length)
+  }
+  s = s.replace(/\{\{[#^/][^}]*\}\}/g, '')
+  s = s.replace(/\{\{\s*([^{}]+?)\s*\}\}/g, (_m, raw: string) => {
+    const parts = raw.split(':').map((p) => p.trim())
+    const name = parts[parts.length - 1]
+    const filters = parts.slice(0, -1)
+    if (name === 'FrontSide') return ctx.frontSide ?? ''
+    if (name === 'Tags') return ctx.tags ?? ''
+    if (['Deck', 'Subdeck', 'Card', 'Type', 'CardFlag'].includes(name) || filters.includes('type')) return ''
+    const v = fields.get(name) ?? ''
+    return filters.includes('text') ? plainText(v) : v
+  })
+  return s.replace(/<(script|style)[\s\S]*?<\/\1>/gi, '').replace(/\[anki:[^\]]*\]/g, '')
+}
+
+/** Face « réponse » d'une carte : ce qui suit la ligne <hr id=answer>, sinon la réponse débarrassée de la question. */
+export function renderAnkiAnswer(afmt: string, question: string, fields: Map<string, string>, tags = ''): string {
+  const a = renderAnkiTemplate(afmt, fields, { frontSide: question, tags })
+  const parts = a.split(/<hr[^>]*\bid\s*=\s*["']?answer["']?[^>]*>/i)
+  if (parts.length > 1) return parts[parts.length - 1]
+  return question && a.includes(question) ? a.replace(question, '') : a
+}
+
+/**
+ * Types de notes qui ne se réduisent pas à « devant / derrière » : plus de deux champs (ex. « Basique (carte inversée facultative) »,
+ * vocabulaire, personnalisés) ou question qui n'est pas le premier champ. On les importe en appliquant les gabarits d'Anki.
+ */
+function needsRender(m: AnkiModel): boolean {
+  if (m.cloze || m.qfmts.length === 0) return false
+  if (chooseKind(m).kind === 'typed') return m.fields.length > 2
+  if (m.fields.length !== 2) return true
+  const q0 = (m.qfmts[0] ?? '').replace(/\s+/g, '')
+  return q0 !== `{{${m.fields[0]}}}`.replace(/\s+/g, '')
 }
 
 function chooseKind(m: AnkiModel | undefined): { kind: NoteKind; extraTemplates: number } {
@@ -479,6 +569,10 @@ export function importAnkiSource(src: AnkiSource): AnkiImportReport {
     return id
   }
 
+  const created = new Set<string>() // cartes Mnémo créées par cet import (celles qui existaient déjà ne sont jamais modifiées)
+  let occlusionSkipped = 0
+  let renderedNotes = 0
+
   db.transaction(() => {
     for (const n of coll.notes) {
       const cards = noteToCards.get(n.id) ?? []
@@ -486,6 +580,47 @@ export function importAnkiSource(src: AnkiSource): AnkiImportReport {
       const source = `anki:${n.guid}`
       const known = findBySource.get(source) as { id: string; kind: NoteKind } | undefined
       const model = coll.models.get(n.mid)
+
+      // Occlusion d'image d'Anki : un dessin de zones que Mnémo ne sait pas relire tel quel.
+      if (!known && (/image-occlusion:/.test(n.flds) || /occlusion/i.test(model?.name ?? ''))) {
+        occlusionSkipped++
+        continue
+      }
+
+      // Types de notes spéciaux : chaque carte est rendue avec les gabarits d'Anki, comme dans Anki.
+      if (!known && model && needsRender(model)) {
+        const vals = n.flds.split('\x1f')
+        const fmap = new Map<string, string>(model.fields.map((name, i) => [name, vals[i] ?? '']))
+        const tags = n.tags.split(/\s+/).filter(Boolean)
+        for (const c of [...cards].sort((x, y) => x.ord - y.ord)) {
+          const src = `${source}#${c.ord}`
+          const have = findBySource.get(src) as { id: string } | undefined
+          let noteId = have?.id
+          if (noteId) report.existing++
+          else {
+            const q = renderAnkiTemplate(model.qfmts[c.ord] ?? '', fmap, { tags: n.tags.trim() })
+            const front = htmlToMarkdown(q, mediaMap).trim()
+            const back = htmlToMarkdown(renderAnkiAnswer(model.afmts[c.ord] ?? '', q, fmap, n.tags.trim()), mediaMap).trim()
+            if (!front || !back) {
+              report.skipped++
+              continue
+            }
+            noteId = addNote({ kind: 'basic', deckId: deckFor(c.did), fields: { front, back }, tags, source: src })
+            report.notes++
+            renderedNotes++
+          }
+          const mine = db.prepare('SELECT id FROM card WHERE note_id = ? LIMIT 1').get(noteId) as { id: string } | undefined
+          if (!mine) continue
+          cardMap.set(c.id, mine.id)
+          if (!have) {
+            db.prepare('UPDATE card SET deck_id = ?, suspended = ? WHERE id = ?').run(deckFor(c.did), c.queue === -1 ? 1 : 0, mine.id)
+            created.add(mine.id)
+            report.cards++
+          }
+        }
+        continue
+      }
+
       const chosen = known ? { kind: known.kind, extraTemplates: 0 } : chooseKind(model)
       const kind = chosen.kind
       if (chosen.extraTemplates > 0) extraWarn.add(model?.name ?? '?')
@@ -496,9 +631,11 @@ export function importAnkiSource(src: AnkiSource): AnkiImportReport {
         report.existing++
       } else {
         const flds = n.flds.split('\x1f').map((f) => htmlToMarkdown(f, mediaMap))
+        // Texte à trous : le trou peut être dans un autre champ que le premier (types de notes personnalisés).
+        const ci = kind === 'cloze' ? Math.max(0, flds.findIndex((f) => /\{\{c\d+::/.test(f))) : 0
         const fields: Record<string, string> =
           kind === 'cloze'
-            ? { text: flds[0] ?? '', extra: flds.slice(1).filter(Boolean).join('\n\n') }
+            ? { text: flds[ci] ?? '', extra: flds.filter((f, i) => i !== ci && f).join('\n\n') }
             : { front: flds[0] ?? '', back: flds.slice(1).filter(Boolean).join('\n\n') }
         if (!(kind === 'cloze' ? fields.text : fields.front) || (kind !== 'cloze' && !fields.back)) {
           report.skipped++
@@ -508,7 +645,7 @@ export function importAnkiSource(src: AnkiSource): AnkiImportReport {
           report.skipped++
           continue
         }
-        const first = [...cards].sort((a, b) => a.ord - b.ord)[0]
+        const first = [...cards].sort((x, y) => x.ord - y.ord)[0]
         noteId = addNote({ kind, deckId: deckFor(first.did), fields, tags: n.tags.split(/\s+/).filter(Boolean), source })
         report.notes++
       }
@@ -523,6 +660,7 @@ export function importAnkiSource(src: AnkiSource): AnkiImportReport {
         cardMap.set(c.id, mine.id)
         if (!known) {
           db.prepare('UPDATE card SET deck_id = ?, suspended = ? WHERE id = ?').run(deckFor(c.did), c.queue === -1 ? 1 : 0, mine.id)
+          created.add(mine.id)
           report.cards++
         }
       }
@@ -561,7 +699,41 @@ export function importAnkiSource(src: AnkiSource): AnkiImportReport {
         `UPDATE card SET state = 2, due = ?, stability = ?, difficulty = 5, scheduled_days = ?, reps = ?, lapses = ?, last_review = ? WHERE id = ?`
       ).run((coll.crt + c.due * 86400) * 1000, ivl, ivl, c.reps, c.lapses, (coll.crt + (c.due - ivl) * 86400) * 1000, cid)
     }
+
+    // Les cartes arrivent avec LEUR échéance d'Anki : ce qui était à réviser aujourd'hui l'est toujours (le calcul FSRS
+    // ne sert que pour la suite). Sans cela, les compteurs ne ressemblent plus à ceux d'Anki.
+    for (const c of coll.cards) {
+      const cid = cardMap.get(c.id)
+      if (!cid || !created.has(cid)) continue
+      if (c.queue === -2 || c.queue === -3) db.prepare('UPDATE card SET buried_until = ? WHERE id = ?').run(dayEnd(), cid)
+      if (c.type !== 2) continue
+      const ivl = Math.max(1, c.ivl)
+      db.prepare(
+        `UPDATE card SET due = @due, state = 2, scheduled_days = @ivl,
+           stability = CASE WHEN stability > 0 THEN stability ELSE @ivl END,
+           difficulty = CASE WHEN difficulty > 0 THEN difficulty ELSE 5 END,
+           reps = MAX(reps, @reps), lapses = MAX(lapses, @lapses),
+           last_review = COALESCE(last_review, @last) WHERE id = @id`
+      ).run({ due: (coll.crt + c.due * 86400) * 1000, ivl, reps: c.reps, lapses: c.lapses, last: (coll.crt + (c.due - ivl) * 86400) * 1000, id: cid })
+    }
+
+    // Nouvelles cartes par jour : celles réglées dans Anki, pour les decks (et leurs parents) qui viennent d'arriver.
+    const defaultLimit = getSettings().newPerDay
+    const wanted = new Set<string>()
+    for (const did of deckIds.keys()) {
+      const parts = (coll.decks.get(did) ?? '').split('::')
+      for (let i = 1; i <= parts.length; i++) wanted.add(parts.slice(0, i).join('::'))
+    }
+    for (const [did, limit] of coll.deckNewPerDay) {
+      const name = coll.decks.get(did) ?? ''
+      if (!name || !wanted.has(name) || limit === defaultLimit) continue
+      db.prepare('UPDATE deck SET new_per_day = ? WHERE id = ? AND new_per_day IS NULL').run(limit, createDeck(name, null))
+    }
   })()
+
+  if (occlusionSkipped)
+    report.warnings.push(`${occlusionSkipped} note(s) « occlusion d’image » d’Anki non reprises : refais-les avec l’outil d’occlusion de Mnémo.`)
+  if (renderedNotes) report.warnings.push(`${renderedNotes} carte(s) de types de notes spéciaux importées telles qu’Anki les affichait (une carte par côté).`)
 
   if (extraWarn.size)
     report.warnings.push(`Types de notes avec plusieurs modèles de cartes (seul le premier sens est conservé) : ${[...extraWarn].join(', ')}.`)

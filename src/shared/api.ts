@@ -200,6 +200,8 @@ export interface Api {
   'notion.forget': () => void
   'notion.status': () => boolean
   'assistant.chat': (req: AssistantChatReq) => AssistantChatRes
+  /** Choisit le dossier que l'assistant peut lire en permanence ; renvoie son chemin (null si annulé). */
+  'assistant.pickFolder': () => string | null
   'assistant.makeCards': (source: string, count: number, hint: string) => AssistantCard[]
   'assistant.addCards': (deck: string, cards: AiCardProposal[]) => { added: number; deckId: string }
   'assistant.makeSheets': (source: string, title: string) => AssistantSheet[]

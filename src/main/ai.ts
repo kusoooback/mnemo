@@ -580,11 +580,12 @@ export async function aiGenerate(text: string, count: number, lang: 'fr' | 'en',
   const system = `Tu crées des cartes de révision (flashcards) de grande qualité pour la répétition espacée.
 Règles :
 - une seule idée par carte, question complète et compréhensible sans le document (jamais « selon le texte », « ci-dessus ») ;
-- réponse courte (une phrase ou une liste très brève) ; ne recopie pas de paragraphes ;
+- CARTES COURTES : question de 20 mots maximum ; réponse de 25 mots maximum (une seule phrase, ou une liste de 4 éléments au plus, sans phrases d'introduction) ; ne recopie jamais de paragraphes ;
+- si une réponse a besoin de plus de 25 mots, c'est qu'il y a plusieurs idées : fais plusieurs cartes, chacune avec sa propre question ;
 - ne retiens que l'essentiel à savoir pour un examen : définitions, théorèmes et propriétés, méthodes, formules, dates et faits clés, exemples types ;
 - IGNORE tout ce qui est pratique ou administratif (groupes, horaires, salles, noms d'enseignants, consignes, numéros d'exercice) ;
 - pas de doublons, pas de carte triviale.
-Cartes à trous : une phrase complète avec UN seul trou (deux au maximum) sur le mot clé ({{c1::réponse}}), jamais une phrase presque entièrement masquée.
+Cartes à trous : une phrase de 30 mots maximum avec UN seul trou (deux au maximum) sur le mot clé ({{c1::réponse}}), jamais une phrase presque entièrement masquée.
 Écris toutes les formules en LaTeX entre $…$ (ex. $x^2$, $\\sum_{k=1}^{n} u_k$, $A \\subset B$) ; le texte fourni note les exposants ^{…} et les indices _{…}. Langue des cartes : ${LANG[lang]}.
 Exemples de BONNES cartes :
 {"type":"basic","front":"Quelle est la définition d'une application injective ?","back":"Une application f : E → F est injective si deux éléments distincts de E ont des images distinctes.","text":"","extra":""}
@@ -1008,6 +1009,7 @@ const REVIEW_SCHEMA = { type: 'object', properties: { cards: { type: 'array', it
 async function reviewCards(cards: AiCardProposal[], source: string, lang: 'fr' | 'en'): Promise<AiCardProposal[]> {
   try {
     const system = `Tu es un relecteur exigeant de cartes de révision (flashcards). Pour chaque carte, vérifie qu'elle est exacte${source ? ' d\'après l\'extrait fourni' : ''}, utile pour un examen, atomique (une seule idée), claire sans le document, et que la question appelle une seule réponse courte.
+RACCOURCIS toute carte trop longue : question de 20 mots maximum, réponse de 25 mots maximum (une phrase, ou 4 éléments au plus) ; si une carte contient plusieurs idées, remplace-la par plusieurs cartes courtes.
 Corrige la formulation si besoin (formules en LaTeX entre $…$), ou SUPPRIME la carte si elle est fausse, triviale, ambiguë, hors sujet ou administrative. N'ajoute aucune carte. Langue : ${LANG[lang]}.
 Réponds UNIQUEMENT avec le même JSON : {"cards":[…]} (champs type, front, back, text, extra).`
     const payload = JSON.stringify({ cards: cards.map((c) => ({ type: c.kind, front: c.front, back: c.back, text: c.text, extra: c.extra })) })
