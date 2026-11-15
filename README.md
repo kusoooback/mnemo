@@ -425,6 +425,7 @@ Chaque cours reçoit aussi une **fiche de révision** :
 - rejet des étiquettes (« Remarque », « Théorème 3 »), des énoncés pris pour des questions, des trous partout et des infos pratiques ;
 - suppression des cartes en double, puis **relecture par l'IA** (exacte ? claire ? une seule idée ?) qui corrige ou retire les mauvaises ;
 - **fiches de révision soignées** : titre et accroche, encadré « À retenir », puis des encadrés colorés par type (Définition, Théorème, Propriété, Méthode, Piège, Exemple), des tableaux de comparaison, des formules mises en page et une section « Pour réviser ». Elles s'ouvrent en belle page dans Mnémo (clair et sombre) et s'exportent en **PDF A4** (bouton « Exporter en PDF ») : en-tête Mnémo, marges, formules, encadrés et tableaux jamais coupés entre deux pages, pied de page numéroté.
+- **mise en page « cours » automatique** : une fiche écrite comme un vrai cours (titre « # II.1.2 – … », plan numéroté 1) / 1.2 / 1.21 / a), « Argument : … », « Fil rouge : … », dates en gras, « ## Vocabulaire », tableaux « Notion | Définition ») prend l'allure d'un polycopié soigné : en-tête à pastille colorée selon la partie, titres hiérarchisés, encadrés Argument et Dissert, dates et vocabulaire en étiquettes, tableaux de définitions. Même rendu à l'écran et dans le PDF.
 
 **Fais tes cartes directement dans Mnémo.** Page **Génération IA** :
 - **Depuis un texte ou un fichier** : colle un cours ou choisis un PDF (scans compris).

@@ -43,7 +43,7 @@ export async function runPdfExport(win: BrowserWindow, outDir: string): Promise<
     '> Bijective, de réciproque $\\ln$ : $\\ln(e^x) = x$.',
     ''
   ]
-  const md = [
+  const mdDefault = [
     '# Applications : injection, surjection, bijection',
     '',
     '*Comment une fonction associe les éléments de deux ensembles, et pourquoi la bijection est la notion centrale.*',
@@ -60,11 +60,13 @@ export async function runPdfExport(win: BrowserWindow, outDir: string): Promise<
     '- Pourquoi $x \\mapsto x^2$ de $\\mathbb{R}$ dans $\\mathbb{R}$ n’est-elle ni injective ni surjective ?',
     ''
   ].join(NL)
+  const md = process.env.MNEMO_QA_MD ? readFileSync(process.env.MNEMO_QA_MD, 'utf8') : mdDefault
   const file = join(outDir, 'fiche-pdf.md')
   writeFileSync(file, md)
   const added = await invoke<{ ids: string[] }>('docs.addPaths', [file])
   await js(`window.__mnemo.getState().go(${JSON.stringify({ name: 'doc', id: added.ids[0] })})`)
   await wait(1800)
+  writeFileSync(join(outDir, 'ecran.png'), (await wc.capturePage()).toPNG())
   // Clic sur « Exporter en PDF » (le chemin de sortie est imposé par MNEMO_QA_DIR, pas de boîte de dialogue).
   const clicked = await js<boolean>(`(() => { const el = [...document.querySelectorAll('button')].find(e => e.textContent && e.textContent.includes('Exporter en PDF')); if (el) { el.click(); return true } return false })()`)
   log.push(`bouton Exporter en PDF cliqué : ${clicked}`)

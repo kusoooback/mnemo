@@ -1,6 +1,7 @@
 import { app, BrowserWindow, dialog, shell } from 'electron'
 import { mkdirSync, rmSync, writeFileSync } from 'fs'
 import { join } from 'path'
+import { COURSE_CSS } from '../shared/course-css'
 
 /*
  * Export d'une fiche en PDF : une vraie page A4 composée à part (polices, formules, encadrés en couleur, pied de page
@@ -15,6 +16,7 @@ const PAPER_CSS = `
 @page { size: A4; margin: 17mm 19mm 21mm 19mm; }
 * { box-sizing: border-box; }
 html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+html { --text: #1d1d1b; --surface: #fff; --font-serif: 'Newsreader Variable', Newsreader, Georgia, serif; --font-sans: 'Inter Variable', Inter, 'Segoe UI', Arial, sans-serif; }
 body { margin: 0; color: #1d1d1b; background: #fff; font-family: 'Inter Variable', Inter, 'Segoe UI', Arial, sans-serif; font-size: 10.2pt; line-height: 1.58; }
 .paper { padding: 0; }
 .brand { display: flex; align-items: center; justify-content: space-between; margin: 0 0 18px; padding-bottom: 10px; border-bottom: 2.5px solid #c6613f; font-size: 8pt; letter-spacing: .12em; text-transform: uppercase; color: #7b7974; }
@@ -62,7 +64,7 @@ export interface PdfInput {
 }
 
 export function paperHtml({ title, subtitle, html, css }: PdfInput): string {
-  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>${esc(title)}</title><style>${css}\n${PAPER_CSS}</style></head>
+  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>${esc(title)}</title><style>${css}\n${PAPER_CSS}\n${COURSE_CSS}</style></head>
 <body><div class="paper"><div class="brand"><b>Mnémo</b><span>${esc(subtitle || 'Fiche de révision')}</span></div><article class="sheet md">${html}</article></div></body></html>`
 }
 

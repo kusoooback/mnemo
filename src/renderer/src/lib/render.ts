@@ -16,6 +16,7 @@ import katex from 'katex'
 import { Marked } from 'marked'
 import type { NoteKind } from '@shared/types'
 import { transformCallouts } from './callouts'
+import { transformCourse } from './course'
 import { splitMath, stashMath } from './math'
 import { occlusionBack, occlusionFront } from './occlusion'
 import 'katex/dist/katex.min.css'
@@ -110,6 +111,11 @@ export function renderMarkdown(src: string): string {
   if (cache.size > 400) cache.clear()
   cache.set(src, out)
   return out
+}
+
+/** Fiche de révision : Markdown + mise en page « cours » (en-tête, titres numérotés, encadrés Argument, dates…). */
+export function renderSheet(src: string): string {
+  return transformCourse(renderMarkdown(src))
 }
 
 const CLOZE = /\{\{c(\d+)::([\s\S]*?)(?:::([\s\S]*?))?\}\}/g

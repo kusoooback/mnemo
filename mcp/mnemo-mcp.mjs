@@ -75,6 +75,14 @@ Fiches (mnemo_create_sheet) : Markdown structuré, un titre « # … », des sec
 > Texte…
 Types d'encadrés : KEY (à retenir), DEFINITION, THEOREM, PROPERTY, METHOD, WARNING (piège), EXAMPLE, NOTE. Une bonne fiche tient sur 1 à 2 pages : plan, notions clés, dates/chiffres, mots de vocabulaire.
 
+Mise en page « cours » (automatique dans Mnémo et dans l'export PDF, pour un cours d'histoire, de géographie, de droit, etc.) : écris la fiche avec ces repères et ils deviennent des éléments visuels.
+- « # II.1.2 – Titre » : en-tête avec pastille « II.1.2 » (la couleur dépend de la partie I, II.1, II.2, II.3, III.1, III.2, III.3).
+- Titres numérotés comme dans le plan du prof : « ## 1) … » (grande partie), « ## 1.2 … », « ## 1.21 … », « ### a) … ».
+- « Fil rouge : … » (première phrase de la fiche) ; **Argument : l'idée-force du paragraphe** (une ligne en gras, avant les preuves) ; *Dissert : « sujet possible ? »*.
+- Les dates en gras (**1913**, **juin 1947**) deviennent des pastilles ; ➕ signale un complément trouvé hors du cours, ⚠ un doute à vérifier.
+- Fin de fiche : « ## Vocabulaire » (notions séparées par « – ») et « ## Dates » (séparées par « · »).
+- Tableaux : | Notion | Définition | Plan | pour un cahier de définitions, | Date | Événement | Fiche | pour un cahier de dates.
+
 À la fin, résume à l'élève ce qui a été créé (nombre de cartes, decks, fiches).`
 
 const cardSchema = {

@@ -12,6 +12,13 @@ import './styles/layout.css'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
+import { COURSE_CSS } from '@shared/course-css'
+
+// Mise en page « cours » des fiches (la même feuille sert à l'écran et à l'export PDF).
+const courseStyle = document.createElement('style')
+courseStyle.id = 'course-css'
+courseStyle.textContent = COURSE_CSS
+document.head.appendChild(courseStyle)
 
 createRoot(document.getElementById('root') as HTMLElement).render(
   <StrictMode>

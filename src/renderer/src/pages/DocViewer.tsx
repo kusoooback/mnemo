@@ -6,7 +6,7 @@ import type { DocInfo } from '@shared/types'
 import { call } from '../api'
 import { PdfButton } from '../components/PdfButton'
 import { useT, type Key } from '../i18n'
-import { renderMarkdown } from '../lib/render'
+import { renderMarkdown, renderSheet } from '../lib/render'
 import { texToMarkdown } from '../lib/tex'
 import { usePage } from '../lib/keepalive'
 import { useStore } from '../store'
@@ -211,7 +211,7 @@ function TextEditor({ info, onSelect }: { info: DocInfo; onSelect: (s: string) =
             {preview ? t('dv.edit') : t('dv.preview')}
           </button>
         )}
-        {preview && <PdfButton title={info.title} subtitle={[info.subject, info.chapter].filter(Boolean).join(' · ')} html={renderMarkdown(md)} />}
+        {preview && <PdfButton title={info.title} subtitle={[info.subject, info.chapter].filter(Boolean).join(' · ')} html={renderSheet(md)} />}
         <span className="spacer" />
         {dirty && <span className="muted" style={{ fontSize: '0.8125rem' }}>{t('dv.unsaved')}</span>}
         <button className="btn btn-sm btn-dark" disabled={!dirty} onClick={() => void save()}>
@@ -220,7 +220,7 @@ function TextEditor({ info, onSelect }: { info: DocInfo; onSelect: (s: string) =
         </button>
       </div>
       {preview ? (
-        <div className="md selectable doc-preview sheet print-area" onMouseUp={() => onSelect(window.getSelection()?.toString().trim() ?? '')} dangerouslySetInnerHTML={{ __html: renderMarkdown(md) }} />
+        <div className="md selectable doc-preview sheet print-area" onMouseUp={() => onSelect(window.getSelection()?.toString().trim() ?? '')} dangerouslySetInnerHTML={{ __html: renderSheet(md) }} />
       ) : (
         <textarea
           className="doc-textarea"
