@@ -5,6 +5,11 @@
 **Une application de révision par cartes mémoire, gratuite, qui marche sans internet et sans compte.**
 Tes cartes restent sur ton ordinateur. Elle remplace Anki avec une interface plus simple, une IA gratuite intégrée, et un import en un clic de tes cours depuis le **Cahier de Prépa**.
 
+<p align="center">
+  <a href="https://kusoooback.github.io/mnemo/#video"><img src="docs/assets/apercu.webp" alt="Démo animée de Mnémo : logo, révision d’une carte, IA, fiches de cours, statistiques" width="840"></a><br>
+  <sub>▶ <a href="https://kusoooback.github.io/mnemo/#video"><b>Voir la vidéo avec le son</b></a> &nbsp;·&nbsp; 🌐 <a href="https://kusoooback.github.io/mnemo/"><b>Site officiel et téléchargement</b></a></sub>
+</p>
+
 | Thème clair | Thème sombre |
 | --- | --- |
 | ![Accueil, thème clair](docs/screenshots/accueil.png) | ![Accueil, thème sombre](docs/screenshots/accueil-sombre.png) |
@@ -13,9 +18,9 @@ Tes cartes restent sur ton ordinateur. Elle remplace Anki avec une interface plu
 
 | Ton ordinateur | Clique ici |
 | --- | --- |
-| **Windows** | [**Télécharger pour Windows**](https://github.com/kusoooback/mnemo/releases/latest/download/mnemo-1.0.0-setup.exe) (`mnemo-1.0.0-setup.exe`) |
-| **Mac récent** (puce Apple M1, M2, M3…) | [**Télécharger pour Mac (Apple)**](https://github.com/kusoooback/mnemo/releases/latest/download/mnemo-1.0.0-arm64.dmg) (`mnemo-1.0.0-arm64.dmg`) |
-| **Mac plus ancien** (processeur Intel) | [**Télécharger pour Mac (Intel)**](https://github.com/kusoooback/mnemo/releases/latest/download/mnemo-1.0.0-x64.dmg) (`mnemo-1.0.0-x64.dmg`) |
+| **Windows** | [**Télécharger pour Windows**](https://kusoooback.github.io/mnemo/#installer) (fichier `…-setup.exe`) |
+| **Mac récent** (puce Apple M1, M2, M3…) | [**Télécharger pour Mac (Apple)**](https://kusoooback.github.io/mnemo/#installer) (fichier `…-arm64.dmg`) |
+| **Mac plus ancien** (processeur Intel) | [**Télécharger pour Mac (Intel)**](https://kusoooback.github.io/mnemo/#installer) (fichier `…-x64.dmg`) |
 
 Toutes les versions : [page des téléchargements](https://github.com/kusoooback/mnemo/releases/latest). Installation pas à pas, expliquée simplement : [Windows](#sur-windows-pas-à-pas) ou [Mac](#sur-mac-pas-à-pas).
 
